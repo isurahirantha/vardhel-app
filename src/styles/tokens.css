@@ -1,0 +1,58 @@
+:root {
+  /* Vardhel Brand Accents (Aligned with /logo) */
+  --brand-primary: #228870;
+  --brand-primary-hover: #1b6d59;
+  --brand-secondary: #0e192c;
+  --brand-secondary-hover: #16253f;
+  --brand-accent-glow: #10b981;
+
+  /* Default Light Theme — Warm Pearl & Soft Alabaster (Zero clinical glare) */
+  --bg-canvas: #fafaf8;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f3f2ee;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --border-subtle: #e6e4dd;
+  --border-accent: rgba(34, 136, 112, 0.35);
+
+  /* Light Theme Typography (Deep Obsidian Navy for high contrast & elegance) */
+  --text-primary: #0e192c;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  /* Fluid Type Scale */
+  --text-hero: clamp(2.25rem, 4vw + 1rem, 4.1rem);
+  --text-h1: clamp(1.875rem, 2.8vw + 0.75rem, 3.1rem);
+  --text-h2: clamp(1.5rem, 2vw + 0.5rem, 2.35rem);
+  --text-h3: clamp(1.25rem, 1.4vw + 0.4rem, 1.65rem);
+}
+
+html.dark {
+  /* Dark Theme — Deep Midnight Slate (Obsidian #0a111f with logo navy #0e192c) */
+  --bg-canvas: #0a111f;
+  --bg-surface: #0e192c;
+  --bg-surface-elevated: #16233b;
+  --bg-glass: rgba(14, 25, 44, 0.82);
+  --border-subtle: rgba(244, 242, 235, 0.12);
+  --border-accent: rgba(34, 136, 112, 0.45);
+
+  /* Dark Theme Typography (Soft Alabaster #F4F2EB from logo left stroke) */
+  --text-primary: #f4f2eb;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+}
+
+/* Sinhala Typography Enhancements (Section 4A.7) */
+html[lang="si"] body {
+  font-family: var(--font-sinhala), var(--font-sans), sans-serif;
+  line-height: 1.85;
+  letter-spacing: 0 !important;
+}
+
+html[lang="si"] h1,
+html[lang="si"] h2,
+html[lang="si"] h3,
+html[lang="si"] h4 {
+  font-family: var(--font-sinhala), var(--font-display), sans-serif;
+  line-height: 1.45;
+  letter-spacing: 0 !important;
+}

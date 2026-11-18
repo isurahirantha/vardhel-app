@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: codeloom-mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local_root_dev_only}
+      MYSQL_DATABASE: codeloom
+      MYSQL_USER: codeloom_app
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-codeloom_local_dev}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - codeloom_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codeloom-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - .env.local
+    environment:
+      DATABASE_URL: mysql://codeloom_app:${MYSQL_PASSWORD:-codeloom_local_dev}@mysql:3306/codeloom
+    ports:
+      - "3000:3000"
+    volumes:
+      - codeloom_uploads:/app/storage
+    profiles:
+      - full
+
+volumes:
+  codeloom_mysql_data:
+  codeloom_uploads:

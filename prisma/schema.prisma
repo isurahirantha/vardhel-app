@@ -1,0 +1,1106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// 6.1 Core / Auth / Settings
+// ============================================================================
+
+enum AdminRole {
+  SUPER_ADMIN
+}
+
+model AdminUser {
+  id                  String    @id @default(cuid())
+  email               String    @unique @db.VarChar(255)
+  passwordHash        String    @map("password_hash") @db.VarChar(512)
+  role                AdminRole @default(SUPER_ADMIN)
+  mustChangePassword  Boolean   @default(true) @map("must_change_password")
+  totpSecretEnc       String?   @map("totp_secret_enc") @db.VarChar(512)
+  totpEnabled         Boolean   @default(false) @map("totp_enabled")
+  recoveryCodesJson   Json?     @map("recovery_codes_json")
+  failedAttempts      Int       @default(0) @map("failed_attempts")
+  lockedUntil         DateTime? @map("locked_until")
+  lastLoginAt         DateTime? @map("last_login_at")
+  lastLoginIp         String?   @map("last_login_ip") @db.VarChar(64)
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  sessions            AdminSession[]
+  auditLogs           AuditLog[]
+  uploadedMedia       Media[]
+  moderatedFeedback   Feedback[]
+  enquiryNotes        EnquiryNote[]
+  revisions           ContentRevision[]
+
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id          String    @id @default(cuid())
+  adminId     String    @map("admin_id")
+  tokenHash   String    @unique @map("token_hash") @db.VarChar(128)
+  csrfSecret  String    @map("csrf_secret") @db.VarChar(128)
+  ip          String?   @db.VarChar(64)
+  userAgent   String?   @map("user_agent") @db.VarChar(512)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  lastSeenAt  DateTime  @default(now()) @map("last_seen_at")
+  expiresAt   DateTime  @map("expires_at")
+  revokedAt   DateTime? @map("revoked_at")
+
+  admin       AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}
+
+model RateLimit {
+  key         String   @id @db.VarChar(255)
+  count       Int      @default(1)
+  windowStart DateTime @default(now()) @map("window_start")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([windowStart])
+  @@map("rate_limits")
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  adminId    String?    @map("admin_id")
+  action     String     @db.VarChar(128)
+  entity     String     @db.VarChar(128)
+  entityId   String?    @map("entity_id") @db.VarChar(128)
+  diffJson   Json?      @map("diff_json")
+  ip         String?    @db.VarChar(64)
+  userAgent  String?    @map("user_agent") @db.VarChar(512)
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  admin      AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([adminId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model ContentRevision {
+  id          String     @id @default(cuid())
+  entityType  String     @map("entity_type") @db.VarChar(64)
+  entityId    String     @map("entity_id") @db.VarChar(128)
+  locale      String?    @db.VarChar(16)
+  snapshot    Json
+  adminId     String?    @map("admin_id")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  admin       AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+  @@map("content_revisions")
+}
+
+// ============================================================================
+// 6.8 Internationalisation & Core Settings
+// ============================================================================
+
+model Locale {
+  code        String   @id @db.VarChar(16)
+  name        String   @db.VarChar(64)
+  nativeName  String   @map("native_name") @db.VarChar(64)
+  isDefault   Boolean  @default(false) @map("is_default")
+  isEnabled   Boolean  @default(true) @map("is_enabled")
+  direction   String   @default("ltr") @db.VarChar(8)
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("locales")
+}
+
+model UiString {
+  id          String   @id @default(cuid())
+  key         String   @db.VarChar(191)
+  locale      String   @db.VarChar(16)
+  value       String   @db.Text
+  defaultVal  String?  @map("default_val") @db.Text
+  group       String   @default("general") @db.VarChar(64)
+  description String?  @db.VarChar(255)
+  needsReview Boolean  @default(false) @map("needs_review")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([key, locale])
+  @@index([locale, group])
+  @@map("ui_strings")
+}
+
+model SiteSetting {
+  key         String   @id @db.VarChar(128)
+  group       String   @default("general") @db.VarChar(64)
+  valueJson   Json     @map("value_json")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations SiteSettingTranslation[]
+
+  @@index([group])
+  @@map("site_settings")
+}
+
+model SiteSettingTranslation {
+  id          String      @id @default(cuid())
+  settingKey  String      @map("setting_key") @db.VarChar(128)
+  locale      String      @db.VarChar(16)
+  value       String      @db.Text
+  needsReview Boolean     @default(false) @map("needs_review")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  setting     SiteSetting @relation(fields: [settingKey], references: [key], onDelete: Cascade)
+
+  @@unique([settingKey, locale])
+  @@map("site_settings_translations")
+}
+
+model SocialLink {
+  id          String   @id @default(cuid())
+  platform    String   @db.VarChar(64)
+  url         String   @db.VarChar(512)
+  icon        String?  @db.VarChar(64)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations SocialLinkTranslation[]
+
+  @@index([isActive, sortOrder])
+  @@map("social_links")
+}
+
+model SocialLinkTranslation {
+  id           String     @id @default(cuid())
+  socialLinkId String     @map("social_link_id")
+  locale       String     @db.VarChar(16)
+  label        String     @db.VarChar(128)
+  needsReview  Boolean    @default(false) @map("needs_review")
+
+  socialLink   SocialLink @relation(fields: [socialLinkId], references: [id], onDelete: Cascade)
+
+  @@unique([socialLinkId, locale])
+  @@map("social_links_translations")
+}
+
+model NavItem {
+  id          String    @id @default(cuid())
+  href        String    @db.VarChar(255)
+  parentId    String?   @map("parent_id")
+  location    String    @default("header") @db.VarChar(32) // header | footer_company | footer_services | footer_legal
+  sortOrder   Int       @default(0) @map("sort_order")
+  isVisible   Boolean   @default(true) @map("is_visible")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  parent       NavItem?  @relation("NavHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children     NavItem[] @relation("NavHierarchy")
+  translations NavItemTranslation[]
+
+  @@index([location, isVisible, sortOrder])
+  @@map("nav_items")
+}
+
+model NavItemTranslation {
+  id          String  @id @default(cuid())
+  navItemId   String  @map("nav_item_id")
+  locale      String  @db.VarChar(16)
+  label       String  @db.VarChar(128)
+  needsReview Boolean @default(false) @map("needs_review")
+
+  navItem     NavItem @relation(fields: [navItemId], references: [id], onDelete: Cascade)
+
+  @@unique([navItemId, locale])
+  @@map("nav_items_translations")
+}
+
+model HomeSection {
+  id          String   @id @default(cuid())
+  key         String   @unique @db.VarChar(64)
+  configJson  Json?    @map("config_json")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isVisible   Boolean  @default(true) @map("is_visible")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations HomeSectionTranslation[]
+
+  @@index([isVisible, sortOrder])
+  @@map("home_sections")
+}
+
+model HomeSectionTranslation {
+  id            String      @id @default(cuid())
+  homeSectionId String      @map("home_section_id")
+  locale        String      @db.VarChar(16)
+  title         String      @db.VarChar(255)
+  subtitle      String?     @db.Text
+  ctaPrimary    String?     @map("cta_primary") @db.VarChar(128)
+  ctaSecondary  String?     @map("cta_secondary") @db.VarChar(128)
+  needsReview   Boolean     @default(false) @map("needs_review")
+
+  homeSection   HomeSection @relation(fields: [homeSectionId], references: [id], onDelete: Cascade)
+
+  @@unique([homeSectionId, locale])
+  @@map("home_sections_translations")
+}
+
+model Media {
+  id          String     @id @default(cuid())
+  type        String     @db.VarChar(32) // image | video | doc
+  storagePath String     @map("storage_path") @db.VarChar(512)
+  publicUrl   String     @map("public_url") @db.VarChar(512)
+  mime        String     @db.VarChar(128)
+  size        Int
+  width       Int?
+  height      Int?
+  altText     String     @map("alt_text") @db.VarChar(255)
+  checksum    String?    @db.VarChar(128)
+  uploadedBy  String?    @map("uploaded_by")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  deletedAt   DateTime?  @map("deleted_at")
+
+  uploader        AdminUser?     @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+  serviceImages   Service[]      @relation("ServiceImage")
+  productLogos    Product[]      @relation("ProductLogo")
+  productCovers   Product[]      @relation("ProductCover")
+  productVideos   Product[]      @relation("ProductVideo")
+  productPosters  Product[]      @relation("ProductPoster")
+  productMedia    ProductMedia[]
+  projectLogos    Project[]      @relation("ProjectClientLogo")
+  projectCovers   Project[]      @relation("ProjectCover")
+  projectMedia    ProjectMedia[]
+  feedbackPhotos  Feedback[]     @relation("FeedbackPhoto")
+  teamPhotos      TeamMember[]   @relation("TeamPhoto")
+  offerImages     Offer[]        @relation("OfferImage")
+
+  @@index([type, deletedAt])
+  @@map("media")
+}
+
+// ============================================================================
+// 6.2 Services
+// ============================================================================
+
+model ServiceCategory {
+  id          String    @id @default(cuid())
+  slug        String    @unique @db.VarChar(128)
+  icon        String?   @db.VarChar(64)
+  sortOrder   Int       @default(0) @map("sort_order")
+  isPublished Boolean   @default(true) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  services     Service[]
+  translations ServiceCategoryTranslation[]
+
+  @@index([isPublished, sortOrder])
+  @@map("service_categories")
+}
+
+model ServiceCategoryTranslation {
+  id          String          @id @default(cuid())
+  categoryId  String          @map("category_id")
+  locale      String          @db.VarChar(16)
+  name        String          @db.VarChar(191)
+  description String?         @db.Text
+  needsReview Boolean         @default(false) @map("needs_review")
+
+  category    ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@map("service_categories_translations")
+}
+
+model Service {
+  id           String    @id @default(cuid())
+  categoryId   String    @map("category_id")
+  slug         String    @unique @db.VarChar(128)
+  imageId      String?   @map("image_id")
+  icon         String?   @db.VarChar(64)
+  isFeatured   Boolean   @default(false) @map("is_featured")
+  sortOrder    Int       @default(0) @map("sort_order")
+  isPublished  Boolean   @default(true) @map("is_published")
+  publishedAt  DateTime? @map("published_at")
+  noIndex      Boolean   @default(false) @map("no_index")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  category     ServiceCategory      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  image        Media?               @relation("ServiceImage", fields: [imageId], references: [id], onDelete: SetNull)
+  translations ServiceTranslation[]
+  projects     ProjectService[]
+
+  @@index([categoryId, isPublished, sortOrder])
+  @@map("services")
+}
+
+model ServiceTranslation {
+  id               String  @id @default(cuid())
+  serviceId        String  @map("service_id")
+  locale           String  @db.VarChar(16)
+  title            String  @db.VarChar(191)
+  shortDescription String  @map("short_description") @db.Text
+  longDescription  String  @map("long_description") @db.LongText
+  featuresJson     Json    @map("features_json") // string[]
+  processStepsJson Json?   @map("process_steps_json")
+  seoTitle         String? @map("seo_title") @db.VarChar(191)
+  seoDescription   String? @map("seo_description") @db.Text
+  needsReview      Boolean @default(false) @map("needs_review")
+
+  service          Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, locale])
+  @@map("services_translations")
+}
+
+// ============================================================================
+// 6.3 Products
+// ============================================================================
+
+enum ProductStatus {
+  LIVE
+  BETA
+  COMING_SOON
+  ARCHIVED
+}
+
+enum ProductLinkType {
+  LIVE_APP
+  DEMO
+  DOCS
+  API
+  PLAY_STORE
+  APP_STORE
+  REPO
+  OTHER
+}
+
+model ProductCategory {
+  id          String    @id @default(cuid())
+  slug        String    @unique @db.VarChar(128)
+  icon        String?   @db.VarChar(64)
+  sortOrder   Int       @default(0) @map("sort_order")
+  isPublished Boolean   @default(true) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  products     Product[]
+  translations ProductCategoryTranslation[]
+
+  @@index([isPublished, sortOrder])
+  @@map("product_categories")
+}
+
+model ProductCategoryTranslation {
+  id          String          @id @default(cuid())
+  categoryId  String          @map("category_id")
+  locale      String          @db.VarChar(16)
+  name        String          @db.VarChar(191)
+  description String?         @db.Text
+  needsReview Boolean         @default(false) @map("needs_review")
+
+  category    ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@map("product_categories_translations")
+}
+
+model Product {
+  id                   String        @id @default(cuid())
+  categoryId           String?       @map("category_id")
+  slug                 String        @unique @db.VarChar(128)
+  logoId               String?       @map("logo_id")
+  coverId              String?       @map("cover_id")
+  videoType            String?       @map("video_type") @db.VarChar(32) // youtube | vimeo | upload | external
+  videoUrl             String?       @map("video_url") @db.VarChar(512)
+  videoMediaId         String?       @map("video_media_id")
+  videoPosterId        String?       @map("video_poster_id")
+  videoDurationSeconds Int?          @map("video_duration_seconds")
+  status               ProductStatus @default(LIVE)
+  techStackJson        Json?         @map("tech_stack_json") // string[]
+  isFeatured           Boolean       @default(true) @map("is_featured")
+  sortOrder            Int           @default(0) @map("sort_order")
+  isPublished          Boolean       @default(true) @map("is_published")
+  publishedAt          DateTime?     @map("published_at")
+  noIndex              Boolean       @default(false) @map("no_index")
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+  deletedAt            DateTime?     @map("deleted_at")
+
+  category     ProductCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  logo         Media?               @relation("ProductLogo", fields: [logoId], references: [id], onDelete: SetNull)
+  cover        Media?               @relation("ProductCover", fields: [coverId], references: [id], onDelete: SetNull)
+  videoMedia   Media?               @relation("ProductVideo", fields: [videoMediaId], references: [id], onDelete: SetNull)
+  videoPoster  Media?               @relation("ProductPoster", fields: [videoPosterId], references: [id], onDelete: SetNull)
+  translations ProductTranslation[]
+  features     ProductFeature[]
+  screenshots  ProductMedia[]
+  links        ProductLink[]
+  tags         ProductTagPivot[]
+  feedback     Feedback[]
+
+  @@index([isPublished, sortOrder])
+  @@map("products")
+}
+
+model ProductTranslation {
+  id               String  @id @default(cuid())
+  productId        String  @map("product_id")
+  locale           String  @db.VarChar(16)
+  name             String  @db.VarChar(191)
+  tagline          String  @db.VarChar(255)
+  shortDescription String  @map("short_description") @db.Text
+  longDescription  String  @map("long_description") @db.LongText
+  targetAudience   String? @map("target_audience") @db.Text
+  seoTitle         String? @map("seo_title") @db.VarChar(191)
+  seoDescription   String? @map("seo_description") @db.Text
+  needsReview      Boolean @default(false) @map("needs_review")
+
+  product          Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+  @@map("products_translations")
+}
+
+model ProductFeature {
+  id        String   @id @default(cuid())
+  productId String   @map("product_id")
+  icon      String   @default("Sparkles") @db.VarChar(64)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product      Product                     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  translations ProductFeatureTranslation[]
+
+  @@index([productId, sortOrder])
+  @@map("product_features")
+}
+
+model ProductFeatureTranslation {
+  id          String         @id @default(cuid())
+  featureId   String         @map("feature_id")
+  locale      String         @db.VarChar(16)
+  title       String         @db.VarChar(191)
+  description String         @db.Text
+  needsReview Boolean        @default(false) @map("needs_review")
+
+  feature     ProductFeature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@unique([featureId, locale])
+  @@map("product_features_translations")
+}
+
+model ProductMedia {
+  id        String   @id @default(cuid())
+  productId String   @map("product_id")
+  mediaId   String   @map("media_id")
+  caption   String?  @db.VarChar(255)
+  sortOrder Int      @default(0) @map("sort_order")
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+  @@map("product_media")
+}
+
+model ProductLink {
+  id            String          @id @default(cuid())
+  productId     String          @map("product_id")
+  label         String          @db.VarChar(128)
+  url           String          @db.VarChar(512)
+  type          ProductLinkType @default(LIVE_APP)
+  isPrimary     Boolean         @default(false) @map("is_primary")
+  sortOrder     Int             @default(0) @map("sort_order")
+  lastCheckedAt DateTime?       @map("last_checked_at")
+  lastStatus    Int?            @map("last_status")
+
+  product       Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+  @@map("product_links")
+}
+
+model ProductTag {
+  id       String            @id @default(cuid())
+  slug     String            @unique @db.VarChar(64)
+  nameEn   String            @map("name_en") @db.VarChar(64)
+  nameSi   String?           @map("name_si") @db.VarChar(64)
+  products ProductTagPivot[]
+
+  @@map("product_tags")
+}
+
+model ProductTagPivot {
+  productId String     @map("product_id")
+  tagId     String     @map("tag_id")
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag       ProductTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([productId, tagId])
+  @@map("product_tag_pivots")
+}
+
+// ============================================================================
+// 6.4 Live Projects / Portfolio
+// ============================================================================
+
+enum ProjectType {
+  CLIENT_PROJECT
+  PRODUCT_DEPLOYMENT
+  INTERNAL
+}
+
+enum ProjectLinkType {
+  LIVE_SITE
+  DEMO
+  APP
+  SOCIAL
+  OTHER
+}
+
+model ProjectCategory {
+  id          String    @id @default(cuid())
+  slug        String    @unique @db.VarChar(128)
+  sortOrder   Int       @default(0) @map("sort_order")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  projects     Project[]
+  translations ProjectCategoryTranslation[]
+
+  @@map("project_categories")
+}
+
+model ProjectCategoryTranslation {
+  id          String          @id @default(cuid())
+  categoryId  String          @map("category_id")
+  locale      String          @db.VarChar(16)
+  name        String          @db.VarChar(191)
+  description String?         @db.Text
+  needsReview Boolean         @default(false) @map("needs_review")
+
+  category    ProjectCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@map("project_categories_translations")
+}
+
+model Project {
+  id           String      @id @default(cuid())
+  categoryId   String?     @map("category_id")
+  slug         String      @unique @db.VarChar(128)
+  clientLogoId String?     @map("client_logo_id")
+  coverId      String?     @map("cover_id")
+  videoType    String?     @map("video_type") @db.VarChar(32)
+  videoUrl     String?     @map("video_url") @db.VarChar(512)
+  techStackJson Json?      @map("tech_stack_json")
+  projectType  ProjectType @default(CLIENT_PROJECT) @map("project_type")
+  completedOn  DateTime?   @map("completed_on")
+  isDemo       Boolean     @default(false) @map("is_demo")
+  isFeatured   Boolean     @default(false) @map("is_featured")
+  sortOrder    Int         @default(0) @map("sort_order")
+  isPublished  Boolean     @default(false) @map("is_published")
+  publishedAt  DateTime?   @map("published_at")
+  noIndex      Boolean     @default(false) @map("no_index")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  deletedAt    DateTime?   @map("deleted_at")
+
+  category     ProjectCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  clientLogo   Media?               @relation("ProjectClientLogo", fields: [clientLogoId], references: [id], onDelete: SetNull)
+  cover        Media?               @relation("ProjectCover", fields: [coverId], references: [id], onDelete: SetNull)
+  translations ProjectTranslation[]
+  links        ProjectLink[]
+  socialWork   ProjectSocialWork[]
+  gallery      ProjectMedia[]
+  services     ProjectService[]
+  feedback     Feedback[]
+
+  @@index([isPublished, isFeatured, sortOrder])
+  @@map("projects")
+}
+
+model ProjectTranslation {
+  id             String  @id @default(cuid())
+  projectId      String  @map("project_id")
+  locale         String  @db.VarChar(16)
+  title          String  @db.VarChar(191)
+  clientName     String? @map("client_name") @db.VarChar(191)
+  industry       String? @db.VarChar(128)
+  summary        String  @db.Text
+  challenge      String? @db.LongText
+  solution       String? @db.LongText
+  result         String? @db.LongText
+  seoTitle       String? @map("seo_title") @db.VarChar(191)
+  seoDescription String? @map("seo_description") @db.Text
+  needsReview    Boolean @default(false) @map("needs_review")
+
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, locale])
+  @@map("projects_translations")
+}
+
+model ProjectService {
+  projectId String  @map("project_id")
+  serviceId String  @map("service_id")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, serviceId])
+  @@map("project_services")
+}
+
+model ProjectLink {
+  id            String          @id @default(cuid())
+  projectId     String          @map("project_id")
+  label         String          @db.VarChar(128)
+  url           String          @db.VarChar(512)
+  type          ProjectLinkType @default(LIVE_SITE)
+  sortOrder     Int             @default(0) @map("sort_order")
+  lastCheckedAt DateTime?       @map("last_checked_at")
+  lastStatus    Int?            @map("last_status")
+
+  project       Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+  @@map("project_links")
+}
+
+model ProjectSocialWork {
+  id         String   @id @default(cuid())
+  projectId  String   @map("project_id")
+  platform   String   @db.VarChar(64) // facebook | instagram | tiktok | tripadvisor | youtube
+  handle     String?  @db.VarChar(128)
+  profileUrl String?  @map("profile_url") @db.VarChar(512)
+  sortOrder  Int      @default(0) @map("sort_order")
+
+  project      Project                        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  translations ProjectSocialWorkTranslation[]
+
+  @@index([projectId, sortOrder])
+  @@map("project_social_work")
+}
+
+model ProjectSocialWorkTranslation {
+  id           String            @id @default(cuid())
+  socialWorkId String            @map("social_work_id")
+  locale       String            @db.VarChar(16)
+  summary      String            @db.Text
+  needsReview  Boolean           @default(false) @map("needs_review")
+
+  socialWork   ProjectSocialWork @relation(fields: [socialWorkId], references: [id], onDelete: Cascade)
+
+  @@unique([socialWorkId, locale])
+  @@map("project_social_work_translations")
+}
+
+model ProjectMedia {
+  id        String  @id @default(cuid())
+  projectId String  @map("project_id")
+  mediaId   String  @map("media_id")
+  caption   String? @db.VarChar(255)
+  sortOrder Int     @default(0) @map("sort_order")
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media     Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+  @@map("project_media")
+}
+
+// ============================================================================
+// 6.5 Customer Proof (Feedback & FAQs)
+// ============================================================================
+
+enum FeedbackStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  HIDDEN
+}
+
+enum FeedbackSource {
+  PUBLIC_FORM
+  ADMIN_ENTERED
+}
+
+model Feedback {
+  id               String         @id @default(cuid())
+  status           FeedbackStatus @default(PENDING)
+  name             String         @db.VarChar(191)
+  company          String?        @db.VarChar(191)
+  role             String?        @db.VarChar(191)
+  email            String?        @db.VarChar(255) // Private, NEVER returned to public
+  rating           Int            @default(5)
+  message          String         @db.Text
+  messageSi        String?        @map("message_si") @db.Text
+  photoMediaId     String?        @map("photo_media_id")
+  relatedProjectId String?        @map("related_project_id")
+  relatedProductId String?        @map("related_product_id")
+  consentToPublish Boolean        @default(false) @map("consent_to_publish")
+  source           FeedbackSource @default(PUBLIC_FORM)
+  locale           String         @default("en") @db.VarChar(16)
+  submittedIpHash  String?        @map("submitted_ip_hash") @db.VarChar(128)
+  moderatedBy      String?        @map("moderated_by")
+  moderatedAt      DateTime?      @map("moderated_at")
+  isFeatured       Boolean        @default(false) @map("is_featured")
+  displayOrder     Int            @default(0) @map("display_order")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+
+  photo            Media?         @relation("FeedbackPhoto", fields: [photoMediaId], references: [id], onDelete: SetNull)
+  project          Project?       @relation(fields: [relatedProjectId], references: [id], onDelete: SetNull)
+  product          Product?       @relation(fields: [relatedProductId], references: [id], onDelete: SetNull)
+  moderator        AdminUser?     @relation(fields: [moderatedBy], references: [id], onDelete: SetNull)
+
+  @@index([status, displayOrder])
+  @@index([createdAt])
+  @@map("feedback")
+}
+
+model Faq {
+  id          String    @id @default(cuid())
+  group       String    @default("general") @db.VarChar(64)
+  sortOrder   Int       @default(0) @map("sort_order")
+  isPublished Boolean   @default(true) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  translations FaqTranslation[]
+
+  @@index([isPublished, sortOrder])
+  @@map("faqs")
+}
+
+model FaqTranslation {
+  id          String  @id @default(cuid())
+  faqId       String  @map("faq_id")
+  locale      String  @db.VarChar(16)
+  question    String  @db.VarChar(255)
+  answer      String  @db.Text
+  needsReview Boolean @default(false) @map("needs_review")
+
+  faq         Faq     @relation(fields: [faqId], references: [id], onDelete: Cascade)
+
+  @@unique([faqId, locale])
+  @@map("faqs_translations")
+}
+
+// ============================================================================
+// 6.6 Company Content (Team, Values, Timeline, Process, Offers, Stats, Pages)
+// ============================================================================
+
+model TeamMember {
+  id          String    @id @default(cuid())
+  photoId     String?   @map("photo_id")
+  linksJson   Json?     @map("links_json")
+  isRoleOnly  Boolean   @default(false) @map("is_role_only") // True for generic roles
+  sortOrder   Int       @default(0) @map("sort_order")
+  isVisible   Boolean   @default(true) @map("is_visible")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  photo        Media?                  @relation("TeamPhoto", fields: [photoId], references: [id], onDelete: SetNull)
+  translations TeamMemberTranslation[]
+
+  @@index([isVisible, sortOrder])
+  @@map("team_members")
+}
+
+model TeamMemberTranslation {
+  id           String     @id @default(cuid())
+  teamMemberId String     @map("team_member_id")
+  locale       String     @db.VarChar(16)
+  name         String     @db.VarChar(191)
+  role         String     @db.VarChar(191)
+  bio          String?    @db.Text
+  needsReview  Boolean    @default(false) @map("needs_review")
+
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  @@unique([teamMemberId, locale])
+  @@map("team_members_translations")
+}
+
+model CoreValue {
+  id          String   @id @default(cuid())
+  codeNumber  String   @default("01") @map("code_number") @db.VarChar(16)
+  icon        String   @default("Award") @db.VarChar(64)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations CoreValueTranslation[]
+
+  @@index([isPublished, sortOrder])
+  @@map("core_values")
+}
+
+model CoreValueTranslation {
+  id          String    @id @default(cuid())
+  valueId     String    @map("value_id")
+  locale      String    @db.VarChar(16)
+  title       String    @db.VarChar(191)
+  motto       String?   @db.VarChar(255)
+  bulletsJson Json      @map("bullets_json") // string[]
+  needsReview Boolean   @default(false) @map("needs_review")
+
+  coreValue   CoreValue @relation(fields: [valueId], references: [id], onDelete: Cascade)
+
+  @@unique([valueId, locale])
+  @@map("core_values_translations")
+}
+
+model TimelineEvent {
+  id          String   @id @default(cuid())
+  year        String   @db.VarChar(32)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations TimelineEventTranslation[]
+
+  @@index([isPublished, sortOrder])
+  @@map("timeline_events")
+}
+
+model TimelineEventTranslation {
+  id          String        @id @default(cuid())
+  eventId     String        @map("event_id")
+  locale      String        @db.VarChar(16)
+  title       String        @db.VarChar(191)
+  description String        @db.Text
+  needsReview Boolean       @default(false) @map("needs_review")
+
+  event       TimelineEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, locale])
+  @@map("timeline_events_translations")
+}
+
+model ProcessStep {
+  id          String   @id @default(cuid())
+  stepType    String   @default("dev_cycle") @map("step_type") @db.VarChar(32) // dev_cycle | growth_journey
+  icon        String   @default("CheckCircle") @db.VarChar(64)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations ProcessStepTranslation[]
+
+  @@index([stepType, isPublished, sortOrder])
+  @@map("process_steps")
+}
+
+model ProcessStepTranslation {
+  id          String      @id @default(cuid())
+  stepId      String      @map("step_id")
+  locale      String      @db.VarChar(16)
+  title       String      @db.VarChar(191)
+  subtitle    String?     @db.VarChar(255)
+  bulletsJson Json        @map("bullets_json") // string[]
+  needsReview Boolean     @default(false) @map("needs_review")
+
+  step        ProcessStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  @@unique([stepId, locale])
+  @@map("process_steps_translations")
+}
+
+model Offer {
+  id          String    @id @default(cuid())
+  imageId     String?   @map("image_id")
+  ctaHref     String    @default("/contact") @map("cta_href") @db.VarChar(255)
+  validFrom   DateTime? @map("valid_from")
+  validTo     DateTime? @map("valid_to")
+  sortOrder   Int       @default(0) @map("sort_order")
+  isPublished Boolean   @default(true) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  image        Media?             @relation("OfferImage", fields: [imageId], references: [id], onDelete: SetNull)
+  translations OfferTranslation[]
+
+  @@index([isPublished, sortOrder])
+  @@map("offers")
+}
+
+model OfferTranslation {
+  id          String  @id @default(cuid())
+  offerId     String  @map("offer_id")
+  locale      String  @db.VarChar(16)
+  title       String  @db.VarChar(191)
+  description String  @db.Text
+  badge       String? @db.VarChar(64)
+  ctaLabel    String  @map("cta_label") @db.VarChar(128)
+  needsReview Boolean @default(false) @map("needs_review")
+
+  offer       Offer   @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@unique([offerId, locale])
+  @@map("offers_translations")
+}
+
+model Stat {
+  id          String   @id @default(cuid())
+  value       String   @db.VarChar(64)
+  suffix      String?  @db.VarChar(32)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations StatTranslation[]
+
+  @@index([isPublished, sortOrder])
+  @@map("stats")
+}
+
+model StatTranslation {
+  id          String  @id @default(cuid())
+  statId      String  @map("stat_id")
+  locale      String  @db.VarChar(16)
+  label       String  @db.VarChar(191)
+  needsReview Boolean @default(false) @map("needs_review")
+
+  stat        Stat    @relation(fields: [statId], references: [id], onDelete: Cascade)
+
+  @@unique([statId, locale])
+  @@map("stats_translations")
+}
+
+model PageContent {
+  id          String   @id @default(cuid())
+  slug        String   @unique @db.VarChar(128) // about | vision | mission | growth | terms | privacy | cookies
+  pageGroup   String   @default("general") @map("page_group") @db.VarChar(64) // company | legal | growth
+  isPublished Boolean  @default(true) @map("is_published")
+  noIndex     Boolean  @default(false) @map("no_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations PageContentTranslation[]
+
+  @@map("pages_content")
+}
+
+model PageContentTranslation {
+  id             String      @id @default(cuid())
+  pageId         String      @map("page_id")
+  locale         String      @db.VarChar(16)
+  title          String      @db.VarChar(191)
+  subtitle       String?     @db.VarChar(255)
+  body           String      @db.LongText
+  seoTitle       String?     @map("seo_title") @db.VarChar(191)
+  seoDescription String?     @map("seo_description") @db.Text
+  needsReview    Boolean     @default(false) @map("needs_review")
+
+  page           PageContent @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, locale])
+  @@map("pages_content_translations")
+}
+
+// ============================================================================
+// 6.7 Leads / Enquiries
+// ============================================================================
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  WON
+  CLOSED
+}
+
+model Enquiry {
+  id           String        @id @default(cuid())
+  name         String        @db.VarChar(191)
+  email        String        @db.VarChar(255)
+  phone        String?       @db.VarChar(64)
+  businessName String?       @map("business_name") @db.VarChar(191)
+  interest     String        @db.VarChar(128)
+  budgetRange  String?       @map("budget_range") @db.VarChar(128)
+  message      String        @db.Text
+  status       EnquiryStatus @default(NEW)
+  sourcePage   String?       @map("source_page") @db.VarChar(255)
+  locale       String        @default("en") @db.VarChar(16)
+  ipHash       String?       @map("ip_hash") @db.VarChar(128)
+  userAgent    String?       @map("user_agent") @db.VarChar(512)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  deletedAt    DateTime?     @map("deleted_at")
+
+  notes        EnquiryNote[]
+
+  @@index([status, createdAt])
+  @@index([deletedAt])
+  @@map("enquiries")
+}
+
+model EnquiryNote {
+  id        String    @id @default(cuid())
+  enquiryId String    @map("enquiry_id")
+  adminId   String?   @map("admin_id")
+  note      String    @db.Text
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  enquiry   Enquiry   @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  admin     AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([enquiryId])
+  @@map("enquiry_notes")
+}
+
+model FormOption {
+  id          String   @id @default(cuid())
+  optionType  String   @map("option_type") @db.VarChar(64) // interest | budget_range
+  valueKey    String   @map("value_key") @db.VarChar(64)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  translations FormOptionTranslation[]
+
+  @@unique([optionType, valueKey])
+  @@index([optionType, isActive, sortOrder])
+  @@map("form_options")
+}
+
+model FormOptionTranslation {
+  id          String     @id @default(cuid())
+  optionId    String     @map("option_id")
+  locale      String     @db.VarChar(16)
+  label       String     @db.VarChar(191)
+  needsReview Boolean    @default(false) @map("needs_review")
+
+  option      FormOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([optionId, locale])
+  @@map("form_options_translations")
+}
