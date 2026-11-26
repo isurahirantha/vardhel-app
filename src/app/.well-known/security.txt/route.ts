@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const body = [
-    "Contact: mailto:codeloom.lk@gmail.com",
+    "Contact: mailto:vardhel.official@gmail.com",
     "Preferred-Languages: en, si",
-    "Canonical: https://codeloom.site/.well-known/security.txt",
+    "Canonical: https://vardhel.com/.well-known/security.txt",
     "Expires: 2027-12-31T23:59:59.000Z",
   ].join("\n");
 

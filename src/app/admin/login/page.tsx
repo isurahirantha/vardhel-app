@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
             height={40}
             className="h-10 w-auto"
           />
-          <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-semibold text-orange-700">
+          <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
             <Shield className="h-3.5 w-3.5" />
             <span>Master Admin Control Centre</span>
           </div>
@@ -95,8 +95,8 @@ export default function AdminLoginPage() {
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder-slate-400 focus:border-orange-500 focus:outline-none"
-              placeholder="codeloom.lk@gmail.com"
+              className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none"
+              placeholder="contact@vardhel.com"
             />
           </div>
 
@@ -115,7 +115,7 @@ export default function AdminLoginPage() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder-slate-400 focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none"
                 placeholder="••••••••••••"
               />
               <Lock className="pointer-events-none absolute right-3.5 top-3.5 h-4 w-4 text-slate-400" />
@@ -126,7 +126,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="admin-totp"
-                className="block text-xs font-semibold text-orange-700"
+                className="block text-xs font-semibold text-emerald-700"
               >
                 Two-Factor Authenticator Code (or Recovery Code)
               </label>
@@ -139,10 +139,10 @@ export default function AdminLoginPage() {
                   required
                   value={totpCode}
                   onChange={(e) => setTotpCode(e.target.value)}
-                  className="w-full rounded-xl border border-orange-400 bg-white px-4 py-3 text-base tracking-widest text-slate-900 placeholder-slate-400 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-xl border border-emerald-400 bg-white px-4 py-3 text-base tracking-widest text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none"
                   placeholder="123456"
                 />
-                <KeyRound className="pointer-events-none absolute right-3.5 top-3.5 h-4 w-4 text-orange-600" />
+                <KeyRound className="pointer-events-none absolute right-3.5 top-3.5 h-4 w-4 text-emerald-600" />
               </div>
             </div>
           )}
@@ -150,7 +150,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isPending}
-            className="keep-white mt-2 flex min-h-[48px] w-full items-center justify-center rounded-xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all hover:bg-orange-500 disabled:opacity-50"
+            className="keep-white mt-2 flex min-h-[48px] w-full items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-500 disabled:opacity-50"
           >
             {isPending
               ? "Verifying..."

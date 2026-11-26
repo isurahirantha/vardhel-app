@@ -14,7 +14,7 @@ const envSchema = z.object({
   IP_HASH_SALT: z
     .string()
     .min(16, "IP_HASH_SALT must be at least 16 characters"),
-  SEED_ADMIN_EMAIL: z.string().email().default("codeloom.lk@gmail.com"),
+  SEED_ADMIN_EMAIL: z.string().email().default("vardhel.official@gmail.com"),
   SEED_ADMIN_PASSWORD: z.string().optional().default(""),
   REQUIRE_ADMIN_2FA: z
     .enum(["true", "false"])
@@ -25,8 +25,8 @@ const envSchema = z.object({
   SMTP_PORT: z.string().optional().default(""),
   SMTP_USER: z.string().optional().default(""),
   SMTP_PASS: z.string().optional().default(""),
-  MAIL_FROM: z.string().optional().default("no-reply@codeloom.site"),
-  NOTIFY_EMAIL: z.string().email().default("codeloom.lk@gmail.com"),
+  MAIL_FROM: z.string().optional().default("no-reply@vardhel.com"),
+  NOTIFY_EMAIL: z.string().email().default("vardhel.official@gmail.com"),
   STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
   UPLOAD_MAX_IMAGE_MB: z.coerce.number().positive().default(8),
   UPLOAD_MAX_VIDEO_MB: z.coerce.number().positive().default(100),

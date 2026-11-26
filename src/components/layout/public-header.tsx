@@ -46,12 +46,22 @@ export function PublicHeader({
   labels,
 }: PublicHeaderProps) {
   const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
 
   const servicesRef = useRef<HTMLDivElement>(null);
   const companyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 15);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -80,8 +90,15 @@ export function PublicHeader({
   const isCompanyActive = pathname.startsWith("/about") || pathname.startsWith("/feedback");
 
   return (
-    <header className="sticky top-0 z-50 w-full px-3 py-2.5 sm:px-6 lg:px-8">
-      <div className="mx-auto flex h-[62px] max-w-[1400px] items-center justify-between rounded-full border border-white/10 bg-[var(--bg-canvas)]/80 px-4 shadow-xl backdrop-blur-2xl transition-all sm:px-6">
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 w-full px-3 py-2.5 transition-all duration-300 sm:px-6 lg:px-8">
+        <div
+          className={`mx-auto flex h-[62px] max-w-[1400px] items-center justify-between rounded-full px-4 transition-all duration-300 sm:px-6 ${
+            scrolled
+              ? "glass-nav-capsule scale-[0.99]"
+              : "border border-[var(--border-subtle)] bg-[var(--bg-canvas)]/90 shadow-sm backdrop-blur-md"
+          }`}
+        >
         
         {/* Brand Logo & Name */}
         <Link
@@ -305,7 +322,7 @@ export function PublicHeader({
             href="/contact"
             className="keep-white inline-flex min-h-[38px] items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:opacity-95 hover:shadow-emerald-500/30"
           >
-            <span className="keep-white">Start a Project</span>
+            <span className="keep-white">{labels.startProject}</span>
             <ArrowUpRight className="keep-white h-3.5 w-3.5" />
           </Link>
         </div>
@@ -387,12 +404,15 @@ export function PublicHeader({
               onClick={() => setMobileOpen(false)}
               className="keep-white flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/20"
             >
-              <span className="keep-white">Start a Project</span>
+              <span className="keep-white">{labels.startProject}</span>
               <ArrowUpRight className="keep-white h-4 w-4" />
             </Link>
           </div>
         </div>
       )}
     </header>
+    {/* Spacer so the fixed header does not cover the top content */}
+    <div className="h-[60px] w-full shrink-0" aria-hidden="true" />
+    </>
   );
 }

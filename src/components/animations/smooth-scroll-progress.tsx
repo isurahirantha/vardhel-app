@@ -11,6 +11,11 @@ export function SmoothScrollProgress() {
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
+    // Detect touch-only mobile devices where native 120Hz scrolling is superior
+    const isTouchOnly =
+      window.matchMedia("(pointer: coarse)").matches &&
+      !window.matchMedia("(pointer: fine)").matches;
+
     const onScroll = () => {
       const total =
         document.documentElement.scrollHeight - window.innerHeight;
@@ -21,13 +26,16 @@ export function SmoothScrollProgress() {
 
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    if (prefersReducedMotion) {
+    if (prefersReducedMotion || isTouchOnly) {
       return () => window.removeEventListener("scroll", onScroll);
     }
 
+    // High responsiveness: reduced from 1.05s to 0.65s for snappy, immediate interaction
     const lenis = new Lenis({
-      duration: 1.05,
+      duration: 0.65,
       smoothWheel: true,
+      wheelMultiplier: 1.1,
+      touchMultiplier: 1,
     });
 
     let rafId = 0;

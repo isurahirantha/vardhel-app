@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vardhel — Your Vision, Our Framework</title>
+<meta name="description" content="Vardhel is a digital business growth partner. We build custom software, websites, branding, marketing and AI automation that move your business forward.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ DESIGN TOKENS ============ */
+:root{
+  --bg:#FAFAF8;
+  --bg-band:#F1F2EE;
+  --surface:#FFFFFF;
+  --surface-2:#F8F9F5;
+  --ink:#0F172A;
+  --ink-soft:#334155;
+  --muted:#64748B;
+  --line:#E6E8E1;
+  --line-soft:#EFF1EB;
+  --line-strong:#D4D8CC;
+  --brand:#10B981;
+  --brand-deep:#059669;
+  --brand-ink:#0B3D33;
+  --brand-dark:#0B2B24;
+  --brand-darker:#071F1B;
+  --accent:#22D3EE;
+  --warn:#F59E0B;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
+  --shadow:0 4px 16px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+  --shadow-lg:0 24px 60px rgba(15,23,42,.10), 0 8px 24px rgba(15,23,42,.06);
+  --shadow-brand:0 20px 50px rgba(16,185,129,.22);
+  --r-sm:10px; --r:16px; --r-lg:22px; --r-xl:28px; --r-pill:999px;
+  --font-display:"Fraunces", Georgia, serif;
+  --font-body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:"JetBrains Mono", ui-monospace, monospace;
+  --maxw:1200px;
+}
+[data-theme="dark"]{
+  --bg:#0A1411;
+  --bg-band:#0E1A16;
+  --surface:#11201B;
+  --surface-2:#0E1A16;
+  --ink:#E8F0EC;
+  --ink-soft:#B8C7C0;
+  --muted:#84938D;
+  --line:#1E3129;
+  --line-soft:#16241F;
+  --line-strong:#2E463A;
+  --brand:#34D399;
+  --brand-deep:#10B981;
+  --brand-ink:#A7F3D0;
+  --brand-dark:#0B2B24;
+  --brand-darker:#06140F;
+  --shadow:0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg:0 24px 60px rgba(0,0,0,.5);
+}
+
+/* ============ RESET / BASE ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  font-size:16px;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  transition:background .3s ease, color .3s ease;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+ul{list-style:none}
+:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+::selection{background:var(--brand);color:#fff}
+
+/* ============ LAYOUT HELPERS ============ */
+.container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.section{padding:96px 0}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--brand-deep);
+  display:inline-flex;align-items:center;gap:8px;
+}
+[data-theme="dark"] .eyebrow{color:var(--brand)}
+.eyebrow::before{content:"";width:18px;height:1.5px;background:currentColor;opacity:.6}
+.h-display{font-family:var(--font-display);font-weight:500;line-height:1.05;letter-spacing:-.02em}
+.lead{color:var(--ink-soft);font-size:18px;line-height:1.6;max-width:60ch}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 22px;border-radius:var(--r-pill);
+  font-weight:600;font-size:15px;
+  transition:transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s;
+  white-space:nowrap;border:1.5px solid transparent;
+}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--brand);color:#06231B;box-shadow:var(--shadow-brand)}
+.btn-primary:hover{background:var(--brand-deep);transform:translateY(-2px)}
+.btn-ghost{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand-deep);transform:translateY(-2px)}
+[data-theme="dark"] .btn-ghost{color:var(--ink)}
+.btn-dark{background:var(--brand-dark);color:#E8F5EF}
+.btn-dark:hover{background:var(--brand-darker);transform:translateY(-2px)}
+.btn-lg{padding:16px 28px;font-size:16px}
+.arrow-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-weight:600;font-size:14px;color:var(--brand-deep);
+  transition:gap .2s ease;
+}
+[data-theme="dark"] .arrow-link{color:var(--brand)}
+.arrow-link:hover{gap:10px}
+.arrow-link svg{width:13px;height:13px;transition:transform .2s}
+.arrow-link:hover svg{transform:translate(2px,-2px)}
+
+/* ============ HEADER ============ */
+.site-header{
+  position:fixed;top:18px;left:0;right:0;z-index:100;
+  display:flex;justify-content:center;
+  padding:0 20px;
+}
+.header-pill{
+  width:100%;max-width:var(--maxw);
+  display:flex;align-items:center;gap:18px;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid var(--line);
+  border-radius:var(--r-pill);
+  padding:9px 9px 9px 18px;
+  box-shadow:var(--shadow);
+  transition:background .3s, border-color .3s;
+}
+[data-theme="dark"] .header-pill{background:rgba(17,32,27,.78);border-color:var(--line)}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-mark{
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(140deg,var(--brand-dark),var(--brand-deep));
+  display:grid;place-items:center;
+  color:#fff;font-family:var(--font-display);font-weight:600;font-size:18px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:.08em}
+.brand-tag{font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+.nav{display:flex;gap:4px;margin-left:auto}
+.nav a{
+  padding:9px 14px;border-radius:var(--r-pill);
+  font-size:14px;font-weight:500;color:var(--ink-soft);
+  transition:color .2s, background .2s;
+}
+.nav a:hover{color:var(--ink);background:var(--surface-2)}
+.header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--surface-2);border:1px solid var(--line);
+  transition:background .2s, border-color .2s, transform .2s;color:var(--ink-soft);
+}
+.icon-btn:hover{border-color:var(--brand);color:var(--brand-deep);transform:rotate(-8deg)}
+[data-theme="dark"] .icon-btn:hover{color:var(--brand)}
+.icon-btn svg{width:17px;height:17px}
+.menu-toggle{display:none}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;padding:140px 0 80px;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:
+    radial-gradient(60% 50% at 80% 0%, rgba(16,185,129,.14), transparent 60%),
+    radial-gradient(50% 40% at 10% 30%, rgba(34,211,238,.08), transparent 60%);
+}
+.hero-grid{
+  display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:7px 14px;border-radius:var(--r-pill);
+  background:var(--surface);border:1px solid var(--line);
+  font-family:var(--font-mono);font-size:11.5px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--brand-deep);
+  margin-bottom:24px;box-shadow:var(--shadow-sm);
+}
+[data-theme="dark"] .hero-badge{color:var(--brand)}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px rgba(16,185,129,.18);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(16,185,129,.18)}50%{box-shadow:0 0 0 8px rgba(16,185,129,.05)}}
+.hero h1{
+  font-family:var(--font-display);font-weight:500;
+  font-size:clamp(34px,5.2vw,62px);line-height:1.04;letter-spacing:-.02em;
+  margin-bottom:22px;
+}
+.hero h1 .green{color:var(--brand-deep);position:relative}
+[data-theme="dark"] .hero h1 .green{color:var(--brand)}
+.hero h1 .green::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:10px;background:rgba(16,185,129,.18);z-index:-1;border-radius:4px}
+.hero p.lead{margin-bottom:32px;font-size:18px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px}
+.hero-proof{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.stars{display:flex;gap:2px;color:#F59E0B}
+.stars svg{width:17px;height:17px}
+.proof-text{font-size:14px;color:var(--muted)}
+.proof-text strong{color:var(--ink);font-weight:600}
+.proof-divider{width:1px;height:22px;background:var(--line)}
+
+/* ---- Hero visual: growth staircase ---- */
+.hero-visual{position:relative}
+.growth-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);padding:24px;
+  box-shadow:var(--shadow-lg);position:relative;overflow:hidden;
+}
+.growth-card::before{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(var(--line-soft) 1px,transparent 1px) 0 0/100% 28px,
+    linear-gradient(90deg,var(--line-soft) 1px,transparent 1px) 0 0/28px 100%;
+  opacity:.5;pointer-events:none;
+}
+.gc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;position:relative}
+.gc-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.gc-live{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--brand-deep);background:rgba(16,185,129,.1);padding:4px 10px;border-radius:var(--r-pill)}
+[data-theme="dark"] .gc-live{color:var(--brand)}
+.gc-live .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse 1.8s infinite}
+.staircase{position:relative;display:flex;flex-direction:column;gap:10px}
+.step{
+  position:relative;display:flex;align-items:center;gap:14px;
+  padding:12px 14px;border-radius:var(--r);background:var(--surface-2);
+  border:1px solid var(--line-soft);
+  transform:translateX(var(--push,0));
+  transition:transform .4s ease, border-color .3s;
+}
+.step:hover{border-color:var(--brand);transform:translateX(var(--push,0)) translateY(-2px)}
+.step .num{font-family:var(--font-mono);font-size:11px;color:var(--brand-deep);width:24px;flex-shrink:0;font-weight:600}
+[data-theme="dark"] .step .num{color:var(--brand)}
+.step .ico{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:grid;place-items:center;color:var(--brand-deep);
+  background:rgba(16,185,129,.1);
+}
+[data-theme="dark"] .step .ico{color:var(--brand)}
+.step .ico svg{width:17px;height:17px}
+.step .label{font-weight:600;font-size:14px}
+.step .sub{font-size:12px;color:var(--ink-soft)}
+.step:nth-child(1){--push:0}
+.step:nth-child(2){--push:5px}
+.step:nth-child(3){--push:10px}
+.step:nth-child(4){--push:15px}
+.step:nth-child(5){--push:20px;margin-right:24px;background:linear-gradient(95deg,rgba(16,185,129,.14),var(--surface-2));border-color:rgba(16,185,129,.3)}
+.gc-foot{
+  margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);
+  display:flex;justify-content:space-between;align-items:center;position:relative;
+}
+.gc-foot .lab{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.gc-foot .val{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--brand-deep)}
+[data-theme="dark"] .gc-foot .val{color:var(--brand)}
+.spark{position:absolute;right:24px;top:-8px;width:90px;height:34px;opacity:.7}
+
+/* floating accents */
+.float-chip{
+  position:absolute;padding:9px 14px;border-radius:var(--r-pill);
+  background:var(--surface);border:1px solid var(--line);
+  box-shadow:var(--shadow);font-size:12.5px;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+  animation:floaty 6s ease-in-out infinite;
+}
+.float-chip svg{width:15px;height:15px;color:var(--brand-deep)}
+[data-theme="dark"] .float-chip svg{color:var(--brand)}
+.float-chip.c1{top:-16px;left:-22px;animation-delay:0s}
+.float-chip.c2{bottom:-46px;right:24px;animation-delay:-2s}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ============ INDUSTRIES TICKER ============ */
+.ticker{
+  position:relative;isolation:isolate;
+  background:var(--bg-band);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:20px 0;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+}
+.ticker::before,.ticker::after{
+  content:"";position:absolute;top:0;bottom:0;width:110px;z-index:5;pointer-events:none;
+}
+.ticker::before{left:0;background:linear-gradient(90deg,var(--bg-band),transparent)}
+.ticker::after{right:0;background:linear-gradient(270deg,var(--bg-band),transparent)}
+.ticker-track{position:relative;z-index:1}
+.ticker-track{display:flex;gap:14px;animation:scrollx 32s linear infinite;width:max-content}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes scrollx{to{transform:translateX(-50%)}}
+.ticker-label{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-right:20px;flex-shrink:0}
+.chip{
+  padding:9px 18px;border-radius:var(--r-pill);
+  background:var(--surface);border:1px solid var(--line);
+  font-size:13.5px;font-weight:500;color:var(--ink-soft);white-space:nowrap;flex-shrink:0;
+  transition:border-color .2s,color .2s;
+}
+.chip:hover{border-color:var(--brand);color:var(--brand-deep)}
+[data-theme="dark"] .chip:hover{color:var(--brand)}
+.chip .em{color:var(--brand-deep)}
+[data-theme="dark"] .chip .em{color:var(--brand)}
+
+/* ============ SECTION HEAD ============ */
+.sec-head{max-width:720px;margin-bottom:48px}
+.sec-head h2{font-family:var(--font-display);font-weight:500;font-size:clamp(28px,3.4vw,42px);line-height:1.1;letter-spacing:-.02em;margin:14px 0 14px}
+.sec-head p{color:var(--ink-soft);font-size:17px}
+.sec-head-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:48px}
+.sec-head-row .sec-head{margin-bottom:0}
+
+/* ============ SERVICES BENTO ============ */
+.services{background:var(--surface)}
+.bento{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:18px;
+}
+.svc{
+  background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:26px;
+  display:flex;flex-direction:column;gap:14px;
+  transition:transform .25s ease, border-color .25s, box-shadow .25s;
+  position:relative;overflow:hidden;
+}
+.svc:hover{transform:translateY(-4px);border-color:var(--brand);box-shadow:var(--shadow)}
+.svc::after{content:"";position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.1),transparent 70%);opacity:0;transition:opacity .3s}
+.svc:hover::after{opacity:1}
+.svc .ico{
+  width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(140deg,rgba(16,185,129,.14),rgba(16,185,129,.05));
+  border:1px solid rgba(16,185,129,.18);
+  display:grid;place-items:center;color:var(--brand-deep);
+}
+[data-theme="dark"] .svc .ico{color:var(--brand)}
+.svc .ico svg{width:22px;height:22px}
+.svc h3{font-family:var(--font-display);font-weight:600;font-size:20px;letter-spacing:-.01em;line-height:1.2}
+.svc p{color:var(--ink-soft);font-size:14.5px;flex-grow:1}
+.svc .tag{
+  align-self:flex-start;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+  color:var(--brand-deep);background:rgba(16,185,129,.1);padding:4px 9px;border-radius:var(--r-pill);
+}
+[data-theme="dark"] .svc .tag{color:var(--brand)}
+.svc-features{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.svc-feat{display:flex;gap:8px;font-size:12.5px;color:var(--ink-soft)}
+.svc-feat svg{width:14px;height:14px;color:var(--brand);flex-shrink:0;margin-top:3px}
+.svc-feat b{color:var(--ink);font-weight:600;display:block;font-size:12px;font-family:var(--font-mono);letter-spacing:.04em}
+/* spans */
+.svc.lg{grid-column:span 3}
+.svc.md{grid-column:span 3}
+.svc.sm{grid-column:span 2}
+.svc.featured{grid-column:span 6;background:linear-gradient(120deg,var(--brand-dark),var(--brand-darker));color:#E8F5EF;border:none}
+.svc.featured .ico{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:var(--brand)}
+.svc.featured h3{color:#fff}
+.svc.featured p{color:#B8D6CB}
+.svc.featured .tag{color:#A7F3D0;background:rgba(255,255,255,.1)}
+.svc.featured .arrow-link{color:#A7F3D0}
+.svc.featured::after{background:radial-gradient(circle,rgba(52,211,153,.25),transparent 70%)}
+
+/* ============ DIAGNOSTIC ============ */
+.diag{background:var(--bg-band)}
+.diag-wrap{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);padding:8px;
+  display:grid;grid-template-columns:1.1fr .9fr;gap:8px;
+  box-shadow:var(--shadow);
+}
+.diag-controls{padding:32px 28px}
+.diag-step{margin-bottom:26px}
+.diag-step .step-lab{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.diag-step .step-lab .n{background:var(--brand);color:#06231B;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:11px}
+.opt-grid{display:flex;flex-direction:column;gap:8px}
+.opt{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 15px;border-radius:var(--r);
+  background:var(--surface-2);border:1.5px solid var(--line);
+  cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;
+}
+.opt:hover{border-color:var(--brand)}
+.opt.active{border-color:var(--brand);background:rgba(16,185,129,.08)}
+.opt .radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;transition:all .2s;display:grid;place-items:center}
+.opt.active .radio{border-color:var(--brand)}
+.opt.active .radio::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.opt-row{display:flex;gap:8px}
+.opt-row .opt{flex:1;justify-content:center;text-align:center;padding:11px;font-size:13.5px}
+.diag-result{
+  background:linear-gradient(150deg,var(--brand-dark),var(--brand-darker));
+  border-radius:var(--r-lg);padding:32px 28px;color:#E8F5EF;
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+}
+.diag-result::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(52,211,153,.25),transparent 70%)}
+.dr-tag{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:16px;display:flex;align-items:center;gap:8px;position:relative}
+.dr-track{font-family:var(--font-display);font-size:26px;font-weight:600;color:#fff;line-height:1.15;margin-bottom:6px;position:relative}
+.dr-time{font-family:var(--font-mono);font-size:12px;color:#A7F3D0;margin-bottom:18px;position:relative}
+.dr-desc{font-size:14px;color:#B8D6CB;margin-bottom:20px;position:relative}
+.dr-list{display:flex;flex-direction:column;gap:12px;margin-bottom:auto;position:relative}
+.dr-item{display:flex;gap:10px;font-size:13.5px;color:#D1E7DC}
+.dr-item svg{width:16px;height:16px;color:var(--brand);flex-shrink:0;margin-top:3px}
+.dr-cta{display:flex;gap:10px;margin-top:24px;position:relative}
+.dr-cta .btn{padding:11px 18px;font-size:14px}
+.btn-wa{background:#25D366;color:#06231B}
+.btn-wa:hover{background:#20bd5a}
+
+/* ============ WHY ============ */
+.why-quote{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);padding:36px 40px;margin-bottom:36px;
+  display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;
+  box-shadow:var(--shadow-sm);position:relative;
+}
+.why-quote .qmark{font-family:var(--font-display);font-size:64px;color:var(--brand);line-height:.6;flex-shrink:0;opacity:.4}
+.why-quote blockquote{font-family:var(--font-display);font-size:clamp(18px,2.2vw,24px);font-weight:500;line-height:1.35;letter-spacing:-.01em;margin-bottom:14px}
+.why-quote .attribution{color:var(--muted);font-size:14px}
+.why-quote .qtags{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.principle{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:26px;
+  transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;
+}
+.principle:hover{transform:translateY(-4px);border-color:var(--brand);box-shadow:var(--shadow)}
+.principle .pnum{font-family:var(--font-display);font-size:32px;font-weight:600;color:var(--brand);opacity:.35;line-height:1;margin-bottom:14px}
+.principle h3{font-size:17px;font-weight:600;margin-bottom:10px;line-height:1.3}
+.principle p{color:var(--ink-soft);font-size:14px}
+.principle.cta-card{background:linear-gradient(140deg,rgba(16,185,129,.1),var(--surface));border-color:rgba(16,185,129,.3);display:flex;flex-direction:column;justify-content:space-between}
+.principle.cta-card h3{color:var(--brand-deep);font-family:var(--font-display);font-size:19px}
+[data-theme="dark"] .principle.cta-card h3{color:var(--brand)}
+
+/* ============ PLATFORMS ============ */
+.platforms{background:var(--surface)}
+.plat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.plat{
+  background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+  display:flex;flex-direction:column;
+}
+.plat:hover{transform:translateY(-5px);border-color:var(--brand);box-shadow:var(--shadow-lg)}
+.plat-thumb{height:170px;position:relative;overflow:hidden;display:grid;place-items:center}
+.plat-thumb.e1{background:linear-gradient(135deg,#0B2B24,#0E5944)}
+.plat-thumb.e2{background:linear-gradient(135deg,#1E293B,#334155)}
+.plat-thumb.e3{background:linear-gradient(135deg,#4C1D95,#831843)}
+.plat-thumb .mock{width:80%;max-width:240px;background:rgba(255,255,255,.94);border-radius:10px;padding:12px;box-shadow:var(--shadow-lg)}
+.plat-thumb .mock .bar{height:6px;border-radius:3px;background:#E2E8F0;margin-bottom:6px}
+.plat-thumb .mock .bar.s{width:60%}
+.plat-thumb .mock .bar.t{width:80%;background:var(--brand);margin-bottom:10px}
+.plat-thumb .mock .rows{display:flex;flex-direction:column;gap:5px}
+.plat-thumb .mock .row{display:flex;align-items:center;gap:6px;font-size:9px;color:#475569}
+.plat-thumb .mock .row .sq{width:9px;height:9px;border-radius:3px;background:#E2E8F0}
+.plat-thumb .mock .row .sq.on{background:var(--brand)}
+.plat-live{
+  position:absolute;top:12px;right:12px;
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(16,185,129,.95);color:#06231B;
+  font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+  padding:5px 10px;border-radius:var(--r-pill);
+}
+.plat-live .dot{width:6px;height:6px;border-radius:50%;background:#06231B;animation:pulse 1.8s infinite}
+.plat-body{padding:22px;display:flex;flex-direction:column;gap:10px;flex-grow:1}
+.plat-body h3{font-family:var(--font-display);font-size:21px;font-weight:600}
+.plat-body p{color:var(--ink-soft);font-size:14px;flex-grow:1}
+
+/* ============ TESTIMONIALS ============ */
+.tst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tst{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:26px;
+  display:flex;flex-direction:column;gap:16px;
+  transition:transform .25s,box-shadow .25s;
+}
+.tst:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.tst .stars{margin-bottom:2px}
+.tst p{color:var(--ink-soft);font-size:14.5px;line-height:1.55;flex-grow:1}
+.tst .who{display:flex;align-items:center;gap:12px}
+.tst .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,var(--brand-dark),var(--brand-deep));display:grid;place-items:center;color:#fff;font-weight:600;font-size:15px;flex-shrink:0}
+.tst .nm{font-weight:600;font-size:14px}
+.tst .rl{font-size:12.5px;color:var(--muted)}
+
+/* ============ FAQ ============ */
+.faq-wrap{max-width:820px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item:first-child{border-top:1px solid var(--line)}
+.faq-q{
+  width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:22px 4px;text-align:left;font-weight:600;font-size:16.5px;
+  transition:color .2s;
+}
+.faq-q:hover{color:var(--brand-deep)}
+[data-theme="dark"] .faq-q:hover{color:var(--brand)}
+.faq-q .pm{width:30px;height:30px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;flex-shrink:0;transition:transform .3s,background .2s}
+.faq-item.open .faq-q .pm{transform:rotate(45deg);background:var(--brand);color:#06231B;border-color:var(--brand)}
+.faq-q .pm svg{width:14px;height:14px}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-a-inner{padding:0 4px 22px;color:var(--ink-soft);font-size:15px;line-height:1.6;max-width:68ch}
+
+/* ============ FINAL CTA ============ */
+.final-cta{padding:80px 0}
+.cta-banner{
+  background:linear-gradient(120deg,var(--brand-dark),var(--brand-darker));
+  border-radius:var(--r-xl);padding:72px 56px;
+  text-align:center;position:relative;overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+.cta-banner::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(50% 60% at 20% 20%,rgba(52,211,153,.2),transparent 60%),
+    radial-gradient(40% 50% at 80% 80%,rgba(34,211,238,.12),transparent 60%);
+}
+.cta-banner::after{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:32px 32px;mask:radial-gradient(60% 60% at 50% 50%,#000,transparent 80%);
+}
+.cta-banner > *{position:relative}
+.cta-banner .eyebrow{color:#6EE7B7}
+.cta-banner .eyebrow::before{background:#6EE7B7}
+.cta-banner h2{font-family:var(--font-display);font-size:clamp(28px,4vw,46px);font-weight:500;line-height:1.1;letter-spacing:-.02em;color:#fff;margin:16px 0 16px}
+.cta-banner p{color:#B8D6CB;font-size:17px;max-width:48ch;margin:0 auto 32px}
+.cta-banner .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ============ FOOTER ============ */
+.site-footer{background:var(--surface);border-top:1px solid var(--line);padding:72px 0 28px}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.foot-brand .brand{margin-bottom:18px}
+.foot-brand p{color:var(--muted);font-size:14px;max-width:32ch;margin-bottom:18px}
+.foot-contact{display:flex;flex-direction:column;gap:10px;font-size:14px}
+.foot-contact a{display:flex;align-items:center;gap:10px;color:var(--ink-soft);transition:color .2s}
+.foot-contact a:hover{color:var(--brand-deep)}
+[data-theme="dark"] .foot-contact a:hover{color:var(--brand)}
+.foot-contact svg{width:15px;height:15px;color:var(--brand-deep);flex-shrink:0}
+[data-theme="dark"] .foot-contact svg{color:var(--brand)}
+.foot-col h4{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.foot-col ul{display:flex;flex-direction:column;gap:10px}
+.foot-col a{font-size:14px;color:var(--ink-soft);transition:color .2s}
+.foot-col a:hover{color:var(--brand-deep)}
+[data-theme="dark"] .foot-col a:hover{color:var(--brand)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding-top:28px;border-top:1px solid var(--line)}
+.foot-bottom p{font-size:13px;color:var(--muted)}
+.foot-social{display:flex;gap:10px}
+.foot-social a{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-soft);transition:all .2s}
+.foot-social a:hover{border-color:var(--brand);color:var(--brand-deep);transform:translateY(-2px)}
+[data-theme="dark"] .foot-social a:hover{color:var(--brand)}
+.foot-social svg{width:16px;height:16px}
+
+/* ============ CHAT WIDGET ============ */
+.chat-fab{
+  position:fixed;bottom:24px;right:24px;z-index:90;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(140deg,var(--brand-deep),var(--brand));
+  color:#06231B;display:grid;place-items:center;
+  box-shadow:var(--shadow-brand);transition:transform .2s;
+  border:none;
+}
+.chat-fab:hover{transform:scale(1.08)}
+.chat-fab svg{width:25px;height:25px}
+.chat-fab .badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:#F43F5E;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;border:2px solid var(--bg)}
+
+/* ============ SCROLL REVEAL ============ */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:960px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero-visual{order:-1;max-width:480px}
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .svc.lg,.svc.md,.svc.sm,.svc.featured{grid-column:span 2}
+  .diag-wrap{grid-template-columns:1fr}
+  .why-grid,.plat-grid,.tst-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .foot-brand{grid-column:span 2}
+  .section{padding:72px 0}
+}
+@media(max-width:720px){
+  .nav,.header-actions .lang,.header-actions .btn span{display:none}
+  .menu-toggle{display:grid}
+  .nav.mobile-open{
+    display:flex;position:absolute;top:64px;left:0;right:0;
+    flex-direction:column;background:var(--surface);
+    border:1px solid var(--line);border-radius:var(--r);
+    padding:10px;box-shadow:var(--shadow-lg);margin:0 16px;
+  }
+  .nav.mobile-open a{padding:12px 14px}
+  .header-pill{padding:8px 8px 8px 14px}
+  .brand-tag{display:none}
+}
+@media(max-width:540px){
+  .container{padding:0 18px}
+  .bento,.why-grid,.plat-grid,.tst-grid{grid-template-columns:1fr}
+  .svc.lg,.svc.md,.svc.sm,.svc.featured{grid-column:span 1}
+  .footer-grid{grid-template-columns:1fr}
+  .foot-brand{grid-column:span 1}
+  .hero{padding:120px 0 60px}
+  .cta-banner{padding:48px 24px}
+  .why-quote{padding:24px}
+  .hero-cta .btn{flex:1;justify-content:center}
+  .float-chip{display:none}
+  .diag-controls{padding:22px 18px}
+  .diag-result{padding:24px 20px}
+  .section{padding:60px 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <div class="header-pill">
+    <a href="#top" class="brand" aria-label="Vardhel home">
+      <span class="brand-mark">V</span>
+      <span>
+        <span class="brand-name">VARDHEL</span><br>
+        <span class="brand-tag">Your Vision, Our Framework</span>
+      </span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#services">Services</a>
+      <a href="#platforms">Products</a>
+      <a href="#diagnostic">Growth</a>
+      <a href="#why">Company</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" id="langBtn" aria-label="Switch language" title="English / Slovenščina">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+      </button>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a href="#cta" class="btn btn-primary"><span>Start a Project</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+      <button class="icon-btn menu-toggle" id="menuBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-copy reveal">
+        <span class="hero-badge"><span class="dot"></span>A Digital Business Growth Partner</span>
+        <h1>Your Business Has Potential.<br><span class="green">Let's Turn It Into Progress.</span></h1>
+        <p class="lead">From custom software and websites to digital marketing and customer engagement, we build the digital capabilities that help businesses move forward — engineered around how you actually work.</p>
+        <div class="hero-cta">
+          <a href="#cta" class="btn btn-primary btn-lg">Let's Grow Your Business
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+          <a href="#services" class="btn btn-ghost btn-lg">Explore What We Do
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+        <div class="hero-proof">
+          <div class="stars" aria-label="5.0 star rating">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+          </div>
+          <span class="proof-text"><strong>5.0 Rating</strong> · Trusted by 20+ ambitious businesses</span>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal">
+        <div class="growth-card">
+          <div class="gc-head">
+            <span class="gc-title">Ascending Growth Staircase</span>
+            <span class="gc-live"><span class="dot"></span>Interactive</span>
+          </div>
+          <div class="staircase">
+            <div class="step"><span class="num">01</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M1 12h6M17 12h6"/></svg></span><div><div class="label">Understand</div><div class="sub">Map your commercial reality</div></div></div>
+            <div class="step"><span class="num">02</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span><div><div class="label">Build</div><div class="sub">Engineer the platform</div></div></div>
+            <div class="step"><span class="num">03</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20"/></svg></span><div><div class="label">Connect</div><div class="sub">Wire your brand & channels</div></div></div>
+            <div class="step"><span class="num">04</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><div class="label">Engage</div><div class="sub">Turn visitors into customers</div></div></div>
+            <div class="step"><span class="num">05</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span><div><div class="label">Grow</div><div class="sub">Compound your momentum</div></div></div>
+          </div>
+          <div class="gc-foot">
+            <span class="lab">Target Climax · Stage 05</span>
+            <span class="val">GROW</span>
+          </div>
+        </div>
+        <div class="float-chip c1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+          +38% avg. growth
+        </div>
+        <div class="float-chip c2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+          Full IP ownership
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INDUSTRIES TICKER ============ -->
+<div class="ticker" aria-label="Industries we power">
+  <div class="ticker-track">
+    <span class="ticker-label">Industries We Power</span>
+    <span class="chip"><span class="em">▸</span> Hospitality &amp; Tourism</span>
+    <span class="chip"><span class="em">▸</span> E-Commerce &amp; Retail</span>
+    <span class="chip"><span class="em">▸</span> Healthcare &amp; Wellness</span>
+    <span class="chip"><span class="em">▸</span> Real Estate &amp; Architecture</span>
+    <span class="chip"><span class="em">▸</span> Professional Services</span>
+    <span class="chip"><span class="em">▸</span> Events &amp; Entertainment</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-label">Industries We Power</span>
+    <span class="chip"><span class="em">▸</span> Hospitality &amp; Tourism</span>
+    <span class="chip"><span class="em">▸</span> E-Commerce &amp; Retail</span>
+    <span class="chip"><span class="em">▸</span> Healthcare &amp; Wellness</span>
+    <span class="chip"><span class="em">▸</span> Real Estate &amp; Architecture</span>
+    <span class="chip"><span class="em">▸</span> Professional Services</span>
+    <span class="chip"><span class="em">▸</span> Events &amp; Entertainment</span>
+  </div>
+</div>
+
+<!-- ============ SERVICES ============ -->
+<section class="section services" id="services">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Integrated Growth Capabilities</span>
+      <h2>Interconnected Digital Capabilities</h2>
+      <p>Not isolated services — an integrated ecosystem where technology, branding, marketing and automation work together to grow your business.</p>
+    </div>
+    <div class="bento reveal">
+      <!-- Featured large card -->
+      <article class="svc featured lg">
+        <span class="tag">Build · Featured</span>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+        <h3>Custom Software Development</h3>
+        <p>Tailored web, mobile and operational software engineered around how your business actually works — never generic templates.</p>
+        <div class="svc-features">
+          <div class="svc-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><div><b>Tailored Value</b>Custom workflow architecture · Zero generic templates</div></div>
+          <div class="svc-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><div><b>Commercial Impact</b>High speed &amp; fast conversion · Turn visitors into buyers</div></div>
+          <div class="svc-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><div><b>Ownership</b>Full IP ownership &amp; handover · Zero vendor lock-in</div></div>
+        </div>
+        <a href="#cta" class="arrow-link" style="margin-top:6px;color:#A7F3D0">Explore Custom Software Development
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <!-- right column: two stacked -->
+      <article class="svc md">
+        <span class="tag">Build · Connect</span>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3>Website Design &amp; Development</h3>
+        <p>High-converting, fast and responsive digital storefronts that turn visitors into loyal customers.</p>
+        <a href="#cta" class="arrow-link">Explore Website Development
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <article class="svc md">
+        <span class="tag">Connect</span>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22a8 8 0 0 0 8-8"/></svg></div>
+        <h3>Digital Branding &amp; Creative</h3>
+        <p>Human-centered UI/UX, visual storytelling and short-form video assets that make your brand unforgettable.</p>
+        <a href="#cta" class="arrow-link">Explore Branding &amp; Creative
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <!-- row of three small -->
+      <article class="svc sm">
+        <span class="tag">Engage</span>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
+        <h3>Digital Marketing &amp; Campaigns</h3>
+        <p>Strategic social presence and multi-channel campaigns across Facebook, Instagram, TikTok and Tripadvisor.</p>
+        <a href="#cta" class="arrow-link">Explore Digital Marketing
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <article class="svc sm">
+        <span class="tag">Connect · Engage</span>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>Customer Engagement Solutions</h3>
+        <p>Seamless booking flows, WhatsApp lead routing and retention systems that keep customers coming back.</p>
+        <a href="#cta" class="arrow-link">Explore Engagement Solutions
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <article class="svc sm">
+        <span class="tag">Build · Engage</span>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3>Business Automation &amp; AI</h3>
+        <p>Eliminate manual bottlenecks with intelligent workflows, smart notifications and practical AI tools.</p>
+        <a href="#cta" class="arrow-link">Explore Automation &amp; AI
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <!-- full-width strategy card -->
+      <article class="svc featured">
+        <span class="tag">Understand · Grow</span>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h20v14H2zM8 21h8M12 17v4"/><path d="M6 8l3 3 3-3 3 3 3-3"/></svg></div>
+        <h3>Digital Strategy &amp; Business Transformation</h3>
+        <p style="max-width:60ch">End-to-end roadmap, technology consulting and hands-on knowledge transfer for sustainable scaling. Every engagement begins here — we understand your commercial reality before proposing any technology.</p>
+        <a href="#diagnostic" class="arrow-link" style="color:#A7F3D0;margin-top:6px">Try the Growth Diagnostic
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIAGNOSTIC ============ -->
+<section class="section diag" id="diagnostic">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Interactive Growth Roadmap Diagnostic</span>
+      <h2>Discover Your Tailored Digital Growth Strategy</h2>
+      <p>Select your priority objective and business stage to preview our recommended architecture, timeline and next step.</p>
+    </div>
+    <div class="diag-wrap reveal">
+      <div class="diag-controls">
+        <div class="diag-step">
+          <div class="step-lab"><span class="n">1</span> Select Your Primary Growth Focus</div>
+          <div class="opt-grid" id="focusOpts">
+            <button class="opt active" data-focus="software" data-track="Custom Software &amp; Web Platform" data-time="3–6 Weeks Delivery" data-desc="Automate operations, replace legacy tools, or launch a digital SaaS." data-b1="Architected around your unique commercial workflows" data-b2="Full handover + post-launch optimization sprint" data-b3="Direct WhatsApp &amp; engineering line support">
+              <span class="radio"></span> Custom Software &amp; Web Platform
+            </button>
+            <button class="opt" data-focus="branding" data-track="Customer Acquisition &amp; Branding" data-time="2–4 Weeks Delivery" data-desc="Build a magnetic brand and acquire customers across social channels." data-b1="Brand system, UI/UX and creative assets in one team" data-b2="Multi-channel campaigns on Facebook, Instagram &amp; TikTok" data-b3="WhatsApp lead routing &amp; retention systems">
+              <span class="radio"></span> Customer Acquisition &amp; Branding
+            </button>
+            <button class="opt" data-focus="ai" data-track="AI Workflows &amp; WhatsApp Routing" data-time="1–3 Weeks Delivery" data-desc="Eliminate manual bottlenecks with intelligent automation and AI tools." data-b1="Smart notifications &amp; practical AI integrations" data-b2="WhatsApp lead routing &amp; booking automation" data-b3="Measurable ROI tracking from day one">
+              <span class="radio"></span> AI Workflows &amp; WhatsApp Routing
+            </button>
+          </div>
+        </div>
+        <div class="diag-step" style="margin-bottom:0">
+          <div class="step-lab"><span class="n">2</span> Business Scale</div>
+          <div class="opt-row" id="scaleOpts">
+            <button class="opt" data-scale="early">Early Stage / Startup</button>
+            <button class="opt active" data-scale="sme">Growing SME</button>
+            <button class="opt" data-scale="enterprise">Established Enterprise</button>
+          </div>
+        </div>
+      </div>
+      <div class="diag-result" id="diagResult">
+        <div class="dr-tag"><span style="width:7px;height:7px;border-radius:50%;background:var(--brand);display:inline-block"></span> Recommended Track · <span id="rTrackTag">Build &amp; Grow</span></div>
+        <div class="dr-track" id="rTrack">Custom Software &amp; Web Platform</div>
+        <div class="dr-time" id="rTime">3–6 Weeks Delivery · Growing SME</div>
+        <div class="dr-desc" id="rDesc">Automate operations, replace legacy tools, or launch a digital SaaS.</div>
+        <div class="dr-list" id="rList">
+          <div class="dr-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Architected around your unique commercial workflows</div>
+          <div class="dr-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Full handover + post-launch optimization sprint</div>
+          <div class="dr-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Direct WhatsApp &amp; engineering line support</div>
+        </div>
+        <div class="dr-cta">
+          <a href="https://wa.me/94767996381" target="_blank" rel="noopener" class="btn btn-wa">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.8c2.18 0 4.22.85 5.74 2.37a8.06 8.06 0 0 1 2.37 5.74c0 4.48-3.63 8.11-8.11 8.11-1.49 0-2.96-.4-4.24-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.1 8.1 0 0 1-1.24-4.29c0-4.48 3.63-8.11 8.11-8.11z"/></svg>
+            Discuss on WhatsApp
+          </a>
+          <a href="#cta" class="btn btn-ghost" style="padding:11px 18px;font-size:14px">Explore</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section class="section" id="why">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">The Vardhel Advantage</span>
+      <h2>Why Businesses Partner With Vardhel</h2>
+      <p>We don't just build digital solutions. We build the possibilities that move businesses forward.</p>
+    </div>
+    <div class="why-quote reveal">
+      <span class="qmark">"</span>
+      <div>
+        <blockquote>"We don't just build digital solutions. We build the possibilities that move businesses forward."</blockquote>
+        <div class="attribution">Vardhel — transforming business potential into digital capability, meaningful customer connections and sustainable growth.</div>
+        <div class="qtags">
+          <span class="chip">Digital Infrastructure</span>
+          <span class="chip">Customer Connections</span>
+          <span class="chip">Sustainable Growth</span>
+        </div>
+      </div>
+    </div>
+    <div class="why-grid reveal">
+      <article class="principle"><div class="pnum">01</div><h3>We understand business problems before proposing technology.</h3><p>We never push technology for its own sake. Every recommendation starts with your commercial reality and growth goals.</p></article>
+      <article class="principle"><div class="pnum">02</div><h3>We create solutions based on actual business needs.</h3><p>No generic templates. We engineer custom platforms and digital workflows tailored to your stage of growth.</p></article>
+      <article class="principle"><div class="pnum">03</div><h3>We combine technology, creativity and digital strategy.</h3><p>Software engineering, brand design and customer acquisition work in harmony under one unified team.</p></article>
+      <article class="principle"><div class="pnum">04</div><h3>We focus on customer experience and engagement.</h3><p>Digital tools only succeed when customers love using them. We design every touchpoint for clarity and conversion.</p></article>
+      <article class="principle"><div class="pnum">05</div><h3>We aim for long-term business value, not just project completion.</h3><p>Launch is just the beginning. We stay with you to optimize, engage customers and compound your digital momentum.</p></article>
+      <article class="principle cta-card"><h3>Built for Long-Term Business Momentum</h3><p style="color:var(--ink-soft);font-size:14px">Let's evaluate where your business is today and map out the exact digital capabilities needed to move forward.</p><a href="#cta" class="arrow-link" style="margin-top:6px">Learn how our partnership works
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLATFORMS ============ -->
+<section class="section platforms" id="platforms">
+  <div class="container">
+    <div class="sec-head-row reveal">
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">Flagship Platforms</span>
+        <h2>Platforms Engineered by Vardhel</h2>
+        <p>Live products built on the same engineering standards we bring to every client engagement.</p>
+      </div>
+      <a href="#cta" class="arrow-link">Explore Products
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </div>
+    <div class="plat-grid reveal">
+      <article class="plat">
+        <div class="plat-thumb e1">
+          <span class="plat-live"><span class="dot"></span>LIVE</span>
+          <div class="mock">
+            <div class="bar"></div><div class="bar s"></div><div class="bar t"></div>
+            <div class="rows">
+              <div class="row"><span class="sq on"></span> Venue planning &amp; collab</div>
+              <div class="row"><span class="sq on"></span> Inventory &amp; guest list</div>
+              <div class="row"><span class="sq"></span> Catering coordination</div>
+              <div class="row"><span class="sq"></span> Vendor management</div>
+            </div>
+          </div>
+        </div>
+        <div class="plat-body">
+          <h3>EventLoom</h3>
+          <p>Your one-stop solution for managing events, inventory and more — designed to make wedding, birthday and corporate event planning a breeze.</p>
+          <a href="#cta" class="arrow-link">Explore EventLoom
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+      </article>
+      <article class="plat">
+        <div class="plat-thumb e2">
+          <span class="plat-live"><span class="dot"></span>LIVE</span>
+          <div class="mock">
+            <div class="bar"></div><div class="bar s"></div><div class="bar t"></div>
+            <div class="rows">
+              <div class="row"><span class="sq on"></span> Team assignments</div>
+              <div class="row"><span class="sq on"></span> Gear tracking</div>
+              <div class="row"><span class="sq on"></span> Client review flow</div>
+              <div class="row"><span class="sq"></span> Shoot calendar</div>
+            </div>
+          </div>
+        </div>
+        <div class="plat-body">
+          <h3>CaptureLoom</h3>
+          <p>Weave perfection into every shoot — the photographer's command center for studios, freelancers and event photographers.</p>
+          <a href="#cta" class="arrow-link">Explore CaptureLoom
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+      </article>
+      <article class="plat">
+        <div class="plat-thumb e3">
+          <span class="plat-live"><span class="dot"></span>LIVE</span>
+          <div class="mock">
+            <div class="bar"></div><div class="bar s"></div><div class="bar t"></div>
+            <div class="rows">
+              <div class="row"><span class="sq on"></span> Ticketing &amp; pricing</div>
+              <div class="row"><span class="sq on"></span> Social virality score</div>
+              <div class="row"><span class="sq"></span> ROI tracking</div>
+              <div class="row"><span class="sq"></span> Promo scheduler</div>
+            </div>
+          </div>
+        </div>
+        <div class="plat-body">
+          <h3>PromoLoom</h3>
+          <p>Go viral or go home — AI-powered event promotion and ticketing that merges social virality with real-time ROI tracking.</p>
+          <a href="#cta" class="arrow-link">Explore PromoLoom
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="section">
+  <div class="container">
+    <div class="sec-head-row reveal">
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">Customer Experiences</span>
+        <h2>What Our Partners Say</h2>
+        <p>Real outcomes from businesses who turned their potential into progress with Vardhel.</p>
+      </div>
+      <a href="#cta" class="btn btn-ghost">Share Your Experience
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </div>
+    <div class="tst-grid reveal">
+      <article class="tst">
+        <div class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <p>"Vardhel rebuilt our booking platform from scratch. Online reservations tripled in the first quarter and the WhatsApp routing cut our response time from hours to minutes."</p>
+        <div class="who"><div class="av">AR</div><div><div class="nm">Amaya Rajapaksa</div><div class="rl">Founder · Coastal Stays (Hospitality)</div></div></div>
+      </article>
+      <article class="tst">
+        <div class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <p>"They didn't just hand over software — they understood our commercial model first. The automation they built removed two full-time manual roles and paid for itself in a month."</p>
+        <div class="who"><div class="av">DK</div><div><div class="nm">Dilshan Karunaratne</div><div class="rl">COO · UrbanRetail (E-Commerce)</div></div></div>
+      </article>
+      <article class="tst">
+        <div class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <p>"EventLoom replaced three separate tools we were duct-taping together. Our event turnaround is faster and clients actually compliment the planning experience now."</p>
+        <div class="who"><div class="av">SP</div><div><div class="nm">Sahani Perera</div><div class="rl">Director · Lumin Events (Events)</div></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" style="background:var(--bg-band)">
+  <div class="container">
+    <div class="sec-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+      <span class="eyebrow" style="justify-content:center">Questions &amp; Answers</span>
+      <h2>Frequently Asked Questions</h2>
+      <p style="margin-left:auto;margin-right:auto">Everything you need to know before starting a conversation with us.</p>
+    </div>
+    <div class="faq-wrap reveal">
+      <div class="faq-item open">
+        <button class="faq-q" aria-expanded="true">What services does Vardhel offer?
+          <span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="faq-a" style="max-height:300px"><div class="faq-a-inner">Vardhel offers an integrated ecosystem of digital capabilities: custom software &amp; web development, mobile apps, website design, digital branding &amp; creative, digital marketing &amp; campaigns, customer engagement solutions (WhatsApp routing, booking flows), business automation &amp; AI integration, and end-to-end digital strategy consulting.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How does your Software + Social Media Growth partnership work?
+          <span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">We pair engineering with marketing under one team. Your platform is built around your commercial workflows, while a dedicated growth track runs campaigns, content and engagement across your channels — so the software you launch and the audience you build compound together rather than sitting in separate silos.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Do you work with startups and students?
+          <span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes. We tailor engagements to your stage — early-stage startups get lean MVPs and growth sprints, while students and early-career founders can access mentorship and smaller scoped projects. Our diagnostic helps match the right architecture to your scale and budget.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How long does a typical project take?
+          <span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Timelines depend on scope: AI workflow &amp; WhatsApp routing projects land in 1–3 weeks, branding &amp; acquisition tracks in 2–4 weeks, and full custom software &amp; web platforms typically take 3–6 weeks from discovery to launch. Every engagement includes a post-launch optimization sprint.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Can we hire Vardhel for both our website/system and social media marketing?
+          <span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Absolutely — that's our core partnership model. Because engineering, branding and marketing live under one unified team, your website or system and your social media growth are designed to feed each other from day one, with a single point of accountability and a WhatsApp line to the engineering team.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final-cta" id="cta">
+  <div class="container">
+    <div class="cta-banner reveal">
+      <span class="eyebrow">A Digital Business Growth Partner</span>
+      <h2>Your Next Stage of Growth Starts Here.</h2>
+      <p>Whether you're starting a new business, improving an existing operation, or ready to expand digitally — let's build what comes next.</p>
+      <div class="cta-row">
+        <a href="mailto:vardhel.official@gmail.com" class="btn btn-primary btn-lg">Start a Conversation
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+        <a href="https://wa.me/94767996381" target="_blank" rel="noopener" class="btn btn-wa btn-lg">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.8c2.18 0 4.22.85 5.74 2.37a8.06 8.06 0 0 1 2.37 5.74c0 4.48-3.63 8.11-8.11 8.11-1.49 0-2.96-.4-4.24-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.1 8.1 0 0 1-1.24-4.29c0-4.48 3.63-8.11 8.11-8.11z"/></svg>
+          Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="foot-brand">
+        <a href="#top" class="brand">
+          <span class="brand-mark">V</span>
+          <span><span class="brand-name">VARDHEL</span><br><span class="brand-tag">Your Vision, Our Framework</span></span>
+        </a>
+        <p>A digital business growth partner. We transform business potential into digital capability, meaningful customer connections and sustainable growth.</p>
+        <div class="foot-contact">
+          <a href="mailto:vardhel.official@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg> vardhel.official@gmail.com</a>
+          <a href="tel:+94767996381"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +94 76 799 6381</a>
+          <a href="#top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Sri Lanka · Global Delivery</a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h4>Services &amp; Growth</h4>
+        <ul>
+          <li><a href="#services">Web Application Development</a></li>
+          <li><a href="#services">Software Product Development</a></li>
+          <li><a href="#services">Mobile App Development</a></li>
+          <li><a href="#services">Social Media Setup &amp; Growth</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#top">Home</a></li>
+          <li><a href="#platforms">Products</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#diagnostic">Growth Partnership</a></li>
+          <li><a href="#why">About Us</a></li>
+          <li><a href="#cta">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#top">Terms of Use</a></li>
+          <li><a href="#top">Privacy Policy</a></li>
+          <li><a href="#top">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© 2026 Vardhel. All rights reserved. · Sri Lanka • Global Delivery</p>
+      <div class="foot-social">
+        <a href="#top" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#top" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+        <a href="https://wa.me/94767996381" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ CHAT WIDGET ============ -->
+<button class="chat-fab" id="chatFab" aria-label="Open chat">
+  <span class="badge">1</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+
+<script>
+/* ============ THEME TOGGLE ============ */
+(function(){
+  var html=document.documentElement, btn=document.getElementById('themeBtn');
+  var stored=localStorage.getItem('vardhel-theme');
+  if(stored){html.setAttribute('data-theme',stored);}
+  function setIcon(t){
+    btn.innerHTML = t==='dark'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  }
+  setIcon(html.getAttribute('data-theme')||'light');
+  btn.addEventListener('click',function(){
+    var cur=html.getAttribute('data-theme')||'light';
+    var next=cur==='dark'?'light':'dark';
+    html.setAttribute('data-theme',next);
+    localStorage.setItem('vardhel-theme',next);
+    setIcon(next);
+  });
+})();
+
+/* ============ MOBILE MENU ============ */
+(function(){
+  var btn=document.getElementById('menuBtn'), nav=document.getElementById('nav');
+  btn.addEventListener('click',function(){nav.classList.toggle('mobile-open');});
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('mobile-open');});});
+})();
+
+/* ============ LANG TOGGLE ============ */
+(function(){
+  var btn=document.getElementById('langBtn'), langs=['EN','SL'], i=0;
+  btn.title='Language: EN';
+  btn.addEventListener('click',function(){
+    i=(i+1)%langs.length;
+    btn.title='Language: '+langs[i];
+    btn.style.fontFamily='var(--font-mono)';
+    btn.style.fontSize='11px';
+    btn.style.fontWeight='600';
+    btn.querySelector('svg').style.display='none';
+    btn.textContent=langs[i];
+  });
+})();
+
+/* ============ FAQ ACCORDION ============ */
+(function(){
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    var q=item.querySelector('.faq-q'), a=item.querySelector('.faq-a');
+    q.addEventListener('click',function(){
+      var open=item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(function(o){
+        o.classList.remove('open');
+        o.querySelector('.faq-q').setAttribute('aria-expanded','false');
+        o.querySelector('.faq-a').style.maxHeight='0';
+      });
+      if(!open){
+        item.classList.add('open');
+        q.setAttribute('aria-expanded','true');
+        a.style.maxHeight=a.scrollHeight+40+'px';
+      }
+    });
+  });
+  // init open one
+  var firstOpen=document.querySelector('.faq-item.open .faq-a');
+  if(firstOpen){firstOpen.style.maxHeight=firstOpen.scrollHeight+40+'px';}
+})();
+
+/* ============ DIAGNOSTIC CONFIGURATOR ============ */
+(function(){
+  var focusOpts=document.querySelectorAll('#focusOpts .opt');
+  var scaleOpts=document.querySelectorAll('#scaleOpts .opt');
+  var cur={focus:'software',scale:'sme'};
+  var scaleLabels={early:'Early Stage / Startup',sme:'Growing SME',enterprise:'Established Enterprise'};
+  var trackTags={software:'Build & Grow',branding:'Connect & Engage',ai:'Automate & Engage'};
+
+  function render(){
+    var activeFocus=document.querySelector('#focusOpts .opt.active');
+    var d=activeFocus.dataset;
+    document.getElementById('rTrackTag').textContent=trackTags[d.focus]||'Build & Grow';
+    document.getElementById('rTrack').textContent=d.track;
+    document.getElementById('rTime').textContent=d.time+' · '+scaleLabels[cur.scale];
+    document.getElementById('rDesc').textContent=d.desc;
+    var list=document.getElementById('rList');
+    list.innerHTML='';
+    [d.b1,d.b2,d.b3].forEach(function(b){
+      var div=document.createElement('div');
+      div.className='dr-item';
+      div.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> '+b;
+      list.appendChild(div);
+    });
+  }
+  focusOpts.forEach(function(o){
+    o.addEventListener('click',function(){
+      focusOpts.forEach(function(x){x.classList.remove('active');});
+      o.classList.add('active');
+      cur.focus=o.dataset.focus;
+      render();
+    });
+  });
+  scaleOpts.forEach(function(o){
+    o.addEventListener('click',function(){
+      scaleOpts.forEach(function(x){x.classList.remove('active');});
+      o.classList.add('active');
+      cur.scale=o.dataset.scale;
+      render();
+    });
+  });
+  render();
+})();
+
+/* ============ CHAT FAB ============ */
+(function(){
+  var fab=document.getElementById('chatFab');
+  fab.addEventListener('click',function(){
+    var b=fab.querySelector('.badge'); if(b)b.remove();
+    window.location.href='https://wa.me/94767996381';
+  });
+})();
+
+/* ============ SCROLL REVEAL ============ */
+(function(){
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+})();
+
+/* ============ HEADER SCROLL STATE ============ */
+(function(){
+  var pill=document.querySelector('.header-pill');
+  var last=0;
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY;
+    if(y>40){pill.style.boxShadow='0 8px 30px rgba(15,23,42,.12)';}
+    else{pill.style.boxShadow='var(--shadow)';}
+    last=y;
+  },{passive:true});
+})();
+</script>
+</body>
+</html>

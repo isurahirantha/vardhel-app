@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 @import "./tokens.css";
 
 @layer base {
@@ -269,6 +270,65 @@ html.light body:not(:has(.admin-workspace)) select {
   border-color: #cbd5e1 !important;
 }
 
+/* Growth diagnostic result card: light mint surface, "Start a Project" gradient on the action */
+.diag-result-card {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%) !important;
+}
+
+.diag-result-card .diag-accent-text {
+  color: #047857 !important;
+}
+
+.diag-result-card .diag-sub-text {
+  color: var(--text-secondary) !important;
+}
+
+.diag-result-card .diag-btn-dark {
+  background: linear-gradient(90deg, #10b981, #14b8a6) !important;
+  color: #04261f !important;
+}
+
+html.dark .diag-result-card {
+  background: var(--bg-surface-elevated) !important;
+}
+
+html.dark .diag-result-card .diag-accent-text {
+  color: #34d399 !important;
+}
+
+/* Featured panel: light mint surface (unlayered so it beats .glass-card). Text uses theme vars. */
+.dark-panel {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 10px 30px -14px rgba(16, 185, 129, 0.35);
+}
+
+html.dark .dark-panel {
+  background: var(--bg-surface-elevated) !important;
+}
+
+.dark-panel-inset {
+  background-color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+html.dark .dark-panel-inset {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Emerald-500 text is too light on the mint surface: use a deeper emerald for readability */
+.dark-panel .text-emerald-500,
+.dark-panel .text-emerald-400,
+.dark-panel:hover h3 {
+  color: #047857 !important;
+}
+
+html.dark .dark-panel .text-emerald-500,
+html.dark .dark-panel .text-emerald-400,
+html.dark .dark-panel:hover h3 {
+  color: #34d399 !important;
+}
+
 /* Glassmorphism & Brand Glow Utilities */
 .glass-card {
   background: var(--bg-glass);
@@ -278,9 +338,30 @@ html.light body:not(:has(.admin-workspace)) select {
   box-shadow: 0 4px 24px -6px rgba(15, 23, 42, 0.08);
 }
 
+.glass-nav-capsule {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border-subtle);
+}
+
+html.dark .glass-nav-capsule {
+  background: rgba(14, 25, 44, 0.75);
+  border-color: rgba(244, 242, 235, 0.16);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(34, 136, 112, 0.2);
+}
+
+html.light .glass-nav-capsule {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(230, 228, 221, 0.9);
+  box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(34, 136, 112, 0.15);
+}
+
 .glass-card-hover {
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.28s ease, box-shadow 0.28s ease;
+  transform: translateZ(0);
+  will-change: transform;
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.24s ease, box-shadow 0.24s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -298,27 +379,87 @@ html.light body:not(:has(.admin-workspace)) select {
   -webkit-text-fill-color: transparent;
 }
 
-.brand-gradient-bg {
+/* In dark mode, ensure gradient text transitions to a luminous brand accent rather than dark navy */
+html.dark .brand-gradient-text {
   background: linear-gradient(
     135deg,
-    #0e192c 0%,
-    color-mix(in srgb, var(--brand-primary) 70%, #0e192c) 100%
-  ) !important;
-  color: #ffffff !important;
+    var(--brand-accent-glow) 0%,
+    color-mix(in srgb, var(--brand-primary) 65%, white) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.brand-gradient-bg *,
+/* Final CTA band: the "Start a Project" emerald-to-teal gradient with dark, high-contrast text */
+.brand-gradient-bg {
+  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%) !important;
+  color: #04261f !important;
+}
+
+.brand-gradient-bg,
 .brand-gradient-bg p,
 .brand-gradient-bg h2,
-.brand-gradient-bg span {
+.brand-gradient-bg span:not(.cta-btn-text):not(.cta-btn-text *) {
+  color: #04261f !important;
+}
+
+.brand-gradient-bg p.cta-subtitle {
+  color: #063d32 !important;
+}
+
+/* Universal dark-contrast-lock (for genuinely dark surfaces only) */
+.dark-contrast-lock,
+.dark-contrast-lock * {
   color: #ffffff !important;
 }
 
-.brand-gradient-bg a span,
-.brand-gradient-bg a svg {
-  color: inherit !important;
+.dark-contrast-lock p,
+.dark-contrast-lock .desc,
+.dark-contrast-lock .text-muted {
+  color: #cbd5e1 !important;
 }
 
+.dark-contrast-lock .text-dim {
+  color: #94a3b8 !important;
+}
+
+/* Primary CTA on the band: deep navy with white text */
+.brand-gradient-bg .cta-primary-btn,
+.brand-gradient-bg .cta-primary-btn * {
+  background-color: #0e192c !important;
+  color: #ffffff !important;
+}
+
+.brand-gradient-bg .cta-primary-btn svg {
+  color: #34d399 !important;
+}
+
+/* Secondary outline button (e.g. WhatsApp) on the band */
+.brand-gradient-bg .cta-secondary-btn {
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(4, 38, 31, 0.4) !important;
+  color: #04261f !important;
+}
+
+.brand-gradient-bg .cta-secondary-btn span {
+  color: #04261f !important;
+}
+
+.brand-gradient-bg .cta-secondary-btn svg {
+  color: #04261f !important;
+}
+
+/* Badge pill on the band */
+.brand-gradient-bg .cta-badge {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(4, 38, 31, 0.3) !important;
+  color: #04261f !important;
+}
+
+.brand-gradient-bg .cta-badge span,
+.brand-gradient-bg .cta-badge svg {
+  color: #04261f !important;
+}
 /* Respect prefers-reduced-motion (Section 10) */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -330,3 +471,87 @@ html.light body:not(:has(.admin-workspace)) select {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   INDUSTRIES AUTO-SCROLL TICKER & FLOATING CHIP ANIMATIONS
+   ========================================================================== */
+@keyframes ticker-scrollx {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  display: flex;
+  width: max-content;
+  animation: ticker-scrollx 32s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+.ticker-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+@keyframes floaty {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-slow {
+  animation: floaty 5.5s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floaty 6s ease-in-out -2.5s infinite;
+}
+
+/* AirDrop-style arrival ripple & transfer beam */
+@keyframes airdrop-ripple-expand {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.airdrop-ripple {
+  animation: airdrop-ripple-expand 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes airdrop-beam-travel {
+  0% {
+    left: var(--beam-from);
+    width: 24px;
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+  20% {
+    opacity: 1;
+    width: 72px;
+  }
+  100% {
+    left: var(--beam-to);
+    width: 24px;
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+}
+
+.airdrop-beam {
+  animation: airdrop-beam-travel 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+

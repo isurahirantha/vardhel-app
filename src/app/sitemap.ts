@@ -5,7 +5,7 @@ import {
 } from "@/server/services/public-content.service";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.APP_URL || "https://codeloom.site";
+  const baseUrl = process.env.APP_URL || "https://vardhel.com";
   const staticPaths = [
     "",
     "/products",

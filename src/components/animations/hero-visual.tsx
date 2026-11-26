@@ -51,12 +51,13 @@ export function HeroVisual({
       </div>
 
       {/* Main Hero Brand Graphic */}
-      <div className="relative mt-4 overflow-hidden rounded-2xl bg-slate-900/50 p-2">
+      <div className="relative mt-4 overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)]/60 p-2">
         <Image
           src="/assets/hero_image.png"
           alt="Vardhel Digital Business Growth Partner Visual"
           width={640}
           height={420}
+          sizes="(max-width: 768px) 100vw, 50vw"
           className="h-auto w-full rounded-xl object-cover"
           priority
         />
@@ -75,10 +76,10 @@ export function HeroVisual({
             return (
               <div
                 key={item.key}
-                className="flex flex-col items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-1.5 py-2"
+                className="flex flex-col items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-1 py-2 transition-colors hover:border-orange-500/40"
               >
-                <Icon className="h-4 w-4 text-orange-500" />
-                <span className="mt-1 font-mono text-[9px] font-bold tracking-tight text-[var(--text-primary)] sm:text-[10px]">
+                <Icon className="h-4 w-4 shrink-0 text-orange-500" />
+                <span className="mt-1 block w-full truncate font-mono text-[9px] font-bold tracking-tight text-[var(--text-primary)] sm:text-[10px]">
                   {item.key}
                 </span>
               </div>

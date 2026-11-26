@@ -20,7 +20,7 @@
   --text-muted: #64748b;
 
   /* Fluid Type Scale */
-  --text-hero: clamp(2.25rem, 4vw + 1rem, 4.1rem);
+  --text-hero: clamp(2.1rem, 2.6vw + 1rem, 3.5rem);
   --text-h1: clamp(1.875rem, 2.8vw + 0.75rem, 3.1rem);
   --text-h2: clamp(1.5rem, 2vw + 0.5rem, 2.35rem);
   --text-h3: clamp(1.25rem, 1.4vw + 0.4rem, 1.65rem);
