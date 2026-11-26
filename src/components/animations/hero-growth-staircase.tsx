@@ -86,7 +86,7 @@ export function HeroGrowthStaircase({
 
   return (
     <div
-      className="relative flex flex-col justify-between overflow-hidden rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]/25 backdrop-blur-[2px] p-4 sm:p-5 shadow-2xl transition-all duration-300"
+      className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-lg transition-all duration-300"
     >
       {/* Top Header Badge */}
       <div className="relative z-20 flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
@@ -106,17 +106,10 @@ export function HeroGrowthStaircase({
       </div>
 
       {/* 2D PHYSICAL ASCENDING STAIRCASE VISUAL */}
-      <div className="relative z-20 mt-4 h-56 w-full px-1 sm:px-2 flex items-end justify-between gap-2 sm:gap-3">
-        {/* Ascent Diagonal Connecting Guide Beam */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-6 right-6 bottom-12 h-0.5 opacity-35 bg-gradient-to-r from-teal-500/20 via-emerald-500/40 to-emerald-400 -rotate-[16deg] origin-bottom-left"
-        />
-
+      <div className="relative z-20 mt-4 h-52 w-full px-1 flex items-end justify-between gap-2">
         {STAGES.map((st, idx) => {
           const tread = stepTreads[idx] ?? stepTreads[0];
           const isActive = activeStep === idx;
-          const Icon = st.icon;
 
           return (
             <div
@@ -124,52 +117,43 @@ export function HeroGrowthStaircase({
               style={{ height: `${tread.heightPercent}%` }}
               onMouseEnter={() => setActiveStep(idx)}
               onClick={() => setActiveStep(idx)}
-              className={`group/step relative flex flex-1 min-w-0 cursor-pointer flex-col justify-between rounded-t-2xl border-t-2 border-x border-b-0 p-1.5 sm:p-2 backdrop-blur-sm transition-all duration-300 ${
+              className={`group/step relative flex flex-1 min-w-0 cursor-pointer flex-col justify-between rounded-t-xl border-t-2 border-x border-b-0 p-1.5 transition-all duration-200 ${
                 isActive
-                  ? "border-t-emerald-500 border-x-emerald-500/40 bg-gradient-to-b from-emerald-500/25 via-[var(--bg-surface-elevated)]/90 to-[var(--bg-surface)]/95 shadow-lg shadow-emerald-500/20 scale-[1.02]"
-                  : "border-t-[var(--border-subtle)] border-x-[var(--border-subtle)]/60 bg-gradient-to-b from-[var(--bg-surface-elevated)]/85 to-[var(--bg-surface)]/65 hover:border-t-emerald-500/80 hover:bg-[var(--bg-surface-elevated)]/95"
+                  ? "border-t-emerald-500 border-x-emerald-500/40 bg-emerald-500/10 shadow-sm"
+                  : "border-t-[var(--border-subtle)] border-x-[var(--border-subtle)]/70 bg-[var(--bg-surface-elevated)] hover:border-t-emerald-500/70"
               }`}
             >
-              {/* Stepped Top Tread Plate (The Stair Surface) */}
+              {/* Stepped Top Tread Plate */}
               <div
-                className={`h-1.5 w-full shrink-0 rounded-full transition-colors ${
+                className={`h-1 w-full shrink-0 rounded-full transition-colors ${
                   isActive
-                    ? "bg-emerald-500 shadow-sm shadow-emerald-500/50"
+                    ? "bg-emerald-500"
                     : "bg-[var(--border-subtle)] group-hover/step:bg-emerald-500/60"
                 }`}
               />
 
-              {/* Step Marker & Icon */}
-              <div className="flex flex-col items-center justify-center my-auto py-1">
-                <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-lg transition-transform ${
-                    isActive
-                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-105"
-                      : "bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-subtle)]"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                </div>
-                <span className="mt-1 font-mono text-[11px] font-extrabold leading-none text-[var(--text-primary)]">
+              {/* Step Marker & Label */}
+              <div className="my-auto text-center">
+                <div className="font-mono text-[11px] font-bold leading-none text-[var(--text-primary)]">
                   0{idx + 1}
-                </span>
-                <span
-                  className={`mt-1 max-w-full truncate font-mono text-[9px] sm:text-[10px] font-bold leading-tight tracking-tight ${
+                </div>
+                <div
+                  className={`mt-1 truncate font-mono text-[9px] font-bold leading-tight tracking-tight ${
                     isActive
                       ? "text-emerald-700 dark:text-emerald-300"
-                      : "text-[var(--text-secondary)]"
+                      : "text-[var(--text-muted)]"
                   }`}
                 >
                   {st.code}
-                </span>
+                </div>
               </div>
 
               {/* Step Base Indicator */}
               <div className="flex shrink-0 items-center justify-center pb-0.5">
                 <span
-                  className={`inline-block h-2 w-2 rounded-full transition-all ${
+                  className={`inline-block h-1.5 w-1.5 rounded-full transition-all ${
                     isActive
-                      ? "bg-emerald-500 ring-2 ring-emerald-500/25"
+                      ? "bg-emerald-500"
                       : "bg-transparent group-hover/step:bg-emerald-500/40"
                   }`}
                 />

@@ -1,9 +1,7 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { getGlobalSiteConfig } from "@/server/services/settings.service";
 import {
   getPublishedProducts,
-  getPublishedProjects,
   getApprovedFeedback,
   getPublishedFaqs,
   getAboutCompanyData,
@@ -14,27 +12,15 @@ import { safeJsonLd } from "@/lib/security/sanitize";
 import { HeroGrowthStaircase } from "@/components/animations/hero-growth-staircase";
 import { HeroParticleSection } from "@/components/animations/hero-particle-section";
 import { HowVardhelWorksGrid } from "@/components/animations/how-vardhel-works-grid";
+import { LiveWorkReel } from "@/components/animations/live-work-reel";
+import { MobileScrollCarousel } from "@/components/ui/mobile-scroll-carousel";
+import { FeedbackAvatar } from "@/components/ui/feedback-avatar";
 import {
   ArrowUpRight,
   MessageCircle,
-  Code2,
-  TrendingUp,
   CheckCircle2,
   Star,
   Sparkles,
-  ExternalLink,
-  Compass,
-  Share2,
-  MessageSquareHeart,
-  Globe,
-  Palette,
-  Megaphone,
-  Cpu,
-  Target,
-  ShieldCheck,
-  Lightbulb,
-  Users,
-  Handshake,
 } from "lucide-react";
 
 export const revalidate = 60;
@@ -52,7 +38,6 @@ export default async function HomePage({
     tCta,
     tHome,
     products,
-    projects,
     feedbackList,
     faqs,
     companyData,
@@ -61,7 +46,6 @@ export default async function HomePage({
     getTranslations({ locale: validLocale, namespace: "cta" }),
     getTranslations({ locale: validLocale, namespace: "home" }),
     getPublishedProducts(validLocale),
-    getPublishedProjects(validLocale),
     getApprovedFeedback(validLocale),
     getPublishedFaqs(validLocale),
     getAboutCompanyData(validLocale),
@@ -71,195 +55,6 @@ export default async function HomePage({
     siteConfig.whatsappNumber,
     siteConfig.whatsappDefaultMessage
   );
-
-  // 7 Interconnected Digital Capabilities
-  const capabilities = [
-    {
-      stage: "BUILD · FEATURED",
-      icon: Code2,
-      title:
-        validLocale === "si"
-          ? "සුවිශේෂී මෘදුකාංග සංවර්ධනය (Custom Software Development)"
-          : "Custom Software Development",
-      desc:
-        validLocale === "si"
-          ? "ඔබේ ව්‍යාපාරික මෙහෙයුම් කාර්යක්ෂම කරන සහ පුළුල් කළ හැකි වෙබ්, ජංගම සහ ව්‍යාපාරික මෘදුකාංග පද්ධති."
-          : "Tailored web, mobile, and operational software engineered around how your business actually works — never generic templates.",
-      href: "/services/software-product-development",
-      ctaLabel:
-        validLocale === "si"
-          ? "සුවිශේෂී මෘදුකාංග විසඳුම් බලන්න"
-          : "Explore Custom Software Development",
-      gridSpan: "lg:col-span-12",
-    },
-    {
-      stage: "BUILD · CONNECT",
-      icon: Globe,
-      title:
-        validLocale === "si"
-          ? "වෙබ් අඩවි නිර්මාණය සහ සංවර්ධනය (Website Design & Development)"
-          : "Website Design & Development",
-      desc:
-        validLocale === "si"
-          ? "වේගවත්, SEO හා AI සෙවුම්වලට ගැළපෙන, අමුත්තන් ගනුදෙනුකරුවන් බවට පත් කරන නවීන වෙබ් අත්දැකීම්."
-          : "High-converting, fast websites built with technical SEO and AI search readiness to turn visitors into customers.",
-      href: "/services/web-application-development",
-      ctaLabel:
-        validLocale === "si"
-          ? "වෙබ් සංවර්ධනය ගැන කියවන්න"
-          : "Explore Website Development",
-      gridSpan: "lg:col-span-6",
-    },
-    {
-      stage: "CONNECT",
-      icon: Palette,
-      title:
-        validLocale === "si"
-          ? "ඩිජිටල් සන්නාමකරණය සහ නිර්මාණාත්මක විසඳුම් (Digital Branding & Creative)"
-          : "Digital Branding & Creative Solutions",
-      desc:
-        validLocale === "si"
-          ? "පාරිභෝගික විශ්වාසය දිනාගන්නා UI/UX නිර්මාණ, කෙටි වීඩියෝ සහ දෘශ්‍ය සන්නාම අනන්‍යතාව."
-          : "Human-centered UI/UX, visual storytelling, and short-form video assets that make your brand unforgettable.",
-      href: "/services/content-short-video-production",
-      ctaLabel:
-        validLocale === "si"
-          ? "සන්නාමකරණ විසඳුම් බලන්න"
-          : "Explore Branding & Creative",
-      gridSpan: "lg:col-span-6",
-    },
-    {
-      stage: "ENGAGE",
-      icon: Megaphone,
-      title:
-        validLocale === "si"
-          ? "ඩිජිටල් අලෙවිකරණය සහ ප්‍රවර්ධන කළමනාකරණය (Digital Marketing & Campaigns)"
-          : "Digital Marketing & Campaign Management",
-      desc:
-        validLocale === "si"
-          ? "Facebook, Instagram, TikTok, TripAdvisor සහ SEO හරහා ඉලක්කගත පාරිභෝගිකයින් වෙත ළඟා වන ප්‍රවර්ධන."
-          : "Strategic social presence, SEO/AI visibility, and multi-channel campaigns across Facebook, Instagram, TikTok, and TripAdvisor.",
-      href: "/services/social-media-setup-management",
-      ctaLabel:
-        validLocale === "si"
-          ? "ඩිජිටල් අලෙවිකරණය බලන්න"
-          : "Explore Digital Marketing",
-      gridSpan: "lg:col-span-4",
-    },
-    {
-      stage: "CONNECT · ENGAGE",
-      icon: MessageSquareHeart,
-      title:
-        validLocale === "si"
-          ? "පාරිභෝගික සබඳතා විසඳුම් (Customer Engagement Solutions)"
-          : "Customer Engagement Solutions",
-      desc:
-        validLocale === "si"
-          ? "වෙබ් අඩවියේ සිට WhatsApp සහ සමාජ මාධ්‍ය දක්වා පාරිභෝගිකයින් සමඟ අඛණ්ඩව සම්බන්ධ වන පද්ධති."
-          : "Seamless booking flows, WhatsApp lead routing, and retention systems that keep customers coming back.",
-      href: "/growth",
-      ctaLabel:
-        validLocale === "si"
-          ? "පාරිභෝගික සබඳතා විසඳුම් බලන්න"
-          : "Explore Engagement Solutions",
-      gridSpan: "lg:col-span-4",
-    },
-    {
-      stage: "BUILD · ENGAGE",
-      icon: Cpu,
-      title:
-        validLocale === "si"
-          ? "ව්‍යාපාර ස්වයංක්‍රීයකරණය සහ AI ඒකාබද්ධකරණය (Automation & AI Integration)"
-          : "Business Automation & AI Integration",
-      desc:
-        validLocale === "si"
-          ? "එදිනෙදා කාර්යයන් ස්වයංක්‍රීය කර කාලය ඉතිරි කරන ස්මාර්ට් තාක්ෂණික සහ AI විසඳුම්."
-          : "Eliminate manual bottlenecks with intelligent workflows, smart notifications, and practical AI tools.",
-      href: "/services/iot-development",
-      ctaLabel:
-        validLocale === "si"
-          ? "AI හා ස්වයංක්‍රීයකරණය බලන්න"
-          : "Explore Automation & AI",
-      gridSpan: "lg:col-span-4",
-    },
-    {
-      stage: "UNDERSTAND · GROW",
-      icon: Target,
-      title:
-        validLocale === "si"
-          ? "ඩිජිටල් උපායමාර්ග සහ ව්‍යාපාර පරිවර්තනය (Digital Strategy & Transformation)"
-          : "Digital Strategy & Business Transformation",
-      desc:
-        validLocale === "si"
-          ? "නිවැරදි තාක්ෂණික මඟපෙන්වීම, දැනුම හුවමාරුව සහ දිගුකාලීන ව්‍යාපාර වර්ධන සැලසුම්. තාක්ෂණයට පෙර ව්‍යාපාරික අවශ්‍යතාව හඳුනාගැනීම."
-          : "End-to-end roadmap, technology consulting, and hands-on knowledge transfer for sustainable scaling. Every engagement begins here — we understand your commercial reality before proposing any technology.",
-      href: "/growth",
-      ctaLabel:
-        validLocale === "si"
-          ? "වර්ධන හවුල්කාරිත්වය ගැන කියවන්න"
-          : "Explore Growth Partnership",
-      gridSpan: "lg:col-span-12",
-    },
-  ];
-
-  // 5 Key Differentiators (Why Businesses Work With Us)
-  const differentiators = [
-    {
-      icon: Compass,
-      title:
-        validLocale === "si"
-          ? "පළමුව ව්‍යාපාරය ගැඹුරින් අධ්‍යයනය කර සම්බන්ධ කර ගැනීම"
-          : "We onboard your business into an active intelligence system.",
-      desc:
-        validLocale === "si"
-          ? "අපි ඔබේ ව්‍යාපාරික ආකෘතිය, ඉලක්ක, වෙළඳපල තරඟකාරිත්වය සහ පාරිභෝගික හැසිරීම් ගැඹුරින් අධ්‍යයනය කර VARDHEL පද්ධතියට සම්බන්ධ කර ගන්නෙමු."
-          : "We don't start by asking what to post. We establish deep structured intelligence on your business, market, audience, and commercial capacity before recommending any action.",
-    },
-    {
-      icon: Lightbulb,
-      title:
-        validLocale === "si"
-          ? "කෘත්‍රිම බුද්ධි පාදක සාක්ෂි සහිත වර්ධන උපායමාර්ග"
-          : "Evidence-led AI strategy, not generic marketing advice.",
-      desc:
-        validLocale === "si"
-          ? "සාමාන්‍ය හෝ පුස්සක් වූ උපදෙස් වෙනුවට, සැබෑ දත්ත සහ වෙළඳපල අවස්ථා මත පදනම් වූ විශේෂිත වර්ධන සැලැස්මක් අපි සකස් කරන්නෙමු."
-          : "Every strategic move combines deep business context, platform-specific behavior, and AI-driven analysis tailored to your specific commercial reality.",
-    },
-    {
-      icon: Sparkles,
-      title:
-        validLocale === "si"
-          ? "ක්‍රියාකාරී නාලිකා ලෙස මෘදුකාංග, වෙබ් සහ සමාජ මාධ්‍ය"
-          : "Execution channels aligned to a single intelligence core.",
-      desc:
-        validLocale === "si"
-          ? "මෘදුකාංග පද්ධති, වෙබ් අඩවි සහ සමාජ මාධ්‍ය යනු හුදකලා සේවා නොවේ — ඒවා ඔබේ ව්‍යාපාරික වර්ධන උපායමාර්ගයේ ප්‍රායෝගික මෙවලම් වේ."
-          : "Custom software, high-converting websites, and managed social channels act as coordinated execution engines driven by verified business intelligence.",
-    },
-    {
-      icon: Users,
-      title:
-        validLocale === "si"
-          ? "අඛණ්ඩ ක්‍රියාකාරීත්ව නිරීක්ෂණය සහ තීරණ ගැනීම"
-          : "Continuous performance tracking and proactive guidance.",
-      desc:
-        validLocale === "si"
-          ? "අපි නිරන්තරයෙන් ව්‍යාපාරික ප්‍රතිඵල අධීක්ෂණය කරමින්, නව අවස්ථා හඳුනාගෙන, උපායමාර්ගය තවදුරටත් සාර්ථක කර ගැනීමට මඟ පෙන්වන්නෙමු."
-          : "We track digital performance indicators, identify emerging market opportunities, and use evidence to guide your next strategic moves.",
-    },
-    {
-      icon: Handshake,
-      title:
-        validLocale === "si"
-          ? "ව්‍යාපෘතියක් භාරදී ඉවත් වීමට වඩා අඛණ්ඩ වර්ධන හවුල්කාරිත්වයක්"
-          : "Ongoing partnership for sustainable, compounding growth.",
-      desc:
-        validLocale === "si"
-          ? "වෙබ් අඩවියක් සාදා හෝ සමාජ මාධ්‍ය පෝස්ට් කිහිපයක් දමා අපි ඉවත් නොවෙමු. ඔබේ ව්‍යාපාරයේ අඛණ්ඩ වර්ධනය වෙනුවෙන් අපි ඔබ සමඟ රැඳී සිටින්නෙමු."
-          : "Your business evolves, and so does our support. We provide ongoing intelligence and optimization rather than simply delivering a project and walking away.",
-    },
-  ];
 
   const orgJsonLd = {
     "@context": "https://schema.org",
@@ -339,61 +134,61 @@ export default async function HomePage({
       />
 
       {/* A. HERO SECTION — Clean Pure White Surface (extends seamlessly behind floating navbar) */}
-      <HeroParticleSection className="bg-[var(--bg-surface)] -mt-[76px] pt-[92px] pb-8 sm:pt-[96px] sm:pb-10 lg:pt-[100px] lg:pb-12">
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
+      <HeroParticleSection className="bg-[var(--bg-surface)] -mt-[68px] pt-24 pb-12 lg:pt-28 lg:pb-16">
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
             <div className="lg:col-span-7">
-            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-500">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>{tHome("positioning_badge")}</span>
-            </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-600/25 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>{tHome("positioning_badge")}</span>
+              </span>
 
-            <h1 className="mt-4 text-[length:var(--text-hero)] font-bold leading-[1.1] tracking-tight text-[var(--text-primary)] [text-wrap:balance]">
-              {validLocale === "si" ? (
-                <span className="brand-gradient-text">
-                  බුද්ධිමය ව්‍යාපාර වර්ධනය.
-                </span>
-              ) : (
-                <span className="brand-gradient-text">
-                  Intelligence-Led Business Growth.
-                </span>
-              )}
-            </h1>
+              <h1 className="mt-5 text-4xl sm:text-5xl lg:text-[3.4rem] font-bold leading-[1.08] tracking-[-0.025em] text-[var(--text-primary)] [text-wrap:balance]">
+                {validLocale === "si" ? (
+                  <>
+                    බුද්ධිමය
+                    <br />
+                    <span className="text-emerald-700 dark:text-emerald-400">
+                      ව්‍යාපාර වර්ධනය.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Intelligence-Led
+                    <br />
+                    <span className="text-emerald-700 dark:text-emerald-400">
+                      Business Growth.
+                    </span>
+                  </>
+                )}
+              </h1>
 
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--text-secondary)]">
-              {tHome("hero_subheadline")}
-            </p>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--text-secondary)]">
+                {tHome("hero_subheadline")}
+              </p>
 
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <Link
-                href="/contact"
-                className="keep-white inline-flex min-h-[50px] items-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:opacity-95 hover:shadow-emerald-500/40"
-              >
-                <span className="keep-white">{tCta("grow_business")}</span>
-                <ArrowUpRight className="keep-white h-4 w-4" />
-              </Link>
-              <a
-                href="#capabilities"
-                className="inline-flex min-h-[50px] items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-7 py-3.5 text-sm font-semibold text-[var(--text-primary)] shadow-xs transition-all hover:border-emerald-500/50 hover:bg-[var(--bg-surface-elevated)]"
-              >
-                <span>{tCta("explore_what_we_do")}</span>
-                <ArrowUpRight className="h-4 w-4 text-emerald-500" />
-              </a>
-            </div>
-
-            {/* Micro Social-Proof Trust Strip */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <div className="flex -space-x-1.5">
-                {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--bg-canvas)] bg-[var(--bg-surface-elevated)] font-mono text-[10px] font-bold text-emerald-500"
-                  >
-                    ★
-                  </div>
-                ))}
+              <div className="mt-7 flex flex-wrap items-center gap-3.5">
+                <Link
+                  href="/contact"
+                  className="keep-white inline-flex min-h-[48px] items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-7 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:opacity-95"
+                >
+                  <span className="keep-white">{tCta("grow_business")}</span>
+                  <ArrowUpRight className="keep-white h-4 w-4" />
+                </Link>
+                <a
+                  href="#capabilities"
+                  className="glass-card inline-flex min-h-[48px] items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-[var(--text-primary)] transition-all hover:border-emerald-500/50"
+                >
+                  <span>{tCta("explore_what_we_do")}</span>
+                  <ArrowUpRight className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
+                </a>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)]">
+
+              {/* Micro Social-Proof Trust Strip */}
+              <div className="mt-6 flex flex-wrap items-center gap-2.5 text-xs text-[var(--text-secondary)]">
+                <span className="flex tracking-tight text-amber-400" aria-hidden="true">
+                  ★★★★★
+                </span>
                 <span className="font-bold text-[var(--text-primary)]">5.0 Rating</span>
                 <span>•</span>
                 <span>
@@ -403,542 +198,651 @@ export default async function HomePage({
                 </span>
               </div>
             </div>
-          </div>
 
-          <div className="lg:col-span-5">
-            <HeroGrowthStaircase locale={validLocale} />
+            <div className="lg:col-span-5">
+              <HeroGrowthStaircase locale={validLocale} />
+            </div>
           </div>
         </div>
-      </div>
-    </HeroParticleSection>
+      </HeroParticleSection>
 
-    {companyData.stats.length > 0 && (
-      <section className="border-y border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)]/60 py-6">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-6 px-4 sm:grid-cols-3 sm:px-6 lg:px-8">
-          {companyData.stats.map((st) => (
-            <div key={st.id} className="text-center">
-              <p className="text-2xl font-bold text-emerald-600">
-                {st.value}
-                {st.suffix}
-              </p>
-              <p className="mt-0.5 text-xs text-[var(--text-muted)]">{st.label}</p>
+      {/* B. UNIFIED PROOF & CLIENT SPECTRUM BAND (Warm Stone) */}
+      <section className="relative overflow-hidden border-y border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] py-6">
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-8 space-y-5">
+          {(() => {
+            const proofStats =
+              companyData.stats.length > 0
+                ? companyData.stats
+                : [
+                  {
+                    id: "st-1",
+                    value: "20",
+                    suffix: "+",
+                    label:
+                      validLocale === "si"
+                        ? "සම්බන්ධ වූ ව්‍යාපාර"
+                        : "Businesses Onboarded",
+                  },
+                  {
+                    id: "st-2",
+                    value: "3",
+                    suffix: "",
+                    label:
+                      validLocale === "si"
+                        ? "ප්‍රධාන මෘදුකාංග පද්ධති"
+                        : "Flagship SaaS Platforms",
+                  },
+                  {
+                    id: "st-3",
+                    value: "100",
+                    suffix: "%",
+                    label:
+                      validLocale === "si"
+                        ? "සම්පූර්ණ IP අයිතිය"
+                        : "Full IP Ownership",
+                  },
+                ];
+            return (
+              <div className="grid grid-cols-3 gap-4 border-b border-[var(--border-subtle)] pb-5 text-center">
+                {proofStats.map((st) => (
+                  <div key={st.id}>
+                    <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
+                      {st.value}
+                      {st.suffix}
+                    </p>
+                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">{st.label}</p>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
+          <div className="ticker-mask relative overflow-hidden">
+            <div className="animate-ticker flex items-center gap-3">
+              <div className="flex items-center gap-2.5 pr-4 text-xs font-semibold text-[var(--text-secondary)]">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="uppercase tracking-wider text-[var(--text-muted)] font-mono text-[11px] whitespace-nowrap">
+                  {validLocale === "si" ? "ඉලක්කගත ක්ෂේත්‍ර" : "Industries We Power"}
+                </span>
+              </div>
+
+              {[
+                validLocale === "si" ? "▸ සංචාරක සහ ආගන්තුක සත්කාර" : "▸ Hospitality & Tourism",
+                validLocale === "si" ? "▸ ඊ-වාණිජ්‍යය සහ සිල්ලර" : "▸ E-Commerce & Retail",
+                validLocale === "si" ? "▸ සෞඛ්‍ය සහ සායනික" : "▸ Healthcare & Wellness",
+                validLocale === "si" ? "▸ නිශ්චල දේපල සහ ඉදිකිරීම්" : "▸ Real Estate & Architecture",
+                validLocale === "si" ? "▸ වෘත්තීය සේවා සහ ආයතනික" : "▸ Professional Services",
+                validLocale === "si" ? "▸ උත්සව සහ විනෝදාස්වාදය" : "▸ Events & Entertainment",
+              ].map((ind, i) => (
+                <span
+                  key={`ind-1-${i}`}
+                  className="whitespace-nowrap rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/50"
+                >
+                  {ind}
+                </span>
+              ))}
+
+              {/* Seamless duplicate loop */}
+              <div className="flex items-center gap-2.5 pl-4 pr-4 text-xs font-semibold text-[var(--text-secondary)]">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="uppercase tracking-wider text-[var(--text-muted)] font-mono text-[11px] whitespace-nowrap">
+                  {validLocale === "si" ? "ඉලක්කගත ක්ෂේත්‍ර" : "Industries We Power"}
+                </span>
+              </div>
+
+              {[
+                validLocale === "si" ? "▸ සංචාරක සහ ආගන්තුක සත්කාර" : "▸ Hospitality & Tourism",
+                validLocale === "si" ? "▸ ඊ-වාණිජ්‍යය සහ සිල්ලර" : "▸ E-Commerce & Retail",
+                validLocale === "si" ? "▸ සෞඛ්‍ය සහ සායනික" : "▸ Healthcare & Wellness",
+                validLocale === "si" ? "▸ නිශ්චල දේපල සහ ඉදිකිරීම්" : "▸ Real Estate & Architecture",
+                validLocale === "si" ? "▸ වෘත්තීය සේවා සහ ආයතනික" : "▸ Professional Services",
+                validLocale === "si" ? "▸ උත්සව සහ විනෝදාස්වාදය" : "▸ Events & Entertainment",
+              ].map((ind, i) => (
+                <span
+                  key={`ind-2-${i}`}
+                  className="whitespace-nowrap rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/50"
+                >
+                  {ind}
+                </span>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
-    )}
 
-      {/* 2. CREDIBILITY & CLIENT SPECTRUM STRIP (Fade-Masked Auto-Scrolling Ticker) */}
-      <section className="relative overflow-hidden border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] py-3 sm:py-4">
-        <div className="ticker-mask relative mx-auto max-w-[1440px] overflow-hidden px-4">
-          <div className="animate-ticker flex items-center gap-3">
-            <div className="flex items-center gap-2.5 pr-4 text-xs font-semibold text-[var(--text-secondary)]">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="uppercase tracking-wider text-[var(--text-muted)] font-mono text-[11px] whitespace-nowrap">
-                {validLocale === "si" ? "ඉලක්කගත ක්ෂේත්‍ර" : "Industries We Power"}
-              </span>
-            </div>
-
-            {[
-              validLocale === "si" ? "▸ සංචාරක සහ ආගන්තුක සත්කාර" : "▸ Hospitality & Tourism",
-              validLocale === "si" ? "▸ ඊ-වාණිජ්‍යය සහ සිල්ලර" : "▸ E-Commerce & Retail",
-              validLocale === "si" ? "▸ සෞඛ්‍ය සහ සායනික" : "▸ Healthcare & Wellness",
-              validLocale === "si" ? "▸ නිශ්චල දේපල සහ ඉදිකිරීම්" : "▸ Real Estate & Architecture",
-              validLocale === "si" ? "▸ වෘත්තීය සේවා සහ ආයතනික" : "▸ Professional Services",
-              validLocale === "si" ? "▸ උත්සව සහ විනෝදාස්වාදය" : "▸ Events & Entertainment",
-            ].map((ind, i) => (
-              <span
-                key={`ind-1-${i}`}
-                className="whitespace-nowrap rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/50"
-              >
-                {ind}
-              </span>
-            ))}
-
-            {/* Seamless duplicate loop */}
-            <div className="flex items-center gap-2.5 pl-4 pr-4 text-xs font-semibold text-[var(--text-secondary)]">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="uppercase tracking-wider text-[var(--text-muted)] font-mono text-[11px] whitespace-nowrap">
-                {validLocale === "si" ? "ඉලක්කගත ක්ෂේත්‍ර" : "Industries We Power"}
-              </span>
-            </div>
-
-            {[
-              validLocale === "si" ? "▸ සංචාරක සහ ආගන්තුක සත්කාර" : "▸ Hospitality & Tourism",
-              validLocale === "si" ? "▸ ඊ-වාණිජ්‍යය සහ සිල්ලර" : "▸ E-Commerce & Retail",
-              validLocale === "si" ? "▸ සෞඛ්‍ය සහ සායනික" : "▸ Healthcare & Wellness",
-              validLocale === "si" ? "▸ නිශ්චල දේපල සහ ඉදිකිරීම්" : "▸ Real Estate & Architecture",
-              validLocale === "si" ? "▸ වෘත්තීය සේවා සහ ආයතනික" : "▸ Professional Services",
-              validLocale === "si" ? "▸ උත්සව සහ විනෝදාස්වාදය" : "▸ Events & Entertainment",
-            ].map((ind, i) => (
-              <span
-                key={`ind-2-${i}`}
-                className="whitespace-nowrap rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/50"
-              >
-                {ind}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* C. HOW VARDHEL WORKS — Business Intelligence System cycle */}
-      <section className="bg-[var(--bg-surface-elevated)] py-12 sm:py-16 border-b border-[var(--border-subtle)]">
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+      {/* C. HOW VARDHEL WORKS · CAPABILITIES & ADVANTAGE — Pure White (5 AirDrop Cards + Linked Workflow Panel) */}
+      <section
+        id="how-it-works"
+        className="bg-[var(--bg-surface)] pt-9 pb-14 lg:pt-10 lg:pb-14 scroll-mt-24 border-b border-[var(--border-subtle)]"
+      >
+        <span id="capabilities" className="sr-only" />
+        <span id="advantage" className="sr-only" />
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
-              {validLocale === "si" ? "VARDHEL ක්‍රියා කරන ආකාරය" : "How VARDHEL Works"}
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+              {validLocale === "si"
+                ? "VARDHEL ක්‍රියා කරන ආකාරය · අපගේ හැකියාවන් සහ විශේෂත්වය"
+                : "How VARDHEL Works · Capabilities & Advantage"}
             </span>
-            <h2 className="mt-2 text-[length:var(--text-h2)] font-bold text-[var(--text-primary)] [text-wrap:balance]">
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)] [text-wrap:balance]">
               {validLocale === "si"
                 ? "අපි ආරම්භ කරන්නේ ඔබේ ව්‍යාපාරය තේරුම් ගැනීමෙනි"
                 : "We start by understanding your business — not by asking what to post."}
             </h2>
           </div>
+
           <HowVardhelWorksGrid
+            capabilitiesLabel={
+              validLocale === "si" ? "ක්‍රියාත්මක වන හැකියාවන්:" : "Capabilities Activated:"
+            }
+            allCapabilities={[
+              {
+                id: "software",
+                label: validLocale === "si" ? "සුවිශේෂී මෘදුකාංග" : "Custom Software",
+                href: "/services/software-product-development",
+              },
+              {
+                id: "strategy",
+                label: validLocale === "si" ? "ඩිජිටල් උපායමාර්ග" : "Digital Strategy",
+                href: "/growth",
+              },
+              {
+                id: "web",
+                label: validLocale === "si" ? "වෙබ් අඩවි සහ SEO" : "Websites & SEO",
+                href: "/services/web-application-development",
+              },
+              {
+                id: "brand",
+                label: validLocale === "si" ? "සන්නාමකරණය සහ වීඩියෝ" : "Branding & Video",
+                href: "/services/content-short-video-production",
+              },
+              {
+                id: "marketing",
+                label: validLocale === "si" ? "ඩිජිටල් අලෙවිකරණය" : "Marketing",
+                href: "/services/social-media-setup-management",
+              },
+              {
+                id: "engage",
+                label: validLocale === "si" ? "පාරිභෝගික සබඳතා" : "Engagement & Leads",
+                href: "/growth",
+              },
+              {
+                id: "ai",
+                label: validLocale === "si" ? "AI සහ ස්වයංක්‍රීයකරණය" : "AI & Automation",
+                href: "/services/iot-development",
+              },
+            ]}
             steps={[
               {
                 title: validLocale === "si" ? "ඇතුළත් කිරීම" : "Onboard",
+                tag: validLocale === "si" ? "බුද්ධි පද්ධතිය" : "INTELLIGENCE CORE",
                 desc:
                   validLocale === "si"
                     ? "ඔබේ ව්‍යාපාරයේ ඉලක්ක, ගනුදෙනුකරුවන් සහ වෙළඳපල අපි පද්ධතියට ඇතුළත් කරමු."
                     : "We bring your business into VARDHEL: goals, audience, market and resources.",
+                advantageLabel:
+                  validLocale === "si"
+                    ? "සක්‍රීය ව්‍යාපාර බුද්ධිය"
+                    : "ACTIVE BUSINESS INTELLIGENCE",
+                advantageTitle:
+                  validLocale === "si"
+                    ? "ඕනෑම පියවරකට පෙර ඔබේ ව්‍යාපාරය ගැඹුරින් අධ්‍යයනය කර සම්බන්ධ කර ගැනීම."
+                    : "We establish deep structured context before recommending any action.",
+                advantageQuote:
+                  validLocale === "si"
+                    ? `“${tHome("philosophy_quote")}”`
+                    : "“We don't start by asking what you want to post. We start by understanding your business.”",
+                activeCapIds: ["strategy", "software"],
+                cards: [
+                  {
+                    code: "CORE · AUDIT",
+                    title:
+                      validLocale === "si"
+                        ? "ව්‍යාපාර සහ වෙළඳපල ඇතුළත් කිරීම"
+                        : "Business & Commercial Onboarding",
+                    desc:
+                      validLocale === "si"
+                        ? "ආදායම් ඉලක්ක, මෙහෙයුම් අභියෝග සහ ඩිජිටල් යටිතල පහසුකම් VARDHEL තුළ සිතියම්ගත කිරීම."
+                        : "Map revenue goals, operational bottlenecks, and digital infrastructure gaps inside VARDHEL.",
+                    href: "/growth",
+                  },
+                  {
+                    code: "CORE · CONTEXT",
+                    title:
+                      validLocale === "si"
+                        ? "පාරිභෝගික සහ නාලිකා සැලසුම"
+                        : "Customer & Channel Architecture",
+                    desc:
+                      validLocale === "si"
+                        ? "ඔබේ මෘදුකාංග, වෙබ් අඩවිය සහ සමාජ මාධ්‍ය එකම බුද්ධි මධ්‍යස්ථානයකට සම්බන්ධ කිරීම."
+                        : "Align your software, website, and social touchpoints to a single intelligence core.",
+                    href: "/services",
+                  },
+                ],
+                ctaLabel:
+                  validLocale === "si"
+                    ? "ඇතුළත් කිරීමේ ක්‍රියාවලිය බලන්න"
+                    : "Learn How Onboarding Works",
+                ctaHref: "/growth",
               },
               {
                 title: validLocale === "si" ? "පර්යේෂණය" : "Research",
+                tag: validLocale === "si" ? "සාක්ෂි සහ SEO" : "EVIDENCE & SEO",
                 desc:
                   validLocale === "si"
                     ? "තරඟකරුවන්, වෙළඳපල සහ පාරිභෝගික හැසිරීම් සාක්ෂි මත පදනම්ව අධ්‍යයනය."
                     : "Competitors, market conditions and audience behaviour, grounded in evidence.",
+                advantageLabel:
+                  validLocale === "si"
+                    ? "සාක්ෂි මත පදනම් වූ AI විශ්ලේෂණය"
+                    : "EVIDENCE-LED AI ANALYSIS",
+                advantageTitle:
+                  validLocale === "si"
+                    ? "සෑම උපායමාර්ගික පියවරක්ම සැබෑ දත්ත මත පදනම් වේ — සාමාන්‍ය උපදෙස් නොවේ."
+                    : "Every strategic move is backed by market data, not generic marketing advice.",
+                advantageQuote:
+                  validLocale === "si"
+                    ? "ඔබේ වෙළඳපලට ගැළපෙන තරඟකාරී විශ්ලේෂණ, සෙවුම් ඉල්ලුම සහ පාරිභෝගික හැසිරීම්."
+                    : "Deep competitive benchmarking, search demand, and platform behavior tailored to your market.",
+                activeCapIds: ["strategy", "web", "marketing"],
+                cards: [
+                  {
+                    code: "01 · WEB & SEO",
+                    title:
+                      validLocale === "si"
+                        ? "තාක්ෂණික SEO සහ AI සෙවුම් සූදානම"
+                        : "Technical SEO & AI Search Readiness",
+                    desc:
+                      validLocale === "si"
+                        ? "වෙබ් අඩවියේ වේගය, පරිවර්තන බාධා සහ AI සෙවුම් අවස්ථා පරීක්ෂා කිරීම."
+                        : "Audit search visibility, conversion friction, and AI discovery opportunities across your web presence.",
+                    href: "/services/web-application-development",
+                  },
+                  {
+                    code: "03 · REACH",
+                    title:
+                      validLocale === "si"
+                        ? "තරඟකරුවන් සහ ප්‍රේක්ෂක දත්ත"
+                        : "Competitor & Audience Signals",
+                    desc:
+                      validLocale === "si"
+                        ? "Facebook, Instagram, TikTok සහ TripAdvisor හරහා සාක්ෂි පාදක පර්යේෂණ."
+                        : "Evidence-backed research across Facebook, Instagram, TikTok, and TripAdvisor.",
+                    href: "/services/social-media-setup-management",
+                  },
+                ],
+                ctaLabel:
+                  validLocale === "si"
+                    ? "පර්යේෂණ හා SEO විසඳුම් බලන්න"
+                    : "Explore Research & SEO",
+                ctaHref: "/services",
               },
               {
                 title: validLocale === "si" ? "උපායමාර්ගය" : "Strategy",
+                tag: validLocale === "si" ? "වර්ධන සැලැස්ම" : "ROADMAP",
                 desc:
                   validLocale === "si"
                     ? "ඔබේ ව්‍යාපාරයට ගැළපෙන වර්ධන සැලැස්මක්."
                     : "A growth plan tailored to your business, not generic social media advice.",
+                advantageLabel:
+                  validLocale === "si"
+                    ? "ඒකාබද්ධ වර්ධන සැලැස්ම"
+                    : "UNIFIED GROWTH ROADMAP",
+                advantageTitle:
+                  validLocale === "si"
+                    ? "සමාජ මාධ්‍ය සහ වෙබ් අඩවි යනු ක්‍රියාකාරී නාලිකා පමණි — සම්පූර්ණ උපායමාර්ගය නොවේ."
+                    : "Social media and websites are execution channels — not the entire strategy.",
+                advantageQuote:
+                  validLocale === "si"
+                    ? "අප නිර්මාණය කරන සෑම පද්ධතියක්ම සහ ප්‍රවර්ධනයක්ම ඔබේ ව්‍යාපාරික වර්ධනයට ගැළපෙන බුද්ධිමය සැලසුමකින් මෙහෙයවනු ලැබේ."
+                    : "Every platform we engineer and campaign we run is guided by business intelligence tailored to your growth.",
+                activeCapIds: ["strategy", "software", "web"],
+                cards: [
+                  {
+                    code: "UNDERSTAND · GROW",
+                    title:
+                      validLocale === "si"
+                        ? "ඩිජිටල් උපායමාර්ග සහ ව්‍යාපාර පරිවර්තනය"
+                        : "Digital Strategy & Business Transformation",
+                    desc:
+                      validLocale === "si"
+                        ? "තිරසාර වර්ධනය සඳහා තාක්ෂණික මඟපෙන්වීම, දැනුම හුවමාරුව සහ දිගුකාලීන සැලසුම්."
+                        : "End-to-end roadmap, technology consulting, and hands-on knowledge transfer for sustainable scaling.",
+                    href: "/growth",
+                  },
+                  {
+                    code: "BUILD · PLAN",
+                    title:
+                      validLocale === "si"
+                        ? "පද්ධති සහ නාලිකා සැලසුම"
+                        : "System & Channel Blueprint",
+                    desc:
+                      validLocale === "si"
+                        ? "ප්‍රතිලාභ වැඩි මෘදුකාංග, වෙබ් ප්‍රවාහ සහ ප්‍රවර්ධන ප්‍රමුඛතාගත කිරීම."
+                        : "Prioritized architecture deciding what custom software, web flows, and campaigns drive ROI first.",
+                    href: "/services",
+                  },
+                ],
+                ctaLabel:
+                  validLocale === "si"
+                    ? "වර්ධන හවුල්කාරිත්වය ගැන කියවන්න"
+                    : "Explore Growth Partnership",
+                ctaHref: "/growth",
               },
               {
                 title: validLocale === "si" ? "නිරීක්ෂණය" : "Monitor",
+                tag: validLocale === "si" ? "දත්ත නිරීක්ෂණය" : "TRACKING",
                 desc:
                   validLocale === "si"
                     ? "ක්‍රියාකාරීත්ව දත්ත සහ අවස්ථා අඛණ්ඩව නිරීක්ෂණය."
                     : "Ongoing tracking of available performance signals and opportunities.",
+                advantageLabel:
+                  validLocale === "si"
+                    ? "අඛණ්ඩ නිරීක්ෂණය සහ මඟපෙන්වීම"
+                    : "CONTINUOUS TRACKING & GUIDANCE",
+                advantageTitle:
+                  validLocale === "si"
+                    ? "ඊළඟ උපායමාර්ගික තීරණ ගැනීමට අපි සජීවී ප්‍රතිඵල නිරීක්ෂණය කරන්නෙමු."
+                    : "We monitor live performance indicators to guide your next strategic moves.",
+                advantageQuote:
+                  validLocale === "si"
+                    ? "නව පාරිභෝගික අවස්ථා සහ වර්ධන බාධා කල්තියා හඳුනාගැනීම."
+                    : "Spot emerging customer demand and conversion leaks early with structured signal tracking.",
+                activeCapIds: ["engage", "marketing", "ai"],
+                cards: [
+                  {
+                    code: "04 · RETAIN",
+                    title:
+                      validLocale === "si"
+                        ? "පාරිභෝගික සබඳතා සහ WhatsApp යොමුකිරීම්"
+                        : "Customer Engagement & Lead Routing",
+                    desc:
+                      validLocale === "si"
+                        ? "වෙබ් අඩවියේ සිට WhatsApp සහ සමාජ මාධ්‍ය දක්වා පාරිභෝගිකයින් සම්බන්ධ කරන පද්ධති."
+                        : "Seamless booking flows, WhatsApp lead routing, and retention systems that keep customers coming back.",
+                    href: "/growth",
+                  },
+                  {
+                    code: "03 · SIGNALS",
+                    title:
+                      validLocale === "si"
+                        ? "ප්‍රවර්ධන ROI සහ පරිවර්තන දත්ත"
+                        : "Campaign ROI & Conversion Signals",
+                    desc:
+                      validLocale === "si"
+                        ? "සැබෑ ප්‍රතිඵල මත පදනම්ව තීරණ ගැනීමට අඛණ්ඩ දත්ත විශ්ලේෂණය."
+                        : "Continuous tracking across campaigns and funnels so decisions are grounded in live results.",
+                    href: "/products",
+                  },
+                ],
+                ctaLabel:
+                  validLocale === "si"
+                    ? "නිරීක්ෂණ සහ සබඳතා විසඳුම් බලන්න"
+                    : "Explore Engagement & Tracking",
+                ctaHref: "/growth",
               },
               {
                 title: validLocale === "si" ? "ක්‍රියාත්මක කිරීම සහ දියුණු කිරීම" : "Execute & Improve",
+                tag: validLocale === "si" ? "නිර්මාණය සහ වර්ධනය" : "BUILD & SCALE",
                 desc:
                   validLocale === "si"
                     ? "මෘදුකාංග, වෙබ් සහ සමාජ මාධ්‍ය ක්‍රියාත්මක කර ප්‍රතිඵල අනුව වැඩිදියුණු කරමු."
                     : "Software, websites and social channels delivered, then refined from results.",
+                advantageLabel:
+                  validLocale === "si"
+                    ? "අඛණ්ඩ හවුල්කාරිත්වය · සම්පූර්ණ IP අයිතිය"
+                    : "ONGOING PARTNERSHIP · FULL IP OWNERSHIP",
+                advantageTitle:
+                  validLocale === "si"
+                    ? "ඔබේ ව්‍යාපාරය වර්ධනය වන විට අඛණ්ඩව වැඩිදියුණු වන තාක්ෂණික සහ නිර්මාණශීලී ක්‍රියාත්මක කිරීම."
+                    : "Coordinated engineering and creative execution, refined continuously as you grow.",
+                advantageQuote:
+                  validLocale === "si"
+                    ? "සාමාන්‍ය සැකිලි නොව — 100% IP අයිතිය සහිත සුවිශේෂී ඩිජිටල් හැකියාවන්."
+                    : "Never generic templates or one-off handoffs — compounding digital capability with 100% IP ownership.",
+                activeCapIds: ["software", "web", "brand", "marketing", "ai"],
+                cards: [
+                  {
+                    code: "BUILD · FEATURED",
+                    title:
+                      validLocale === "si"
+                        ? "සුවිශේෂී මෘදුකාංග සංවර්ධනය"
+                        : "Custom Software Development",
+                    desc:
+                      validLocale === "si"
+                        ? "සම්පූර්ණ IP අයිතිය සහ ඉහළ වේගය සහිත වෙබ්, ජංගම සහ මෙහෙයුම් මෘදුකාංග පද්ධති."
+                        : "Tailored web, mobile, and operational software with Custom Architecture, High Speed & Full IP Ownership.",
+                    href: "/services/software-product-development",
+                  },
+                  {
+                    code: "01–05 · EXECUTE",
+                    title:
+                      validLocale === "si"
+                        ? "වෙබ් අඩවි, සන්නාමකරණය, අලෙවිකරණය සහ AI"
+                        : "Websites, Branding, Marketing & AI Automation",
+                    desc:
+                      validLocale === "si"
+                        ? "SEO සූදානම් වෙබ් අඩවි, කෙටි වීඩියෝ, ප්‍රවර්ධන සහ ප්‍රායෝගික AI ස්වයංක්‍රීයකරණය."
+                        : "High-converting websites, visual storytelling, multi-channel campaigns, and practical AI workflows.",
+                    href: "/services",
+                  },
+                ],
+                ctaLabel: tCta("read_more"),
+                ctaHref: "/services",
               },
             ]}
           />
         </div>
       </section>
 
-      {/* D. OUR INTERCONNECTED DIGITAL CAPABILITIES — Clean Surface (White) */}
+      {/* FEATURED FLAGSHIP PRODUCTS — Warm Stone + Live Work Reel */}
       <section
-        id="capabilities"
-        className="bg-[var(--bg-surface)] py-10 sm:py-12 lg:py-14 scroll-mt-24 border-y border-[var(--border-subtle)]"
+        id="platforms"
+        className="bg-[var(--bg-surface-elevated)] py-10 lg:py-12 scroll-mt-24 border-b border-[var(--border-subtle)]"
       >
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="max-w-2xl">
-              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                {validLocale === "si"
-                  ? "එකිනෙකට බැඳුණු ඩිජිටල් පද්ධතිය"
-                  : "Integrated Growth Capabilities"}
+            <div>
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+                {validLocale === "si" ? "අපගේ නිෂ්පාදන" : "Flagship Platforms"}
               </span>
-              <h2 className="mt-1.5 text-[length:var(--text-h2)] font-bold text-[var(--text-primary)] [text-wrap:balance]">
-                {tHome("capabilities_title")}
+              <h2 className="mt-1.5 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+                {validLocale === "si"
+                  ? "Vardhel විසින් නිර්මාණය කළ මෘදුකාංග පද්ධති"
+                  : "Platforms Engineered by Vardhel"}
               </h2>
-              <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
-                {tHome("capabilities_subtitle")}
-              </p>
             </div>
             <Link
-              href="/services"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+              href="/products"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
             >
-              <span>{tCta("read_more")}</span>
+              <span>{tCta("explore_products")}</span>
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
 
-          {/* Row 1: Core Engineering & Strategy (2 Featured Cards) */}
-          <div className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-12">
-            {[
-              { cap: capabilities[0]!, span: "lg:col-span-7", isFlagship: true },
-              { cap: capabilities[6]!, span: "lg:col-span-5", isFlagship: false },
-            ].map(({ cap, span, isFlagship }) => {
-              const Icon = cap.icon;
+          {/* Option 1: Looping Live Work Showreel (admin-uploaded MP4/WebM overrides canvas fallback) */}
+          <LiveWorkReel videoUrl={siteConfig.workReelVideoUrl} locale={validLocale} />
+
+          <MobileScrollCarousel
+            wrapperClassName="mt-5"
+            gridClassName="md:grid md:grid-cols-3 md:gap-5"
+            prevLabel="Previous platform"
+            nextLabel="Next platform"
+          >
+            {products.map((prod) => {
+              const hasCover = Boolean(prod.coverUrl);
+              const isEventLoom = prod.slug.includes("event");
+              const isCaptureLoom = prod.slug.includes("capture");
+              const gradientBg = isEventLoom
+                ? "from-[#10b981] to-[#14b8a6]"
+                : isCaptureLoom
+                  ? "from-[#1E293B] to-[#334155]"
+                  : "from-[#4C1D95] to-[#831843]";
+
               return (
                 <Link
-                  key={cap.title}
-                  href={cap.href}
-                  className={`glass-card glass-card-hover group flex flex-col justify-between rounded-2xl p-5 sm:p-6 ${span}`}
+                  key={prod.id}
+                  href={`/products/${prod.slug}`}
+                  className="glass-card glass-card-hover group flex w-[82vw] max-w-[320px] shrink-0 snap-center md:w-auto md:max-w-none flex-col justify-between overflow-hidden rounded-2xl p-4"
                 >
                   <div>
-                    <div className="flex items-center gap-3">
-                      <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-[#04261f] shadow-sm shadow-emerald-500/20">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-                        {cap.stage}
+                    <div className={`relative flex h-32 md:h-36 w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${gradientBg} p-3 shadow-inner`}>
+                      <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-[#10B981] px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-[#06231B] shadow-xs">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#06231B] animate-pulse" />
+                        LIVE
+                      </span>
+
+                      {hasCover ? (
+                        <div className="relative h-full w-full overflow-hidden rounded-lg">
+                          <img
+                            src={prod.coverUrl}
+                            alt={prod.name}
+                            loading="lazy"
+                            className="h-full w-full rounded-lg object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
+                      ) : (
+                        /* Stylized Product Dashboard Mockup from template */
+                        <div className="w-[85%] max-w-[240px] rounded-xl bg-white/95 p-3.5 shadow-lg backdrop-blur-xs">
+                          <div className="h-1.5 w-full rounded-full bg-slate-200 mb-1.5" />
+                          <div className="h-1.5 w-3/5 rounded-full bg-slate-200 mb-2" />
+                          <div className="h-1.5 w-4/5 rounded-full bg-[#10B981] mb-2.5" />
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
+                              <span className="h-2 w-2 rounded-xs bg-[#10B981]" />
+                              <span>Workflow &amp; Core Operations</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
+                              <span className="h-2 w-2 rounded-xs bg-slate-200" />
+                              <span>Client Review &amp; Routing</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
+                              <span className="h-2 w-2 rounded-xs bg-slate-200" />
+                              <span>Analytics &amp; ROI Tracking</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between">
+                      <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                        {prod.name}
+                      </h3>
+                      <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                        {prod.status}
                       </span>
                     </div>
-
-                    <h3 className="mt-4 text-lg sm:text-xl font-bold leading-snug text-[var(--text-primary)]">
-                      {cap.title}
-                    </h3>
-                    <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {cap.desc}
+                    <p className="mt-0.5 line-clamp-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 font-mono">
+                      {prod.tagline}
+                    </p>
+                    <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[var(--text-secondary)]">
+                      {prod.shortDescription}
                     </p>
                   </div>
 
-                  {isFlagship ? (
-                    <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-emerald-500/15">
-                      {[
-                        validLocale === "si" ? "සැකිලි රහිත ගැළපුම" : "Custom Architecture",
-                        validLocale === "si" ? "ඉහළ වේගය" : "High Speed & Conversion",
-                        validLocale === "si" ? "සම්පූර්ණ IP අයිතිය" : "Full IP Ownership",
-                      ].map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/12 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:text-emerald-200"
-                        >
-                          <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                          <span>{tag}</span>
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="mt-4 flex items-center gap-1.5 pt-3 border-t border-emerald-500/15 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-                      <span>{cap.ctaLabel}</span>
-                      <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </div>
-                  )}
+                  <div className="mt-3 flex items-center justify-between border-t border-[var(--border-subtle)] pt-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                    <span>Explore {prod.name}</span>
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </div>
                 </Link>
               );
             })}
+          </MobileScrollCarousel>
+        </div>
+      </section>
+
+      {/* CUSTOMER FEEDBACK — Clean Surface (White) */}
+      <section className="bg-[var(--bg-surface)] py-10 lg:py-12 border-b border-[var(--border-subtle)]">
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+                {validLocale === "si" ? "පාරිභෝගික අදහස්" : "Customer Experiences"}
+              </h2>
+            </div>
+            <Link
+              href="/feedback"
+              className="glass-card inline-flex min-h-[40px] items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:border-emerald-500/40"
+            >
+              <span>{tCta("share_experience")}</span>
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
           </div>
 
-          {/* Row 2: 5 Compact Execution Channels */}
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {capabilities.slice(1, 6).map((cap) => {
-              const Icon = cap.icon;
-              return (
-                <Link
-                  key={cap.title}
-                  href={cap.href}
-                  className="glass-card glass-card-hover group flex flex-col justify-between rounded-2xl p-5"
-                >
-                  <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-colors group-hover:bg-emerald-600 group-hover:text-white">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <ArrowUpRight className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-emerald-600" />
+          {feedbackList.length > 0 && (
+            <MobileScrollCarousel
+              wrapperClassName="mt-4 md:mt-6"
+              gridClassName="md:grid md:grid-cols-3 md:gap-5"
+              prevLabel="Previous review"
+              nextLabel="Next review"
+            >
+              {feedbackList.slice(0, 6).map((fb) => (
+                <div key={fb.id} className="glass-card w-[84vw] max-w-[330px] shrink-0 snap-center md:w-auto md:max-w-none rounded-2xl p-5 space-y-2.5 flex flex-col justify-between">
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-1 text-amber-400">
+                      {Array.from({ length: fb.rating }).map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-amber-400" />
+                      ))}
                     </div>
-                    <h3 className="mt-3.5 text-sm font-bold leading-snug text-[var(--text-primary)] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      {cap.title}
-                    </h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-secondary)]">
-                      {cap.desc}
+                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                      &ldquo;{fb.message}&rdquo;
                     </p>
                   </div>
-                </Link>
-              );
-            })}
+                  <div className="flex items-center gap-3 pt-2 border-t border-[var(--border-subtle)] text-xs">
+                    <FeedbackAvatar name={fb.name} avatarUrl={fb.avatarUrl} />
+                    <div className="min-w-0">
+                      <p className="truncate font-bold text-[var(--text-primary)]">
+                        {fb.name}
+                      </p>
+                      {(fb.role || fb.company) && (
+                        <p className="truncate text-[var(--text-muted)]">
+                          {fb.role} {fb.company ? `@ ${fb.company}` : ""}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </MobileScrollCarousel>
+          )}
+        </div>
+      </section>
+
+      {/* FAQ ACCORDION — Warm Stone Band */}
+      <section className="bg-[var(--bg-surface-elevated)] py-10 lg:py-12 border-b border-[var(--border-subtle)]">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-center text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+            {validLocale === "si"
+              ? "නිතර අසන ප්‍රශ්න (FAQ)"
+              : "Frequently Asked Questions"}
+          </h2>
+          {/* Frequently Asked Questions */}
+          <div className="mt-6 space-y-3">
+            {faqs.map((faq, idx) => (
+              <details
+                key={faq.id}
+                open={idx === 0}
+                className="faq-details glass-card group rounded-2xl p-4 sm:p-5 open:border-emerald-500/40 transition-colors duration-500"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-bold text-[var(--text-primary)]">
+                  <span>{faq.question}</span>
+                  <span className="ml-4 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] text-emerald-500 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-open:rotate-45 group-open:bg-emerald-500 group-open:text-white">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-[var(--text-secondary)]">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
           </div>
         </div>
       </section>
 
-    {/* E. WHY BUSINESSES WORK WITH US — Horizontal Spotlight + 3-over-2 Bento Grid */}
-    <section className="bg-[var(--bg-surface-elevated)]/60 py-14 sm:py-16 lg:py-20 border-b border-[var(--border-subtle)]">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        {/* Centered Header */}
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>{validLocale === "si" ? "අපගේ විශේෂත්වය" : "The Vardhel Advantage"}</span>
-          </span>
-          <h2 className="mt-3 text-[length:var(--text-h2)] font-bold leading-tight text-[var(--text-primary)] [text-wrap:balance]">
-            {tHome("why_us_title")}
-          </h2>
-        </div>
-
-        {/* Full-Width Horizontal Philosophy Spotlight */}
-        <div className="glass-card mt-10 rounded-3xl p-6 sm:p-8 lg:p-10">
-          <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12 lg:gap-8">
-            <div className="lg:col-span-8 space-y-2.5">
-              <span className="block font-mono text-[11px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
-                {tHome("positioning_badge")}
-              </span>
-              <blockquote className="text-xl font-bold leading-snug text-[var(--text-primary)] sm:text-2xl [text-wrap:balance]">
-                &ldquo;{tHome("philosophy_quote")}&rdquo;
-              </blockquote>
-              <p className="max-w-2xl text-sm leading-relaxed text-[var(--text-secondary)]">
-                {tHome("philosophy_supporting")}
-              </p>
-            </div>
-
-            <div className="lg:col-span-4 flex flex-col items-start lg:items-end justify-between gap-5">
-              <div className="flex flex-wrap gap-2 lg:justify-end">
-                {[
-                  validLocale === "si" ? "ඩිජිටල් යටිතල පහසුකම්" : "Digital Infrastructure",
-                  validLocale === "si" ? "පාරිභෝගික සබඳතා" : "Customer Connections",
-                  validLocale === "si" ? "තිරසාර වර්ධනය" : "Sustainable Growth",
-                ].map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/12 px-2.5 py-1 text-xs font-semibold text-emerald-800 dark:text-emerald-200"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                    <span>{tag}</span>
-                  </span>
-                ))}
-              </div>
-
-              <Link
-                href="/growth"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 text-xs font-bold text-[#04261f] shadow-md shadow-emerald-500/20 transition-all hover:opacity-95"
-              >
-                <span>
-                  {validLocale === "si"
-                    ? "අපගේ වර්ධන හවුල්කාරිත්වය ගැන කියවන්න"
-                    : "Learn How Our Partnership Works"}
-                </span>
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* 3-over-2 Balanced Bento Grid */}
-        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-6">
-          {differentiators.map((diff, idx) => {
-            const Icon = diff.icon;
-            const spanClass =
-              idx < 3
-                ? "lg:col-span-2"
-                : idx === 4
-                ? "md:col-span-2 lg:col-span-3"
-                : "lg:col-span-3";
-
-            return (
-              <div
-                key={idx}
-                className={`glass-card glass-card-hover group flex flex-col justify-between rounded-2xl p-5 ${spanClass}`}
-              >
-                <div>
-                  <div className="flex items-start gap-3.5">
-                    <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-sm shadow-emerald-500/20">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <h3 className="text-base font-bold leading-snug text-[var(--text-primary)]">
-                      {diff.title}
-                    </h3>
-                  </div>
-                  <p className="mt-2.5 text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">
-                    {diff.desc}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-
-    {/* FEATURED FLAGSHIP PRODUCTS — Clean Surface (White) */}
-    <section className="bg-[var(--bg-surface)] py-12 sm:py-16 lg:py-20 border-b border-[var(--border-subtle)]">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-widest text-orange-500">
-              {validLocale === "si" ? "අපගේ නිෂ්පාදන" : "Flagship Platforms"}
-            </span>
-            <h2 className="mt-2 text-[length:var(--text-h2)] font-bold text-[var(--text-primary)]">
-              {validLocale === "si"
-                ? "Vardhel විසින් නිර්මාණය කළ මෘදුකාංග පද්ධති"
-                : "Platforms Engineered by Vardhel"}
-            </h2>
-          </div>
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-orange-500 hover:underline"
-          >
-            <span>{tCta("explore_products")}</span>
-            <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3">
-          {products.map((prod) => {
-            const hasCover = Boolean(prod.coverUrl);
-            const isEventLoom = prod.slug.includes("event");
-            const isCaptureLoom = prod.slug.includes("capture");
-            const gradientBg = isEventLoom
-              ? "from-[#10b981] to-[#14b8a6]"
-              : isCaptureLoom
-              ? "from-[#1E293B] to-[#334155]"
-              : "from-[#4C1D95] to-[#831843]";
-
-            return (
-              <Link
-                key={prod.id}
-                href={`/products/${prod.slug}`}
-                className="glass-card glass-card-hover group flex flex-col justify-between overflow-hidden rounded-3xl p-6"
-              >
-                <div>
-                  <div className={`relative flex h-48 w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${gradientBg} p-3 shadow-inner`}>
-                    <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-[#10B981] px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-[#06231B] shadow-xs">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#06231B] animate-pulse" />
-                      LIVE
-                    </span>
-
-                    {hasCover ? (
-                      <div className="relative h-full w-full overflow-hidden rounded-xl">
-                        <img
-                          src={prod.coverUrl}
-                          alt={prod.name}
-                          loading="lazy"
-                          className="h-full w-full rounded-xl object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                    ) : (
-                      /* Stylized Product Dashboard Mockup from template */
-                      <div className="w-[85%] max-w-[240px] rounded-xl bg-white/95 p-3.5 shadow-lg backdrop-blur-xs">
-                        <div className="h-1.5 w-full rounded-full bg-slate-200 mb-1.5" />
-                        <div className="h-1.5 w-3/5 rounded-full bg-slate-200 mb-2" />
-                        <div className="h-1.5 w-4/5 rounded-full bg-[#10B981] mb-2.5" />
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
-                            <span className="h-2 w-2 rounded-xs bg-[#10B981]" />
-                            <span>Workflow &amp; Core Operations</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
-                            <span className="h-2 w-2 rounded-xs bg-slate-200" />
-                            <span>Client Review &amp; Routing</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
-                            <span className="h-2 w-2 rounded-xs bg-slate-200" />
-                            <span>Analytics &amp; ROI Tracking</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-6 flex items-center justify-between">
-                    <h3 className="text-2xl font-bold text-[var(--text-primary)] group-hover:text-emerald-500 transition-colors">
-                      {prod.name}
-                    </h3>
-                    <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-500">
-                      {prod.status}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs font-semibold text-indigo-500 font-mono">
-                    {prod.tagline}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
-                    {prod.shortDescription}
-                  </p>
-                </div>
-
-                <div className="mt-6 flex items-center justify-between border-t border-[var(--border-subtle)] pt-4 text-xs font-semibold text-emerald-500 group-hover:text-emerald-400">
-                  <span>Explore {prod.name}</span>
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-
-    {/* CUSTOMER FEEDBACK — Clean Surface (White) */}
-    <section className="bg-[var(--bg-surface)] py-12 sm:py-16 lg:py-20 border-b border-[var(--border-subtle)]">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 className="text-[length:var(--text-h2)] font-bold text-[var(--text-primary)]">
-              {validLocale === "si" ? "පාරිභෝගික අදහස්" : "Customer Experiences"}
-            </h2>
-          </div>
-          <Link
-            href="/feedback"
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-orange-500/35 bg-orange-500/10 px-5 py-2.5 text-xs font-semibold text-orange-500 hover:bg-orange-500/20"
-          >
-            <span>{tCta("share_experience")}</span>
-            <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        {feedbackList.length > 0 && (
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {feedbackList.slice(0, 6).map((fb) => (
-              <div key={fb.id} className="glass-card rounded-2xl p-6 space-y-3">
-                <div className="flex items-center gap-1 text-amber-400">
-                  {Array.from({ length: fb.rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-[var(--text-secondary)]">
-                  &ldquo;{fb.message}&rdquo;
-                </p>
-                <div className="pt-2 text-xs">
-                  <p className="font-bold text-[var(--text-primary)]">
-                    {fb.name}
-                  </p>
-                  {(fb.role || fb.company) && (
-                    <p className="text-[var(--text-muted)]">
-                      {fb.role} {fb.company ? `@ ${fb.company}` : ""}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-
-    {/* FAQ ACCORDION — Soft Band Background */}
-    <section className="bg-[var(--bg-surface-elevated)]/60 py-12 sm:py-16 lg:py-20 border-b border-[var(--border-subtle)]">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-center text-[length:var(--text-h2)] font-bold text-[var(--text-primary)]">
-          {validLocale === "si"
-            ? "නිතර අසන ප්‍රශ්න (FAQ)"
-            : "Frequently Asked Questions"}
-        </h2>
-        {/* Frequently Asked Questions */}
-        <div className="mt-8 space-y-4">
-          {faqs.map((faq, idx) => (
-            <details
-              key={faq.id}
-              open={idx === 0}
-              className="glass-card group rounded-2xl p-5 open:border-emerald-500/40 transition-colors"
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-[var(--text-primary)]">
-                <span>{faq.question}</span>
-                <span className="ml-4 flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] text-emerald-500 transition-transform group-open:rotate-45 group-open:bg-emerald-500 group-open:text-white">
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
-                {faq.answer}
-              </p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
-
-      {/* F. FINAL CALL TO ACTION */}
-      <section className="mx-auto max-w-[1440px] px-4 pt-2 pb-12 sm:px-6 sm:pt-4 sm:pb-16 lg:px-8 lg:pt-4 lg:pb-16">
+      {/* F. FINAL CALL TO ACTION — Pure White Band with Obsidian CTA Card */}
+      <section className="bg-[var(--bg-surface)] mx-auto max-w-[1360px] px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
         <div className="brand-gradient-bg rounded-3xl p-8 text-center shadow-xl sm:p-14">
           <span className="cta-badge inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-xs font-semibold">
             <CheckCircle2 className="h-3.5 w-3.5" />

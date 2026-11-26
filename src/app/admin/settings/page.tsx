@@ -35,6 +35,7 @@ export default async function AdminSettingsPage() {
         enable3dHero: enConfig.enable3dHero,
         enableCustomCursor: enConfig.enableCustomCursor,
         enableFeedback: enConfig.enableFeedback,
+        workReelVideoUrl: enConfig.workReelVideoUrl,
         socialLinks: enConfig.socialLinks.map((s, idx) => ({
           platform: s.platform,
           labelEn: s.label,

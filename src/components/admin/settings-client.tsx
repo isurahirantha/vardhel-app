@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateSiteSettingsAction } from "@/server/actions/admin-content.actions";
-import { Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, Film, Upload } from "lucide-react";
 
 interface SettingsClientProps {
   csrfToken: string;
@@ -27,6 +27,7 @@ interface SettingsClientProps {
     enable3dHero: boolean;
     enableCustomCursor: boolean;
     enableFeedback: boolean;
+    workReelVideoUrl?: string;
     socialLinks: { platform: string; labelEn: string; labelSi: string; url: string }[];
   };
 }
@@ -37,6 +38,31 @@ export function SettingsClient({ csrfToken, initial }: SettingsClientProps) {
   const [form, setForm] = useState(initial);
   const [saved, setSaved] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [uploadingReel, setUploadingReel] = useState(false);
+
+  const handleReelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingReel(true);
+    setErrorMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append("csrfToken", csrfToken);
+      fd.append("altText", "Vardhel Live Work Showreel Video");
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = (await res.json()) as { ok: boolean; media?: { publicUrl: string }; error?: string };
+      if (!data.ok || !data.media?.publicUrl) {
+        throw new Error(data.error ?? "Video upload failed");
+      }
+      setForm((prev) => ({ ...prev, workReelVideoUrl: data.media!.publicUrl }));
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Failed to upload video reel.");
+    } finally {
+      setUploadingReel(false);
+      e.target.value = "";
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -339,6 +365,64 @@ export function SettingsClient({ csrfToken, initial }: SettingsClientProps) {
             <span>Customer Feedback Module</span>
           </label>
         </div>
+      </div>
+
+      {/* Live Work Showreel Video */}
+      <div className="rounded-2xl border border-white/10 bg-[#0d1326] p-6 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <Film className="h-5 w-5 text-emerald-500" />
+            <div>
+              <h2 className="text-base font-bold text-white">Live Work Showreel Video (MP4 / WebM)</h2>
+              <p className="text-xs text-slate-400">
+                When uploaded, this looping video overrides the default animated reel in the Platforms section.
+              </p>
+            </div>
+          </div>
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500">
+            <Upload className="h-3.5 w-3.5" />
+            <span>{uploadingReel ? "Uploading..." : "Upload Video (MP4 / WebM)"}</span>
+            <input
+              type="file"
+              accept="video/mp4,video/webm"
+              disabled={uploadingReel}
+              onChange={handleReelUpload}
+              className="hidden"
+            />
+          </label>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            type="text"
+            value={form.workReelVideoUrl ?? ""}
+            onChange={(e) => setForm({ ...form, workReelVideoUrl: e.target.value })}
+            placeholder="Leave empty to use default animated reel, or upload / paste /api/media/... URL"
+            className="flex-1 rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs"
+          />
+          {form.workReelVideoUrl && (
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, workReelVideoUrl: "" })}
+              className="rounded-xl border border-red-300 bg-red-50 px-4 py-2 text-xs font-semibold text-red-700 hover:bg-red-100"
+            >
+              Clear Override
+            </button>
+          )}
+        </div>
+
+        {form.workReelVideoUrl && (
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-950 max-w-md">
+            <video
+              src={form.workReelVideoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="aspect-video w-full object-cover"
+            />
+          </div>
+        )}
       </div>
 
       {/* Social Links Manager */}

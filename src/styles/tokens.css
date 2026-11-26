@@ -6,13 +6,13 @@
   --brand-secondary-hover: #16253f;
   --brand-accent-glow: #10b981;
 
-  /* Default Light Theme — Warm Pearl & Soft Alabaster (Zero clinical glare) */
-  --bg-canvas: #fafaf8;
+  /* Default Light Theme — Pure White & Warm Stone */
+  --bg-canvas: #ffffff;
   --bg-surface: #ffffff;
-  --bg-surface-elevated: #f3f2ee;
-  --bg-glass: rgba(255, 255, 255, 0.88);
-  --border-subtle: #e6e4dd;
-  --border-accent: rgba(34, 136, 112, 0.35);
+  --bg-surface-elevated: #f7f7f5;
+  --bg-glass: rgba(255, 255, 255, 0.92);
+  --border-subtle: #e5e4de;
+  --border-accent: rgba(4, 120, 87, 0.3);
 
   /* Light Theme Typography (Deep Obsidian Navy for high contrast & elegance) */
   --text-primary: #0e192c;
@@ -27,18 +27,18 @@
 }
 
 html.dark {
-  /* Dark Theme — Deep Midnight Slate (Obsidian #0a111f with logo navy #0e192c) */
-  --bg-canvas: #0a111f;
-  --bg-surface: #0e192c;
-  --bg-surface-elevated: #16233b;
-  --bg-glass: rgba(14, 25, 44, 0.82);
-  --border-subtle: rgba(244, 242, 235, 0.12);
-  --border-accent: rgba(34, 136, 112, 0.45);
+  /* Dark Theme — Obsidian Graphite & Emerald (Matches Preview) */
+  --bg-canvas: #09090b;
+  --bg-surface: #09090b;
+  --bg-surface-elevated: #111114;
+  --bg-glass: rgba(17, 17, 20, 0.84);
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-accent: rgba(16, 185, 129, 0.42);
 
-  /* Dark Theme Typography (Soft Alabaster #F4F2EB from logo left stroke) */
-  --text-primary: #f4f2eb;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  /* Dark Theme Typography (Warm Alabaster & Neutral Zinc) */
+  --text-primary: #f4f4f0;
+  --text-secondary: #d4d4d8;
+  --text-muted: #71717a;
 }
 
 /* Sinhala Typography Enhancements (Section 4A.7) */

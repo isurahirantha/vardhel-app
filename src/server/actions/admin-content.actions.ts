@@ -77,12 +77,18 @@ export async function updateSiteSettingsAction(input: {
   enable3dHero: boolean;
   enableCustomCursor: boolean;
   enableFeedback: boolean;
+  workReelVideoUrl?: string;
   socialLinks: { id?: string; platform: string; labelEn: string; labelSi: string; url: string }[];
 }) {
   const session = await requireAdminMutationAuth(input.csrfToken);
 
   const primary = isValidHexColor(input.primaryColor) ? input.primaryColor : "#ea580c";
   const secondary = isValidHexColor(input.secondaryColor) ? input.secondaryColor : "#4f46e5";
+  const rawReelUrl = (input.workReelVideoUrl ?? "").trim();
+  const safeReelUrl =
+    rawReelUrl.startsWith("/api/media/") || isSafeExternalUrl(rawReelUrl)
+      ? rawReelUrl
+      : "";
 
   const scalarUpdates = [
     { key: "brand_name", group: "brand", value: { value: sanitizePlainText(input.brandName) } },
@@ -92,6 +98,7 @@ export async function updateSiteSettingsAction(input: {
     { key: "notify_email", group: "contact", value: { value: sanitizePlainText(input.notifyEmail) } },
     { key: "whatsapp_number", group: "contact", value: { value: sanitizePlainText(input.whatsappNumber) } },
     { key: "phone", group: "contact", value: { value: sanitizePlainText(input.phone) } },
+    { key: "work_reel_video_url", group: "features", value: { value: safeReelUrl } },
     {
       key: "feature_toggles",
       group: "features",

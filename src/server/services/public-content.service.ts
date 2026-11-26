@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { sanitizeRichText } from "@/lib/security/sanitize";
 
@@ -459,12 +460,13 @@ export async function getPublishedProjects(locale: "en" | "si"): Promise<PublicP
 
 export async function getApprovedFeedback(locale: "en" | "si") {
   try {
-    // STRICT VAPT RULE (Section 8.4): Only APPROVED feedback is returned; email & submittedIpHash are NEVER selected.
+    // STRICT VAPT RULE (Section 8.4): Only APPROVED feedback is returned; raw email & submittedIpHash are NEVER returned to clients.
     const rows = await prisma.feedback.findMany({
       where: { status: "APPROVED", deletedAt: null },
       select: {
         id: true,
         name: true,
+        email: true,
         company: true,
         role: true,
         rating: true,
@@ -472,19 +474,28 @@ export async function getApprovedFeedback(locale: "en" | "si") {
         messageSi: true,
         isFeatured: true,
         createdAt: true,
+        photo: { select: { publicUrl: true } },
       },
       orderBy: [{ isFeatured: "desc" }, { displayOrder: "asc" }, { createdAt: "desc" }],
     });
 
-    return rows.map((r) => ({
-      id: r.id,
-      name: r.name,
-      company: r.company,
-      role: r.role,
-      rating: r.rating,
-      message: locale === "si" && r.messageSi?.trim() ? r.messageSi : r.message,
-      createdAt: r.createdAt.toISOString(),
-    }));
+    return rows.map((r) => {
+      const normalizedEmail = r.email?.trim().toLowerCase() ?? "";
+      const gravatarUrl = normalizedEmail
+        ? `https://www.gravatar.com/avatar/${createHash("sha256").update(normalizedEmail).digest("hex")}?s=96&d=404`
+        : null;
+
+      return {
+        id: r.id,
+        name: r.name,
+        company: r.company,
+        role: r.role,
+        rating: r.rating,
+        avatarUrl: r.photo?.publicUrl ?? gravatarUrl,
+        message: locale === "si" && r.messageSi?.trim() ? r.messageSi : r.message,
+        createdAt: r.createdAt.toISOString(),
+      };
+    });
   } catch {
     return [];
   }

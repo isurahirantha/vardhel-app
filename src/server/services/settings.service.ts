@@ -23,6 +23,7 @@ export interface GlobalSiteConfig {
   enable3dHero: boolean;
   enableCustomCursor: boolean;
   enableFeedback: boolean;
+  workReelVideoUrl: string;
   headerNav: { id: string; href: string; label: string }[];
   footerCompanyNav: { id: string; href: string; label: string }[];
   footerServicesNav: { id: string; href: string; label: string }[];
@@ -73,6 +74,7 @@ export async function getGlobalSiteConfig(locale: "en" | "si"): Promise<GlobalSi
     enable3dHero: true,
     enableCustomCursor: true,
     enableFeedback: true,
+    workReelVideoUrl: "",
     headerNav: DEFAULT_HEADER_NAV.map((n) => ({
       id: n.id,
       href: n.href,
@@ -167,6 +169,9 @@ export async function getGlobalSiteConfig(locale: "en" | "si"): Promise<GlobalSi
           break;
         case "working_hours":
           if (translatedVal) defaults.workingHours = translatedVal;
+          break;
+        case "work_reel_video_url":
+          if (typeof val.value === "string") defaults.workReelVideoUrl = val.value.trim();
           break;
         case "feature_toggles":
           if (typeof val.enableFloatingWhatsapp === "boolean")

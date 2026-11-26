@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { getApprovedFeedback } from "@/server/services/public-content.service";
 import { FeedbackForm } from "@/components/sections/feedback-form";
+import { FeedbackAvatar } from "@/components/ui/feedback-avatar";
 import { Star } from "lucide-react";
 
 export const revalidate = 60;
@@ -81,13 +82,16 @@ export default async function FeedbackPage({
                     ))}
                   </div>
                   <p className="text-sm text-slate-200">&ldquo;{fb.message}&rdquo;</p>
-                  <div className="pt-2 text-xs">
-                    <p className="font-bold text-white">{fb.name}</p>
-                    {(fb.role || fb.company) && (
-                      <p className="text-slate-400">
-                        {fb.role} {fb.company ? `@ ${fb.company}` : ""}
-                      </p>
-                    )}
+                  <div className="flex items-center gap-3 pt-2 text-xs">
+                    <FeedbackAvatar name={fb.name} avatarUrl={fb.avatarUrl} />
+                    <div className="min-w-0">
+                      <p className="truncate font-bold text-white">{fb.name}</p>
+                      {(fb.role || fb.company) && (
+                        <p className="truncate text-slate-400">
+                          {fb.role} {fb.company ? `@ ${fb.company}` : ""}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
