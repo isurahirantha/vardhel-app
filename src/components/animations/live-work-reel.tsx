@@ -1,7 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Pause,
+  Play,
+} from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type {
   PublicProductDTO,
@@ -56,9 +64,22 @@ const CLIENT_SLIDES: ClientSlide[] = [
     highlight: "Tailor-Made Journeys · Lead Capture · High-Speed Web Architecture",
     highlightSi: "විශේෂිත සංචාරක සැලසුම් · පාරිභෝගික ආකර්ෂණය · වේගවත් වෙබ් පද්ධතිය",
   },
+  {
+    id: "sakwa-canneries",
+    code: "SC",
+    name: "Sakwa Canneries",
+    url: "https://sakwacanneries.com/",
+    displayUrl: "sakwacanneries.com",
+    logo: "",
+    category: "CLIENT BUILD · EXPORT & FOOD MANUFACTURING",
+    categorySi: "අපනයන සහ ආහාර නිෂ්පාදන වෙබ් පද්ධතිය",
+    image: "/images/reel/sakwacanneries.jpg",
+    highlight: "Global Export Showcase · Product Catalog · B2B Inquiry Flow",
+    highlightSi: "ගෝලීය අපනයන ප්‍රදර්ශනය · නිෂ්පාදන නාමාවලිය · B2B සම්බන්ධතා",
+  },
 ];
 
-const SLIDE_DURATION_MS = 4000;
+const SLIDE_DURATION_MS = 10000;
 const TICK_MS = 100;
 
 interface WorkspaceItem {
@@ -100,28 +121,47 @@ export function LiveWorkReel({
   const clientSlides: ClientSlide[] = useMemo(() => {
     if (projects.length === 0) return CLIENT_SLIDES;
 
-    return projects.map((proj) => {
+    const findFallback = (slug: string, name: string) => {
+      const hay = `${slug} ${name}`.toLowerCase();
+      return CLIENT_SLIDES.find(
+        (c) =>
+          (c.id === "ransan" && hay.includes("ransan")) ||
+          (c.id === "signature-tours" && hay.includes("signature")) ||
+          (c.id === "sakwa-canneries" && hay.includes("sakwa"))
+      );
+    };
+
+    const mapped = projects.map((proj) => {
       const liveLink =
         proj.links.find((l) => l.type === "LIVE_SITE" || l.type === "DEMO" || l.type === "APP") ??
         proj.links[0];
       const href = liveLink?.url || `/projects/${proj.slug}`;
       const displayName = proj.clientName || proj.title;
+      const fallback = findFallback(proj.slug, displayName);
       return {
         id: proj.id,
-        code: displayName.slice(0, 2).toUpperCase(),
+        code: fallback?.code ?? displayName.slice(0, 2).toUpperCase(),
         name: displayName,
         url: href,
         displayUrl: liveLink?.url ? formatHost(liveLink.url) : `vardhel.com/projects/${proj.slug}`,
-        logo: proj.logoUrl || "",
+        logo: proj.logoUrl || fallback?.logo || "",
         category: proj.industry
           ? `CLIENT BUILD · ${proj.industry.toUpperCase()}`
-          : "CLIENT BUILD",
-        categorySi: proj.industry ? `පාරිභෝගික ව්‍යාපෘතිය · ${proj.industry}` : "පාරිභෝගික ව්‍යාපෘතිය",
-        image: proj.coverUrl || "",
+          : fallback?.category ?? "CLIENT BUILD",
+        categorySi: proj.industry
+          ? `පාරිභෝගික ව්‍යාපෘතිය · ${proj.industry}`
+          : fallback?.categorySi ?? "පාරිභෝගික ව්‍යාපෘතිය",
+        image: proj.coverUrl || fallback?.image || "",
         highlight: proj.summary || proj.title,
         highlightSi: proj.summary || proj.title,
       };
     });
+
+    // Ensure all 3 built-in client reels appear even if DB only has partial projects
+    const extras = CLIENT_SLIDES.filter(
+      (c) => !mapped.some((m) => findFallback(m.name, m.name)?.id === c.id)
+    );
+    return [...mapped, ...extras];
   }, [projects]);
 
   const items: WorkspaceItem[] = useMemo(() => {
@@ -149,24 +189,32 @@ export function LiveWorkReel({
       };
     });
 
-    const productItems: WorkspaceItem[] = products.map((prod) => ({
-      kind: "product",
-      id: prod.id,
-      code: "APP",
-      name: prod.name,
-      url: `/products/${prod.slug}`,
-      isExternal: false,
-      displayUrl: `vardhel.com/products/${prod.slug}`,
-      category:
-        locale === "si"
-          ? `VARDHEL නිෂ්පාදන · ${prod.status}`
-          : `VARDHEL PRODUCT · ${prod.status}`,
-      highlight: prod.tagline || prod.shortDescription,
-      ctaLabel: locale === "si" ? `${prod.name} බලන්න` : `Explore ${prod.name}`,
-      image: prod.coverUrl || "",
-      video: prod.videoType === "video" && prod.videoUrl ? prod.videoUrl : undefined,
-      pan: false,
-    }));
+    const productItems: WorkspaceItem[] = products.map((prod) => {
+      const isCaptureDefault =
+        prod.slug.includes("capture") &&
+        (!prod.coverUrl || prod.coverUrl === "/assets/img/captureloom_cover.jpg");
+      const image = isCaptureDefault
+        ? "/images/reel/captureloom.jpg"
+        : prod.coverUrl || "";
+      return {
+        kind: "product",
+        id: prod.id,
+        code: "APP",
+        name: prod.name,
+        url: `/products/${prod.slug}`,
+        isExternal: false,
+        displayUrl: `vardhel.com/products/${prod.slug}`,
+        category:
+          locale === "si"
+            ? `VARDHEL නිෂ්පාදන · ${prod.status}`
+            : `VARDHEL PRODUCT · ${prod.status}`,
+        highlight: prod.tagline || prod.shortDescription,
+        ctaLabel: locale === "si" ? `${prod.name} බලන්න` : `Explore ${prod.name}`,
+        image,
+        video: prod.videoType === "video" && prod.videoUrl ? prod.videoUrl : undefined,
+        pan: isCaptureDefault,
+      };
+    });
 
     return [...clientItems, ...productItems];
   }, [clientSlides, products, locale]);
@@ -176,7 +224,6 @@ export function LiveWorkReel({
   const [isPlaying, setIsPlaying] = useState(true);
   const [isHoverPaused, setIsHoverPaused] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
-  const [isPanning, setIsPanning] = useState(false);
   const [logoFailed, setLogoFailed] = useState<Record<string, boolean>>({});
 
   const productsRailRef = useRef<HTMLDivElement>(null);
@@ -220,6 +267,15 @@ export function LiveWorkReel({
   }, [syncOverflowControls, items.length]);
 
   useEffect(() => {
+    CLIENT_SLIDES.forEach((s) => {
+      if (s.image) {
+        const img = new window.Image();
+        img.src = s.image;
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (showCustomVideo || !isPlaying || isHoverPaused || items.length <= 1) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -236,14 +292,6 @@ export function LiveWorkReel({
 
     return () => window.clearInterval(timer);
   }, [showCustomVideo, isPlaying, isHoverPaused, items.length]);
-
-  // Trigger vertical pan animation on slide change for client screenshots
-  useEffect(() => {
-    setIsPanning(false);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const raf = window.requestAnimationFrame(() => setIsPanning(true));
-    return () => window.cancelAnimationFrame(raf);
-  }, [activeIdx, showCustomVideo]);
 
   const activeItem = items[activeIdx] ?? items[0]!;
   const isActivelyCycling = !showCustomVideo && isPlaying && !isHoverPaused;
@@ -289,21 +337,6 @@ export function LiveWorkReel({
               className="inline-flex items-center gap-1 rounded-full border border-emerald-400/35 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] text-[#6ee7b7] hover:bg-emerald-500/20 transition-colors"
             >
               Back to Showreel
-            </button>
-          )}
-          {!showCustomVideo && (
-            <button
-              type="button"
-              onClick={() => setIsPlaying((prev) => !prev)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-2.5 py-0.5 font-mono text-[11px] text-[#e2e8f0] hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 transition-colors"
-            >
-              <span>
-                {isPlaying
-                  ? isHoverPaused
-                    ? "Paused (Hover)"
-                    : "Auto-Playing"
-                  : "Paused · Click to Resume"}
-              </span>
             </button>
           )}
         </div>
@@ -365,7 +398,7 @@ export function LiveWorkReel({
             </div>
 
             {/* Viewport */}
-            <div className="relative h-[280px] sm:h-[360px] lg:h-[400px] w-full overflow-hidden bg-slate-950">
+            <div className="group/player relative h-[280px] sm:h-[360px] lg:h-[400px] [--reel-vh:280px] sm:[--reel-vh:360px] lg:[--reel-vh:400px] w-full overflow-hidden bg-slate-950">
               {showCustomVideo ? (
                 <video
                   src={videoUrl}
@@ -401,16 +434,14 @@ export function LiveWorkReel({
                       }
                       className={
                         activeItem.pan
-                          ? "w-full h-auto min-h-full object-cover object-top transition-transform duration-[3200ms] ease-linear"
-                          : "w-full h-full object-cover transition-transform duration-700 ease-out"
+                          ? "animate-client-reel w-full h-auto min-h-full object-cover object-top"
+                          : "animate-product-reel w-full h-full object-cover"
                       }
-                      style={{
-                        transform: activeItem.pan
-                          ? isPanning
-                            ? "translateY(-44%)"
-                            : "translateY(-22%)"
-                          : "scale(1)",
-                      }}
+                      style={
+                        isHoverPaused || !isPlaying
+                          ? { animationPlayState: "paused" }
+                          : undefined
+                      }
                     />
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-[#0e192c] via-[#111827] to-[#064e3b] px-6 pb-16 text-center">
@@ -423,7 +454,26 @@ export function LiveWorkReel({
                     </div>
                   )}
 
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#09090b]/60 to-transparent" />
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#09090b] via-[#09090b]/85 to-transparent" />
+
+                  {/* Center Video Player Play / Pause Button */}
+                  <button
+                    type="button"
+                    aria-label={isPlaying ? "Pause showcase reel" : "Play showcase reel"}
+                    onClick={() => setIsPlaying((prev) => !prev)}
+                    className={`keep-white absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-[#09090b]/75 text-white shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-105 hover:border-emerald-400/70 hover:bg-[#09090b]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
+                      isPlaying
+                        ? "opacity-0 group-hover/player:opacity-100 focus-visible:opacity-100"
+                        : "opacity-100"
+                    }`}
+                  >
+                    {isPlaying ? (
+                      <Pause className="h-5 w-5" />
+                    ) : (
+                      <Play className="h-5 w-5 translate-x-0.5" />
+                    )}
+                  </button>
 
                   <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-end justify-between gap-3 px-4 pb-3.5 sm:px-6 sm:pb-4">
                     <div className="max-w-xl">
