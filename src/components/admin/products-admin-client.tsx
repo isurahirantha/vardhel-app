@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   saveProductAction,
   checkLinkHealthAction,
+  deleteProductAction,
 } from "@/server/actions/admin-content.actions";
 import {
   Plus,
@@ -183,6 +184,33 @@ export function ProductsAdminClient({
     });
   };
 
+  const handleDelete = () => {
+    if (!selected.id) return;
+    if (
+      !window.confirm(
+        `Delete "${selected.en.name || selected.slug}"? It will be removed from /products and the home page.`
+      )
+    ) {
+      return;
+    }
+    setMsg(null);
+    startTransition(async () => {
+      const res = await deleteProductAction({ csrfToken, id: selected.id });
+      if (!res.ok) {
+        setMsg({ type: "err", text: res.error ?? "Failed to delete product" });
+        return;
+      }
+      const remaining = initialProducts.filter((p) => p.id !== selected.id);
+      if (remaining[0]) {
+        setSelected(remaining[0]);
+      } else {
+        handleCreateNew();
+      }
+      setMsg({ type: "ok", text: "Product deleted." });
+      router.refresh();
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -214,11 +242,10 @@ export function ProductsAdminClient({
               setSelected(p);
               setMsg(null);
             }}
-            className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
-              selected.id === p.id
+            className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${selected.id === p.id
                 ? "border-orange-500 bg-orange-600 text-white"
                 : "border-white/10 bg-[#0d1326] text-slate-300 hover:bg-white/5"
-            }`}
+              }`}
           >
             {p.en.name} ({p.status})
           </button>
@@ -227,11 +254,10 @@ export function ProductsAdminClient({
 
       {msg && (
         <div
-          className={`flex items-center gap-2 rounded-xl border p-3.5 text-xs ${
-            msg.type === "ok"
+          className={`flex items-center gap-2 rounded-xl border p-3.5 text-xs ${msg.type === "ok"
               ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
               : "border-red-500/40 bg-red-500/10 text-red-300"
-          }`}
+            }`}
         >
           {msg.type === "ok" ? (
             <CheckCircle2 className="h-4 w-4" />
@@ -252,27 +278,36 @@ export function ProductsAdminClient({
             <button
               type="button"
               onClick={() => setActiveTab("en")}
-              className={`rounded-lg px-4 py-2 text-xs font-bold ${
-                activeTab === "en"
+              className={`rounded-lg px-4 py-2 text-xs font-bold ${activeTab === "en"
                   ? "bg-orange-600 text-white"
                   : "bg-white/5 text-slate-300"
-              }`}
+                }`}
             >
               English (EN)
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("si")}
-              className={`rounded-lg px-4 py-2 text-xs font-bold ${
-                activeTab === "si"
+              className={`rounded-lg px-4 py-2 text-xs font-bold ${activeTab === "si"
                   ? "bg-indigo-600 text-white"
                   : "bg-white/5 text-slate-300"
-              }`}
+                }`}
             >
               සිංහල (Sinhala - SI)
             </button>
           </div>
           <div className="flex items-center gap-3">
+            {selected.id && (
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={handleDelete}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete</span>
+              </button>
+            )}
             {selected.slug && (
               <a
                 href={`/en/products/${selected.slug}`}
@@ -561,7 +596,10 @@ export function ProductsAdminClient({
             <div className="lg:col-span-7 space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-200">
-                  Card Cover Image URL (HTTPS or `/assets/...` / `/api/media/...`)
+                  Card Cover Image URL (HTTPS or `/assets/...` / `/api/media/...`){" "}
+                  <span className="font-mono text-[11px] font-normal text-emerald-300">
+                    · Optimal: 1600 × 900 px (16:9 WebP/PNG &lt; 300 KB)
+                  </span>
                 </label>
                 <div className="mt-1 flex gap-2">
                   <input
@@ -590,7 +628,10 @@ export function ProductsAdminClient({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-200">
-                  Product Logo Image URL (Optional)
+                  Product Logo Image URL (Optional){" "}
+                  <span className="font-mono text-[11px] font-normal text-emerald-300">
+                    · Optimal: 256 × 256 px or 512 × 512 px (1:1 PNG/WebP)
+                  </span>
                 </label>
                 <input
                   type="text"

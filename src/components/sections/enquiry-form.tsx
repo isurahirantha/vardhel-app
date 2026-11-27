@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle2, AlertCircle, Send } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { CheckCircle2, AlertCircle, Send, ArrowUpRight, Lock } from "lucide-react";
 
 interface EnquiryFormProps {
   locale: "en" | "si";
   sourcePage?: string;
   defaultInterest?: string;
+  whatsappHref?: string;
   labels: {
     name: string;
     email: string;
@@ -21,10 +23,13 @@ interface EnquiryFormProps {
   };
 }
 
+type ReplyChannel = "WhatsApp" | "Email" | "Phone Call";
+
 export function EnquiryForm({
   locale,
   sourcePage = "/contact",
-  defaultInterest = "Software + Social Media Growth",
+  defaultInterest = "",
+  whatsappHref = "https://wa.me/94767996381",
   labels,
 }: EnquiryFormProps) {
   const [renderedAt, setRenderedAt] = useState<number>(0);
@@ -33,10 +38,13 @@ export function EnquiryForm({
   const [phone, setPhone] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [interest, setInterest] = useState(defaultInterest);
-  const [budgetRange, setBudgetRange] = useState("");
+  const [replyChannel, setReplyChannel] = useState<ReplyChannel>("WhatsApp");
   const [message, setMessage] = useState("");
   const [consent, setConsent] = useState(false);
   const [honeypot, setHoneypot] = useState("");
+
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submittedName, setSubmittedName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -45,24 +53,76 @@ export function EnquiryForm({
     setRenderedAt(Date.now());
   }, []);
 
+  const isNameValid = name.trim().length >= 2;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const isInterestValid = interest.trim().length > 0;
+  const isMessageValid = message.trim().length >= 10;
+
+  const markTouched = (field: string) =>
+    setTouched((prev) => (prev[field] ? prev : { ...prev, [field]: true }));
+
+  const subjectOptions =
+    locale === "si"
+      ? [
+          { value: "Website or Custom Software", label: "වෙබ් / මෘදුකාංග" },
+          { value: "Social Media Growth", label: "සමාජ මාධ්‍ය වර්ධනය" },
+          { value: "Software & Growth", label: "දෙකම (Software + Growth)" },
+          { value: "Vardhel Product Enquiry", label: "Vardhel නිෂ්පාදන" },
+          { value: "General Question", label: "සාමාන්‍ය විමසීමක්" },
+        ]
+      : [
+          { value: "Website or Custom Software", label: "Website / Software" },
+          { value: "Social Media Growth", label: "Social Media Growth" },
+          { value: "Software & Growth", label: "Both Software & Growth" },
+          { value: "Vardhel Product Enquiry", label: "Vardhel Products" },
+          { value: "General Question", label: "General Question" },
+        ];
+
+  const getMessagePlaceholder = () => {
+    if (interest === "Website or Custom Software") {
+      return locale === "si"
+        ? "ඔබේ වෙබ්/මෘදුකාංග අවශ්‍යතා කෙටියෙන් සඳහන් කරන්න..."
+        : "Write about your website, app, or custom software idea...";
+    }
+    if (interest === "Social Media Growth") {
+      return locale === "si"
+        ? "ඔබේ සමාජ මාධ්‍ය ගිණුම් සහ අරමුණු සඳහන් කරන්න..."
+        : "Write about your brand channels and growth goals...";
+    }
+    return locale === "si"
+      ? "ඔබේ පණිවිඩය මෙහි ලියන්න..."
+      : "Write your message...";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!consent) return;
+    setTouched({
+      name: true,
+      email: true,
+      interest: true,
+      message: true,
+      consent: true,
+    });
+
+    if (!isNameValid || !isEmailValid || !isInterestValid || !isMessageValid || !consent) {
+      return;
+    }
+
     setSubmitting(true);
     setStatus("idle");
 
     try {
+      const enrichedMessage = `[Preferred Reply: ${replyChannel}]\n\n${message.trim()}`;
       const res = await fetch("/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          email,
-          phone,
-          businessName,
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          businessName: businessName.trim(),
           interest,
-          budgetRange,
-          message,
+          message: enrichedMessage,
           consent: true,
           locale,
           sourcePage,
@@ -75,12 +135,16 @@ export function EnquiryForm({
         setStatus("err");
         setErrorMsg(data.error ?? "Submission failed.");
       } else {
+        setSubmittedName(name.trim());
         setStatus("ok");
         setName("");
         setEmail("");
         setPhone("");
         setBusinessName("");
+        setInterest(defaultInterest);
         setMessage("");
+        setConsent(false);
+        setTouched({});
       }
     } catch {
       setStatus("err");
@@ -95,20 +159,47 @@ export function EnquiryForm({
       <div
         role="status"
         aria-live="polite"
-        className="glass-card rounded-3xl border border-emerald-500/40 p-8 text-center"
+        className="py-8 text-center space-y-4"
       >
-        <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
-        <p className="mt-4 text-lg font-bold text-white">{labels.success}</p>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 ring-2 ring-emerald-500/30">
+          <CheckCircle2 className="h-7 w-7" />
+        </div>
+        <h3 className="text-xl font-bold text-[var(--text-primary)]">
+          {submittedName
+            ? `Thanks, ${submittedName} — we'll reply via ${replyChannel} within 24h!`
+            : labels.success}
+        </h3>
+        <p className="mx-auto max-w-md text-sm text-[var(--text-secondary)]">
+          {labels.success}
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="keep-white inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
+          >
+            <span>{locale === "si" ? "WhatsApp හරහා කතා කරන්න" : "Message on WhatsApp Now"}</span>
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+          <button
+            type="button"
+            onClick={() => setStatus("idle")}
+            className="rounded-full border border-[var(--border-subtle)] px-5 py-2.5 text-xs font-semibold text-[var(--text-primary)] hover:border-emerald-500/40 transition-colors"
+          >
+            {locale === "si" ? "තවත් විමසීමක් යවන්න" : "Send Another Message"}
+          </button>
+        </div>
       </div>
     );
   }
 
+  const underlineInput =
+    "mt-1 w-full border-0 border-b border-[var(--border-subtle)] bg-transparent px-0 py-2 text-base sm:text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-emerald-600 focus:outline-none";
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="glass-card space-y-5 rounded-3xl p-6 sm:p-8"
-    >
-      {/* Honeypot anti-bot field (hidden from screen readers and visuals) */}
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      {/* Honeypot anti-bot field */}
       <div className="hidden" aria-hidden="true">
         <label htmlFor="website-url-hp">Website</label>
         <input
@@ -125,55 +216,94 @@ export function EnquiryForm({
         <div
           role="alert"
           aria-live="assertive"
-          className="flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 p-3.5 text-xs text-red-300"
+          className="flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-300"
         >
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* Row 1: Name & Email */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
-          <label
-            htmlFor="enq-name"
-            className="block text-xs font-semibold text-slate-200"
-          >
-            {labels.name} *
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="enq-name"
+              className="block text-xs font-semibold text-[var(--text-muted)]"
+            >
+              {labels.name} *
+            </label>
+            {isNameValid && (
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                ✓
+              </span>
+            )}
+          </div>
           <input
             id="enq-name"
             type="text"
             required
             autoComplete="name"
+            placeholder={locale === "si" ? "උදා: කසුන් පෙරේරා" : "Kasun Perera"}
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+            onChange={(e) => {
+              setName(e.target.value);
+              markTouched("name");
+            }}
+            onBlur={() => markTouched("name")}
+            className={underlineInput}
           />
+          {touched.name && !isNameValid && (
+            <p className="mt-1 text-[11px] font-medium text-rose-500">
+              {locale === "si" ? "කරුණාකර ඔබේ නම ඇතුළත් කරන්න." : "Please enter your name."}
+            </p>
+          )}
         </div>
+
         <div>
-          <label
-            htmlFor="enq-email"
-            className="block text-xs font-semibold text-slate-200"
-          >
-            {labels.email} *
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="enq-email"
+              className="block text-xs font-semibold text-[var(--text-muted)]"
+            >
+              {labels.email} *
+            </label>
+            {isEmailValid && (
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                ✓
+              </span>
+            )}
+          </div>
           <input
             id="enq-email"
             type="email"
             required
             autoComplete="email"
+            placeholder="you@company.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              markTouched("email");
+            }}
+            onBlur={() => markTouched("email")}
+            className={underlineInput}
           />
+          {touched.email && !isEmailValid && (
+            <p className="mt-1 text-[11px] font-medium text-rose-500">
+              {locale === "si"
+                ? "කරුණාකර වලංගු විද්‍යුත් තැපැල් ලිපිනයක් ඇතුළත් කරන්න."
+                : "Please enter a valid email address."}
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* Row 2: Phone & Business */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
           <label
             htmlFor="enq-phone"
-            className="block text-xs font-semibold text-slate-200"
+            className="block text-xs font-semibold text-[var(--text-muted)]"
           >
             {labels.phone}
           </label>
@@ -185,13 +315,13 @@ export function EnquiryForm({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+94 7X XXX XXXX"
-            className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+            className={underlineInput}
           />
         </div>
         <div>
           <label
             htmlFor="enq-biz"
-            className="block text-xs font-semibold text-slate-200"
+            className="block text-xs font-semibold text-[var(--text-muted)]"
           >
             {labels.businessName}
           </label>
@@ -199,115 +329,186 @@ export function EnquiryForm({
             id="enq-biz"
             type="text"
             autoComplete="organization"
+            placeholder={locale === "si" ? "ඔබේ ව්‍යාපාරයේ නම" : "Your company"}
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+            className={underlineInput}
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="enq-interest"
-            className="block text-xs font-semibold text-slate-200"
-          >
+      {/* Row 3: Select Subject? (Approachable Radio Pills matching reference) */}
+      <div>
+        <div className="flex items-center justify-between">
+          <span className="block text-xs font-semibold text-[var(--text-primary)]">
             {labels.interest} *
-          </label>
-          <select
-            id="enq-interest"
-            value={interest}
-            onChange={(e) => setInterest(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-white/10 bg-[#0d1326] px-4 py-3 text-base text-white focus:border-orange-500 focus:outline-none"
-          >
-            <option value="Software + Social Media Growth">
-              {locale === "si"
-                ? "මෘදුකාංග + සමාජ මාධ්‍ය වර්ධනය (පූර්ණ විසඳුම)"
-                : "Software + Social Media Growth (End-to-End)"}
-            </option>
-            <option value="Custom Software Development">
-              {locale === "si"
-                ? "වෙබ් / ජංගම / මෘදුකාංග සංවර්ධනය"
-                : "Custom Web / Mobile / Software Development"}
-            </option>
-            <option value="Social Media Setup & Content">
-              {locale === "si"
-                ? "සමාජ මාධ්‍ය කළමනාකරණය සහ වීඩියෝ ප්‍රවර්ධනය"
-                : "Social Media Setup, Content & Video Growth"}
-            </option>
-            <option value="Product Demo (EventLoom / CaptureLoom / PromoLoom)">
-              {locale === "si"
-                ? "නිෂ්පාදන පිළිබඳ විමසීමක් (EventLoom / CaptureLoom / PromoLoom)"
-                : "Product Enquiry (EventLoom / CaptureLoom / PromoLoom)"}
-            </option>
-            <option value="Academic Project Support">
-              {locale === "si"
-                ? "අධ්‍යාපනික මෘදුකාංග ව්‍යාපෘති සහාය"
-                : "Academic Software Project Support"}
-            </option>
-          </select>
+          </span>
+          {isInterestValid && (
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              ✓
+            </span>
+          )}
         </div>
-
-        <div>
-          <label
-            htmlFor="enq-budget"
-            className="block text-xs font-semibold text-slate-200"
-          >
-            {labels.budget}
-          </label>
-          <select
-            id="enq-budget"
-            value={budgetRange}
-            onChange={(e) => setBudgetRange(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-white/10 bg-[#0d1326] px-4 py-3 text-base text-white focus:border-orange-500 focus:outline-none"
-          >
-            <option value="">
-              {locale === "si" ? "සාකච්ඡා කර තීරණය කරමු" : "Let's discuss based on scope"}
-            </option>
-            <option value="Starter / MVP">Starter / MVP</option>
-            <option value="Growth Partnership">Full Growth Partnership</option>
-            <option value="Enterprise Custom">Enterprise Custom</option>
-          </select>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {subjectOptions.map((opt) => {
+            const active = interest === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                aria-pressed={active}
+                onClick={() => {
+                  setInterest(opt.value);
+                  markTouched("interest");
+                }}
+                className={`inline-flex min-h-[34px] items-center gap-2 rounded-full border px-3.5 py-1 text-xs font-medium transition-all ${
+                  active
+                    ? "border-emerald-500 bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 font-semibold"
+                    : "border-[var(--border-subtle)] bg-transparent text-[var(--text-secondary)] hover:border-emerald-500/40"
+                }`}
+              >
+                <span
+                  className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${
+                    active
+                      ? "border-emerald-600 bg-emerald-600"
+                      : "border-[var(--text-muted)]"
+                  }`}
+                >
+                  {active && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+                </span>
+                <span>{opt.label}</span>
+              </button>
+            );
+          })}
         </div>
+        {touched.interest && !isInterestValid && (
+          <p className="mt-1.5 text-[11px] font-medium text-rose-500">
+            {locale === "si" ? "කරුණාකර විකල්පයක් තෝරන්න." : "Please select how we can help."}
+          </p>
+        )}
       </div>
 
+      {/* Row 4: Message (Underline Textarea) */}
       <div>
-        <label
-          htmlFor="enq-message"
-          className="block text-xs font-semibold text-slate-200"
-        >
-          {labels.message} *
-        </label>
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor="enq-message"
+            className="block text-xs font-semibold text-[var(--text-muted)]"
+          >
+            {labels.message} *
+          </label>
+          {isMessageValid && (
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              ✓
+            </span>
+          )}
+        </div>
         <textarea
           id="enq-message"
-          rows={4}
+          rows={2}
           required
           minLength={10}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 p-4 text-base text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+          placeholder={getMessagePlaceholder()}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            markTouched("message");
+          }}
+          onBlur={() => markTouched("message")}
+          className={`${underlineInput} resize-none`}
         />
+        {touched.message && !isMessageValid && (
+          <p className="mt-1 text-[11px] font-medium text-rose-500">
+            {locale === "si"
+              ? "කරුණාකර අවම වශයෙන් අක්ෂර 10ක් ඇතුළත් කරන්න."
+              : "Please enter at least 10 characters."}
+          </p>
+        )}
       </div>
 
-      <label className="flex items-start gap-3 text-xs text-slate-300 cursor-pointer">
-        <input
-          type="checkbox"
-          required
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 accent-orange-600"
-        />
-        <span>{labels.consent}</span>
-      </label>
+      {/* Row 5: Preferred Reply + Consent */}
+      <div className="space-y-3 pt-1">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs font-semibold text-[var(--text-muted)]">
+            {locale === "si" ? "පිළිතුරු ලබා ගැනීමට කැමති මාධ්‍යය" : "Preferred Reply"}
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {(["WhatsApp", "Email", "Phone Call"] as ReplyChannel[]).map((ch) => {
+              const active = replyChannel === ch;
+              return (
+                <button
+                  key={ch}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setReplyChannel(ch)}
+                  className={`min-h-[32px] rounded-full border px-3 py-1 text-[11px] font-semibold transition-colors ${
+                    active
+                      ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                      : "border-[var(--border-subtle)] text-[var(--text-secondary)] hover:border-emerald-500/40"
+                  }`}
+                >
+                  {ch}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-orange-600 px-7 py-3.5 text-sm font-semibold text-white shadow-xl shadow-orange-600/25 transition-all hover:bg-orange-500 disabled:opacity-50"
-      >
-        <Send className="h-4 w-4" />
-        <span>{submitting ? "..." : labels.submit}</span>
-      </button>
+        <div>
+          <label className="flex items-start gap-2.5 text-xs text-[var(--text-secondary)] cursor-pointer">
+            <input
+              type="checkbox"
+              required
+              checked={consent}
+              onChange={(e) => {
+                setConsent(e.target.checked);
+                markTouched("consent");
+              }}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-600"
+            />
+            <span>
+              {labels.consent}{" "}
+              <Link
+                href="/privacy"
+                className="font-semibold text-emerald-700 dark:text-emerald-400 underline underline-offset-2 hover:opacity-80"
+              >
+                {locale === "si" ? "රහස්‍යතා ප්‍රතිපත්තිය" : "Privacy Policy"}
+              </Link>
+              .
+            </span>
+          </label>
+          {touched.consent && !consent && (
+            <p className="mt-1 text-[11px] font-medium text-rose-500">
+              {locale === "si"
+                ? "ඉදිරියට යාමට කරුණාකර එකඟතාවය තහවුරු කරන්න."
+                : "Please accept the consent checkbox to continue."}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Bar: Trust Note + Right-Aligned Send Button */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <p className="inline-flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+          <Lock className="h-3 w-3 shrink-0" />
+          <span>
+            {locale === "si"
+              ? "පැය 24ක් ඇතුළත පිළිතුරු ලැබෙනු ඇත."
+              : "Replies within 24 hours, Mon–Fri."}
+          </span>
+        </p>
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="keep-white inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-emerald-600 px-7 py-2.5 text-xs font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-500 disabled:opacity-50"
+        >
+          <Send className="h-3.5 w-3.5" />
+          <span>
+            {submitting ? (locale === "si" ? "යවමින්..." : "Sending...") : labels.submit}
+          </span>
+        </button>
+      </div>
     </form>
   );
 }

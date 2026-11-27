@@ -3,6 +3,8 @@ services:
     image: mysql:8.0
     container_name: vardhel-db
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -12,7 +14,7 @@ services:
     volumes:
       - vardhel_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,6 +25,8 @@ services:
       dockerfile: Dockerfile
     container_name: vardhel-web
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       db:
         condition: service_healthy

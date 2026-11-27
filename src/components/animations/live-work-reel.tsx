@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import type { PublicProductDTO } from "@/server/services/public-content.service";
+import type {
+  PublicProductDTO,
+  PublicProjectDTO,
+} from "@/server/services/public-content.service";
 
 interface LiveWorkReelProps {
   products?: PublicProductDTO[];
+  projects?: PublicProjectDTO[];
   videoUrl?: string;
   locale?: "en" | "si";
 }
@@ -28,11 +32,11 @@ interface ClientSlide {
 const CLIENT_SLIDES: ClientSlide[] = [
   {
     id: "ransan",
-    code: "01",
+    code: "RB",
     name: "Ransan Boat House",
     url: "https://ransanboathouse.com/",
     displayUrl: "ransanboathouse.com",
-    logo: "https://www.google.com/s2/favicons?domain=ransanboathouse.com&sz=64",
+    logo: "",
     category: "CLIENT BUILD · RIVER SAFARI BOOKING",
     categorySi: "සංචාරක හා බෝට්ටු වෙන්කිරීමේ පද්ධතිය",
     image: "/images/reel/ransanboathouse.jpg",
@@ -41,11 +45,11 @@ const CLIENT_SLIDES: ClientSlide[] = [
   },
   {
     id: "signature-tours",
-    code: "02",
+    code: "ST",
     name: "Sri Lanka Signature Tours",
     url: "https://srilankasignaturetours.com/",
     displayUrl: "srilankasignaturetours.com",
-    logo: "https://www.google.com/s2/favicons?domain=srilankasignaturetours.com&sz=64",
+    logo: "",
     category: "CLIENT BUILD · LUXURY TRAVEL",
     categorySi: "සුඛෝපභෝගී සංචාරක සහ ගමන් සැලසුම්",
     image: "/images/reel/srilankasignaturetours.jpg",
@@ -63,6 +67,7 @@ interface WorkspaceItem {
   code: string;
   name: string;
   url: string;
+  isExternal: boolean;
   displayUrl: string;
   category: string;
   highlight: string;
@@ -72,31 +77,77 @@ interface WorkspaceItem {
   pan: boolean;
 }
 
+function formatHost(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
 /**
  * Unified Vardhel Desktop Workspace:
  * ~75% interactive browser showcase + ~25% Vardhel Products & Client Work navigator.
  */
 export function LiveWorkReel({
   products = [],
+  projects = [],
   videoUrl = "",
   locale = "en",
 }: LiveWorkReelProps) {
   const hasUploadedVideo = Boolean(videoUrl && videoUrl.trim().length > 0);
 
+  const clientSlides: ClientSlide[] = useMemo(() => {
+    if (projects.length === 0) return CLIENT_SLIDES;
+
+    return projects.map((proj) => {
+      const liveLink =
+        proj.links.find((l) => l.type === "LIVE_SITE" || l.type === "DEMO" || l.type === "APP") ??
+        proj.links[0];
+      const href = liveLink?.url || `/projects/${proj.slug}`;
+      const displayName = proj.clientName || proj.title;
+      return {
+        id: proj.id,
+        code: displayName.slice(0, 2).toUpperCase(),
+        name: displayName,
+        url: href,
+        displayUrl: liveLink?.url ? formatHost(liveLink.url) : `vardhel.com/projects/${proj.slug}`,
+        logo: proj.logoUrl || "",
+        category: proj.industry
+          ? `CLIENT BUILD · ${proj.industry.toUpperCase()}`
+          : "CLIENT BUILD",
+        categorySi: proj.industry ? `පාරිභෝගික ව්‍යාපෘතිය · ${proj.industry}` : "පාරිභෝගික ව්‍යාපෘතිය",
+        image: proj.coverUrl || "",
+        highlight: proj.summary || proj.title,
+        highlightSi: proj.summary || proj.title,
+      };
+    });
+  }, [projects]);
+
   const items: WorkspaceItem[] = useMemo(() => {
-    const clientItems: WorkspaceItem[] = CLIENT_SLIDES.map((s) => ({
-      kind: "client",
-      id: s.id,
-      code: s.code,
-      name: s.name,
-      url: s.url,
-      displayUrl: s.displayUrl,
-      category: locale === "si" ? s.categorySi : s.category,
-      highlight: locale === "si" ? s.highlightSi : s.highlight,
-      ctaLabel: locale === "si" ? "වෙබ් අඩවිය බලන්න" : "Visit Live Site",
-      image: s.image,
-      pan: true,
-    }));
+    const clientItems: WorkspaceItem[] = clientSlides.map((s) => {
+      const isExternal = s.url.startsWith("http://") || s.url.startsWith("https://");
+      return {
+        kind: "client",
+        id: s.id,
+        code: s.code,
+        name: s.name,
+        url: s.url,
+        isExternal,
+        displayUrl: s.displayUrl,
+        category: locale === "si" ? s.categorySi : s.category,
+        highlight: locale === "si" ? s.highlightSi : s.highlight,
+        ctaLabel: isExternal
+          ? locale === "si"
+            ? "වෙබ් අඩවිය බලන්න"
+            : "Visit Live Site"
+          : locale === "si"
+            ? "ව්‍යාපෘතිය බලන්න"
+            : "View Case Study",
+        image: s.image,
+        pan: Boolean(s.image),
+      };
+    });
 
     const productItems: WorkspaceItem[] = products.map((prod) => ({
       kind: "product",
@@ -104,6 +155,7 @@ export function LiveWorkReel({
       code: "APP",
       name: prod.name,
       url: `/products/${prod.slug}`,
+      isExternal: false,
       displayUrl: `vardhel.com/products/${prod.slug}`,
       category:
         locale === "si"
@@ -111,13 +163,13 @@ export function LiveWorkReel({
           : `VARDHEL PRODUCT · ${prod.status}`,
       highlight: prod.tagline || prod.shortDescription,
       ctaLabel: locale === "si" ? `${prod.name} බලන්න` : `Explore ${prod.name}`,
-      image: prod.coverUrl || "/assets/img/eventloom_cover.png",
+      image: prod.coverUrl || "",
       video: prod.videoType === "video" && prod.videoUrl ? prod.videoUrl : undefined,
       pan: false,
     }));
 
     return [...clientItems, ...productItems];
-  }, [products, locale]);
+  }, [clientSlides, products, locale]);
 
   const [activeIdx, setActiveIdx] = useState(0);
   const [showCustomVideo, setShowCustomVideo] = useState(hasUploadedVideo);
@@ -281,7 +333,7 @@ export function LiveWorkReel({
 
               {showCustomVideo ? (
                 <span className="font-mono text-[11px] text-[#e2e8f0]">vardhel.com/showreel</span>
-              ) : activeItem.kind === "client" ? (
+              ) : activeItem.isExternal ? (
                 <a
                   href={activeItem.url}
                   target="_blank"
@@ -336,11 +388,17 @@ export function LiveWorkReel({
                       playsInline
                       className="h-full w-full object-cover"
                     />
-                  ) : (
+                  ) : activeItem.image && !logoFailed[`cover-${activeItem.id}`] ? (
                     <img
                       key={activeItem.id}
                       src={activeItem.image}
                       alt={activeItem.name}
+                      onError={() =>
+                        setLogoFailed((prev) => ({
+                          ...prev,
+                          [`cover-${activeItem.id}`]: true,
+                        }))
+                      }
                       className={
                         activeItem.pan
                           ? "w-full h-auto min-h-full object-cover object-top transition-transform duration-[3200ms] ease-linear"
@@ -354,6 +412,15 @@ export function LiveWorkReel({
                           : "scale(1)",
                       }}
                     />
+                  ) : (
+                    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-[#0e192c] via-[#111827] to-[#064e3b] px-6 pb-16 text-center">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-400/30 bg-emerald-500/15 font-mono text-lg font-extrabold text-[#6ee7b7] shadow-lg">
+                        {activeItem.code}
+                      </div>
+                      <p className="mt-3 font-mono text-[11px] uppercase tracking-widest text-emerald-300/80">
+                        {activeItem.displayUrl}
+                      </p>
+                    </div>
                   )}
 
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#09090b] via-[#09090b]/85 to-transparent" />
@@ -371,7 +438,7 @@ export function LiveWorkReel({
                       </p>
                     </div>
 
-                    {activeItem.kind === "client" ? (
+                    {activeItem.isExternal ? (
                       <a
                         href={activeItem.url}
                         target="_blank"
@@ -416,7 +483,6 @@ export function LiveWorkReel({
                     <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#94a3b8]">
                       Vardhel Products
                     </span>
-                    <span className="font-mono text-[11px] text-[#6ee7b7]">Apps</span>
                   </div>
 
                   <div className="relative">
@@ -440,7 +506,7 @@ export function LiveWorkReel({
                       className="no-scrollbar flex gap-1.5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-0.5"
                     >
                       {products.map((prod, idx) => {
-                        const slideIndex = CLIENT_SLIDES.length + idx;
+                        const slideIndex = clientSlides.length + idx;
                         const isSelected = !showCustomVideo && activeIdx === slideIndex;
                         return (
                           <button
@@ -455,11 +521,17 @@ export function LiveWorkReel({
                             }`}
                           >
                             <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/95 p-1.5 shadow-md ring-1 ring-white/20 transition-transform group-hover:scale-105">
-                              {prod.logoUrl ? (
+                              {prod.logoUrl && !logoFailed[`prod-${prod.id}`] ? (
                                 <img
                                   src={prod.logoUrl}
                                   alt={prod.name}
                                   className="h-full w-full object-contain"
+                                  onError={() =>
+                                    setLogoFailed((prev) => ({
+                                      ...prev,
+                                      [`prod-${prod.id}`]: true,
+                                    }))
+                                  }
                                 />
                               ) : (
                                 <span className="font-mono text-xs font-bold text-[#0f172a]">
@@ -468,7 +540,7 @@ export function LiveWorkReel({
                               )}
                             </div>
                             <span
-                              className={`w-full truncate text-[10.5px] font-bold ${
+                              className={`w-full truncate text-[11px] font-bold ${
                                 isSelected ? "text-[#6ee7b7]" : "text-[#ffffff] group-hover:text-[#6ee7b7]"
                               }`}
                             >
@@ -501,7 +573,6 @@ export function LiveWorkReel({
                   <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#94a3b8]">
                     Client Work
                   </span>
-                  <span className="font-mono text-[11px] text-[#6ee7b7]">Live Sites</span>
                 </div>
 
                 <div className="relative flex-1">
@@ -524,7 +595,7 @@ export function LiveWorkReel({
                     onScroll={syncOverflowControls}
                     className="no-scrollbar flex max-h-[268px] flex-col gap-2 overflow-y-auto overscroll-y-contain snap-y snap-mandatory scroll-smooth"
                   >
-                    {CLIENT_SLIDES.map((client, idx) => {
+                    {clientSlides.map((client, idx) => {
                       const isSelected = !showCustomVideo && activeIdx === idx;
                       const showFallback = !client.logo || logoFailed[client.id];
                       return (
@@ -592,10 +663,7 @@ export function LiveWorkReel({
             </div>
 
             {/* Minimal Workspace Footer */}
-            <div className="hidden lg:flex items-center justify-between border-t border-white/10 pt-2.5 text-[11px] text-[#94a3b8]">
-              <span className="font-mono">
-                {products.length} {products.length === 1 ? "App" : "Apps"} · {CLIENT_SLIDES.length} Client Sites
-              </span>
+            <div className="hidden lg:flex items-center justify-end border-t border-white/10 pt-2.5 text-[11px] text-[#94a3b8]">
               <Link href="/products" className="font-semibold text-[#6ee7b7] hover:underline">
                 View All ↗
               </Link>

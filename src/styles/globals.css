@@ -241,16 +241,16 @@ body:not(:has(.admin-workspace)) .border-indigo-500\/40 {
 /* ==========================================================================
    PUBLIC SITE LIGHT-MODE ADAPTIVE RULES
    ========================================================================== */
-html.light body:not(:has(.admin-workspace)) .text-white:not(.bg-orange-600 *):not(.bg-indigo-600 *):not(.bg-emerald-600 *):not(.brand-gradient-bg *):not(.keep-white) {
+html.light body:not(:has(.admin-workspace)) .text-white:not(.bg-orange-600):not(.bg-orange-600 *):not(.bg-indigo-600):not(.bg-indigo-600 *):not(.bg-emerald-600):not(.bg-emerald-600 *):not(.brand-gradient-bg):not(.brand-gradient-bg *):not(.keep-white):not(.keep-white *) {
   color: #0f172a !important;
 }
 
-html.light body:not(:has(.admin-workspace)) .text-slate-200,
-html.light body:not(:has(.admin-workspace)) .text-slate-300 {
+html.light body:not(:has(.admin-workspace)) .text-slate-200:not(.keep-white):not(.keep-white *),
+html.light body:not(:has(.admin-workspace)) .text-slate-300:not(.keep-white):not(.keep-white *) {
   color: #334155 !important;
 }
 
-html.light body:not(:has(.admin-workspace)) .text-slate-400 {
+html.light body:not(:has(.admin-workspace)) .text-slate-400:not(.keep-white):not(.keep-white *) {
   color: #475569 !important;
 }
 
@@ -482,6 +482,26 @@ html.dark .brand-gradient-text {
 
 .industry-flow-stage:hover .animate-industry-bounce-pill {
   animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .industry-flow-stage {
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .animate-industry-bounce-pill {
+    position: static;
+    margin-top: 0;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 @keyframes floaty {

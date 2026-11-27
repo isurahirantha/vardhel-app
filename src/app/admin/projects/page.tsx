@@ -14,6 +14,8 @@ export default async function AdminProjectsPage() {
     .findMany({
       where: { deletedAt: null },
       include: {
+        clientLogo: true,
+        cover: true,
         translations: true,
         links: { orderBy: { sortOrder: "asc" } },
         socialWork: {
@@ -34,6 +36,8 @@ export default async function AdminProjectsPage() {
       isDemo: p.isDemo,
       isFeatured: p.isFeatured,
       isPublished: p.isPublished,
+      coverUrl: p.cover?.publicUrl ?? "",
+      logoUrl: p.clientLogo?.publicUrl ?? "",
       videoType: p.videoType ?? "youtube",
       videoUrl: p.videoUrl ?? "",
       techStack: Array.isArray(p.techStackJson)

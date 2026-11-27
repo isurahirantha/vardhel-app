@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { saveProjectAction } from "@/server/actions/admin-content.actions";
-import { Plus, Trash2, CheckCircle2, Share2, Link2 } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, Share2, Link2, Image as ImageIcon, Upload } from "lucide-react";
 
 export interface AdminProjectItem {
   id: string;
@@ -11,6 +11,8 @@ export interface AdminProjectItem {
   isDemo: boolean;
   isFeatured: boolean;
   isPublished: boolean;
+  coverUrl: string;
+  logoUrl: string;
   videoType: string;
   videoUrl: string;
   techStack: string[];
@@ -62,6 +64,8 @@ export function ProjectsAdminClient({
       isDemo: false,
       isFeatured: true,
       isPublished: false,
+      coverUrl: "",
+      logoUrl: "",
       videoType: "youtube",
       videoUrl: "",
       techStack: ["Next.js", "TypeScript"],
@@ -89,6 +93,46 @@ export function ProjectsAdminClient({
   );
   const [tab, setTab] = useState<"en" | "si">("en");
   const [msg, setMsg] = useState<string | null>(null);
+  const [uploadingField, setUploadingField] = useState<"coverUrl" | "logoUrl" | null>(null);
+
+  const handleImageUpload = async (
+    file: File | undefined,
+    field: "coverUrl" | "logoUrl"
+  ) => {
+    if (!file) return;
+    setUploadingField(field);
+    setMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append("csrfToken", csrfToken);
+      fd.append("file", file);
+      fd.append(
+        "altText",
+        `${selected.en.clientName || selected.en.title || selected.slug || "Client project"} ${field === "logoUrl" ? "logo" : "preview"
+        }`
+      );
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = (await res.json()) as {
+        ok: boolean;
+        media?: { publicUrl: string };
+        error?: string;
+      };
+      if (data.ok && data.media?.publicUrl) {
+        setSelected((prev) => ({ ...prev, [field]: data.media!.publicUrl }));
+        setMsg(
+          field === "logoUrl"
+            ? "Client logo uploaded! Click Save Project to apply."
+            : "Preview image uploaded! Click Save Project to apply."
+        );
+      } else {
+        setMsg(data.error ?? "Upload failed.");
+      }
+    } catch {
+      setMsg("Upload failed. Check file type/size.");
+    } finally {
+      setUploadingField(null);
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,6 +145,8 @@ export function ProjectsAdminClient({
         isDemo: selected.isDemo,
         isFeatured: selected.isFeatured,
         isPublished: selected.isPublished,
+        coverUrl: selected.coverUrl,
+        logoUrl: selected.logoUrl,
         videoType: selected.videoType,
         videoUrl: selected.videoUrl,
         techStack: selected.techStack,
@@ -136,6 +182,8 @@ export function ProjectsAdminClient({
               isDemo: false,
               isFeatured: true,
               isPublished: true,
+              coverUrl: "",
+              logoUrl: "",
               videoType: "youtube",
               videoUrl: "",
               techStack: ["Next.js", "TypeScript"],
@@ -187,11 +235,10 @@ export function ProjectsAdminClient({
               setSelected(p);
               setMsg(null);
             }}
-            className={`rounded-xl border px-3.5 py-2 text-xs font-semibold ${
-              selected.id === p.id
+            className={`rounded-xl border px-3.5 py-2 text-xs font-semibold ${selected.id === p.id
                 ? "border-orange-500 bg-orange-600 text-white"
                 : "border-white/10 bg-[#0d1326] text-slate-300"
-            }`}
+              }`}
           >
             {p.en.title} {p.isPublished ? "(Published)" : "(Draft / Unpublished)"}
           </button>
@@ -214,18 +261,16 @@ export function ProjectsAdminClient({
             <button
               type="button"
               onClick={() => setTab("en")}
-              className={`rounded-lg px-4 py-2 text-xs font-bold ${
-                tab === "en" ? "bg-orange-600 text-white" : "bg-white/5 text-slate-300"
-              }`}
+              className={`rounded-lg px-4 py-2 text-xs font-bold ${tab === "en" ? "bg-orange-600 text-white" : "bg-white/5 text-slate-300"
+                }`}
             >
               English (EN)
             </button>
             <button
               type="button"
               onClick={() => setTab("si")}
-              className={`rounded-lg px-4 py-2 text-xs font-bold ${
-                tab === "si" ? "bg-indigo-600 text-white" : "bg-white/5 text-slate-300"
-              }`}
+              className={`rounded-lg px-4 py-2 text-xs font-bold ${tab === "si" ? "bg-indigo-600 text-white" : "bg-white/5 text-slate-300"
+                }`}
             >
               සිංහල (Sinhala - SI)
             </button>
@@ -289,6 +334,157 @@ export function ProjectsAdminClient({
               />
               <span>Spotlight on Home</span>
             </label>
+          </div>
+        </div>
+
+        {/* Client Work Images (Logo + Preview Image with Placeholder Fallback) */}
+        <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-4 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-emerald-400" />
+              <h3 className="text-sm font-bold text-white">
+                Client Logo &amp; Showcase Preview Image
+              </h3>
+            </div>
+            <span className="font-mono text-[11px] text-emerald-300">
+              Vardhel Products &amp; Client Launches
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
+            <div className="lg:col-span-7 space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-200">
+                  Showcase / Preview Image (Upload or URL){" "}
+                  <span className="font-mono text-[11px] font-normal text-emerald-300">
+                    · Optimal: 1440 × 1500 px (tall desktop capture, WebP/JPG &lt; 400 KB)
+                  </span>
+                </label>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  <input
+                    type="text"
+                    value={selected.coverUrl}
+                    onChange={(e) =>
+                      setSelected({ ...selected, coverUrl: e.target.value })
+                    }
+                    placeholder="/images/reel/ransanboathouse.jpg or https://..."
+                    className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#060913] px-3 py-2 text-xs text-white"
+                  />
+                  <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/25">
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>{uploadingField === "coverUrl" ? "Uploading..." : "Upload"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleImageUpload(e.target.files?.[0], "coverUrl")}
+                    />
+                  </label>
+                  {selected.coverUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setSelected({ ...selected, coverUrl: "" })}
+                      className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300 hover:bg-white/10"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Leave empty to use the built-in placeholder card in the homepage showcase.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-200">
+                  Client Logo (Upload or URL){" "}
+                  <span className="font-mono text-[11px] font-normal text-emerald-300">
+                    · Optimal: 256 × 256 px or 512 × 512 px (1:1 PNG/WebP)
+                  </span>
+                </label>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  <input
+                    type="text"
+                    value={selected.logoUrl}
+                    onChange={(e) =>
+                      setSelected({ ...selected, logoUrl: e.target.value })
+                    }
+                    placeholder="/api/media/... or https://..."
+                    className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#060913] px-3 py-2 text-xs text-white"
+                  />
+                  <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/25">
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>{uploadingField === "logoUrl" ? "Uploading..." : "Upload"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleImageUpload(e.target.files?.[0], "logoUrl")}
+                    />
+                  </label>
+                  {selected.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setSelected({ ...selected, logoUrl: "" })}
+                      className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300 hover:bg-white/10"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Leave empty to display an automatic monogram placeholder badge.
+                </p>
+              </div>
+            </div>
+
+            {/* Live Client Work Preview */}
+            <div className="lg:col-span-5 space-y-2.5">
+              <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-[#0e192c] p-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/95 p-1">
+                  {selected.logoUrl ? (
+                    <img
+                      src={selected.logoUrl}
+                      alt={selected.en.clientName || selected.en.title || "Logo"}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <span className="font-mono text-[11px] font-bold text-[#0f172a]">
+                      {(selected.en.clientName || selected.en.title || selected.slug || "CL")
+                        .slice(0, 2)
+                        .toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-bold text-white">
+                    {selected.en.clientName || selected.en.title || "Client Name"}
+                  </p>
+                  <p className="truncate font-mono text-[11px] text-slate-400">
+                    {selected.links[0]?.url || `vardhel.com/projects/${selected.slug || "slug"}`}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative flex h-28 w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-[#0e192c] via-[#111827] to-[#064e3b]">
+                {selected.coverUrl ? (
+                  <img
+                    src={selected.coverUrl}
+                    alt={selected.en.title || "Preview"}
+                    className="h-full w-full object-cover object-top"
+                  />
+                ) : (
+                  <div className="text-center px-3">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-300">
+                      Default Placeholder Preview
+                    </span>
+                    <p className="mt-1 text-xs font-bold text-white">
+                      {selected.en.title || "Client Launch"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 

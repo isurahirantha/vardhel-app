@@ -4,7 +4,7 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
-RUN npm install
+RUN npm ci
 
 # Stage 2: Builder
 FROM node:22-alpine AS builder

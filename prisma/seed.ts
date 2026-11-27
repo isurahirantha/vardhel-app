@@ -1503,12 +1503,12 @@ async function main() {
   // 14. Seed Team Roles (6 Roles from Team.tsx)
   await prisma.teamMember.deleteMany({});
   const teamRoles = [
-    { en: "Frontend Developers", si: "Frontend මෘදුකාංග ඉංජිනේරුවන්" },
-    { en: "Backend Engineers", si: "Backend පද්ධති ඉංජිනේරුවන්" },
-    { en: "QA Analysts", si: "තත්ත්ව පරීක්ෂණ විශ්ලේෂකයින් (QA)" },
-    { en: "UI/UX Designers", si: "UI/UX නිර්මාණ ශිල්පීන්" },
-    { en: "Business Analysts & Growth Strategists", si: "ව්‍යාපාර විශ්ලේෂකයින් සහ වර්ධන උපායමාර්ගිකයින්" },
-    { en: "Solution Architects", si: "පද්ධති ව්‍යුහ නිර්මාණකරුවන් (Solution Architects)" },
+    { en: "AI & Business Intelligence", si: "AI සහ ව්‍යාපාරික බුද්ධි පද්ධති" },
+    { en: "Full-Stack Product Engineering", si: "සම්පූර්ණ මෘදුකාංග සංවර්ධනය" },
+    { en: "Conversion UI/UX Architecture", si: "UI/UX පද්ධති නිර්මාණය" },
+    { en: "Automated Workflows & APIs", si: "ස්වයංක්‍රීය ක්‍රියාවලි සහ API" },
+    { en: "Growth & Funnel Strategy", si: "ඩිජිටල් වර්ධන උපායමාර්ග" },
+    { en: "Cloud & Security Engineering", si: "Cloud සහ ආරක්ෂක පද්ධති" },
   ];
 
   for (let i = 0; i < teamRoles.length; i++) {
@@ -1654,10 +1654,10 @@ async function main() {
       group: "company",
       enTitle: "Meet Our Digital Specialists",
       enSub: "Your Vision, Our Framework",
-      enBody: `<p>At Vardhel, we've assembled a powerhouse of technical and creative talent in Sri Lanka dedicated to crafting exceptional software and helping businesses grow.</p><p><strong>We transform ideas into powerful digital solutions.</strong> Our full-stack team designs, builds, and optimizes custom software that solves real business challenges—and then sets up and manages your social media presence so your customers find and engage with you.</p>`,
+      enBody: `<p>At Vardhel, we've assembled a powerhouse of technical and creative talent in Sri Lanka dedicated to crafting exceptional software and helping businesses grow.</p><p><strong>We transform ideas into measurable growth.</strong> Backed by <strong>VARDHEL, our AI-driven business growth system</strong>, we pinpoint high-impact opportunities, design and build custom software that solves real business challenges, and manage your digital presence so customers find, trust, and choose you.</p>`,
       siTitle: "අපගේ ඩිජිටල් විශේෂඥ කණ්ඩායම",
       siSub: "ඔබේ දැක්ම, අපගේ තාක්ෂණික රාමුව",
-      siBody: `<p>Vardhel යනු විශිෂ්ට මෘදුකාංග නිර්මාණය කිරීමට සහ ව්‍යාපාර වර්ධනය කිරීමට කැපවූ තාක්ෂණික සහ නිර්මාණශීලී වෘත්තිකයන්ගෙන් සැදුම්ලත් කණ්ඩායමකි.</p><p>අපි ඔබේ අදහස් බලවත් ඩිජිටල් විසඳුම් බවට පත් කරන අතර, සමාජ මාධ්‍ය හරහා ඔබේ ව්‍යාපාරය පාරිභෝගිකයින් අතරට ගෙන යාමටද අඛණ්ඩව කටයුතු කරන්නෙමු.</p>`,
+      siBody: `<p>Vardhel යනු විශිෂ්ට මෘදුකාංග නිර්මාණය කිරීමට සහ ව්‍යාපාර වර්ධනය කිරීමට කැපවූ තාක්ෂණික සහ නිර්මාණශීලී වෘත්තිකයන්ගෙන් සැදුම්ලත් කණ්ඩායමකි.</p><p><strong>VARDHEL — අපගේ AI බලගැන්වූ ව්‍යාපාරික වර්ධන පද්ධතිය</strong> මගින් ඔබේ ව්‍යාපාරයේ නව අවස්ථා හඳුනාගෙන, අභිරුචි මෘදුකාංග නිර්මාණය කර, සමාජ මාධ්‍ය හරහා පාරිභෝගික ආකර්ෂණය අඛණ්ඩව වර්ධනය කරමු.</p>`,
     },
     {
       slug: "vision",

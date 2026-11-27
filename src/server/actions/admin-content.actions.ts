@@ -479,6 +479,29 @@ export async function checkLinkHealthAction(input: {
   return checkExternalLinkSafety(input.url);
 }
 
+export async function deleteProductAction(input: {
+  csrfToken: string;
+  id: string;
+}) {
+  const session = await requireAdminMutationAuth(input.csrfToken);
+  if (!input.id) return { ok: false, error: "Missing product ID" };
+
+  await prisma.product.update({
+    where: { id: input.id },
+    data: { deletedAt: new Date(), isPublished: false },
+  });
+
+  await writeAuditLog({
+    adminId: session.adminId,
+    action: "PRODUCT_DELETED",
+    entity: "products",
+    entityId: input.id,
+  });
+
+  revalidateAllPublicRoutes();
+  return { ok: true };
+}
+
 // ============================================================================
 // 4. Services CRUD
 // ============================================================================
@@ -594,6 +617,8 @@ export async function saveProjectAction(input: {
   isDemo: boolean;
   isFeatured: boolean;
   isPublished: boolean;
+  coverUrl?: string;
+  logoUrl?: string;
   videoType?: string;
   videoUrl?: string;
   techStack: string[];
@@ -636,6 +661,17 @@ export async function saveProjectAction(input: {
     }
   }
 
+  const coverId = await resolveMediaIdForImageUrl(
+    input.coverUrl,
+    `${input.en.title || cleanSlug} preview image`,
+    session.adminId
+  );
+  const clientLogoId = await resolveMediaIdForImageUrl(
+    input.logoUrl,
+    `${input.en.clientName || input.en.title || cleanSlug} logo`,
+    session.adminId
+  );
+
   const project = input.id
     ? await prisma.project.update({
         where: { id: input.id },
@@ -645,6 +681,8 @@ export async function saveProjectAction(input: {
           isFeatured: input.isFeatured,
           isPublished: input.isPublished,
           publishedAt: input.isPublished ? new Date() : null,
+          coverId,
+          clientLogoId,
           videoType: input.videoType || null,
           videoUrl: input.videoUrl?.trim() || null,
           techStackJson: input.techStack.map((t) => sanitizePlainText(t)).filter(Boolean),
@@ -657,6 +695,8 @@ export async function saveProjectAction(input: {
           isFeatured: input.isFeatured,
           isPublished: input.isPublished,
           publishedAt: input.isPublished ? new Date() : null,
+          coverId,
+          clientLogoId,
           videoType: input.videoType || null,
           videoUrl: input.videoUrl?.trim() || null,
           techStackJson: input.techStack.map((t) => sanitizePlainText(t)).filter(Boolean),

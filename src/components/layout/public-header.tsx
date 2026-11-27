@@ -115,14 +115,21 @@ export function PublicHeader({
             aria-label="Main navigation"
           >
             {/* Services Dropdown */}
-            <div className="relative" ref={servicesRef}>
+            <div
+              className="relative"
+              ref={servicesRef}
+              onMouseEnter={() => {
+                setServicesOpen(true);
+                setCompanyOpen(false);
+              }}
+              onMouseLeave={() => setServicesOpen(false)}
+            >
               <button
                 type="button"
                 onClick={() => {
-                  setServicesOpen(!servicesOpen);
+                  setServicesOpen((prev) => !prev);
                   setCompanyOpen(false);
                 }}
-                onMouseEnter={() => setServicesOpen(true)}
                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${isServicesActive
                     ? "bg-emerald-500/15 font-semibold text-emerald-400"
                     : "text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)]"
@@ -136,11 +143,15 @@ export function PublicHeader({
                 />
               </button>
 
-              {servicesOpen && (
-                <div
-                  onMouseLeave={() => setServicesOpen(false)}
-                  className="absolute left-0 top-full mt-2 w-72 origin-top-left rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
-                >
+              <div
+                aria-hidden={!servicesOpen}
+                className={`absolute left-0 top-full pt-2 w-72 origin-top-left transition-all duration-200 ease-out ${
+                  servicesOpen
+                    ? "pointer-events-auto opacity-100 translate-y-0 scale-100"
+                    : "pointer-events-none opacity-0 -translate-y-1.5 scale-95"
+                }`}
+              >
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-2 shadow-2xl backdrop-blur-xl">
                   <Link
                     href="/services"
                     onClick={() => setServicesOpen(false)}
@@ -193,7 +204,7 @@ export function PublicHeader({
                     </div>
                   </Link>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Products Link */}
@@ -230,14 +241,21 @@ export function PublicHeader({
             </Link>
 
             {/* Company Dropdown */}
-            <div className="relative" ref={companyRef}>
+            <div
+              className="relative"
+              ref={companyRef}
+              onMouseEnter={() => {
+                setCompanyOpen(true);
+                setServicesOpen(false);
+              }}
+              onMouseLeave={() => setCompanyOpen(false)}
+            >
               <button
                 type="button"
                 onClick={() => {
-                  setCompanyOpen(!companyOpen);
+                  setCompanyOpen((prev) => !prev);
                   setServicesOpen(false);
                 }}
-                onMouseEnter={() => setCompanyOpen(true)}
                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${isCompanyActive
                     ? "bg-emerald-500/15 font-semibold text-emerald-400"
                     : "text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)]"
@@ -251,11 +269,15 @@ export function PublicHeader({
                 />
               </button>
 
-              {companyOpen && (
-                <div
-                  onMouseLeave={() => setCompanyOpen(false)}
-                  className="absolute left-0 top-full mt-2 w-60 origin-top-left rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
-                >
+              <div
+                aria-hidden={!companyOpen}
+                className={`absolute left-0 top-full pt-2 w-60 origin-top-left transition-all duration-200 ease-out ${
+                  companyOpen
+                    ? "pointer-events-auto opacity-100 translate-y-0 scale-100"
+                    : "pointer-events-none opacity-0 -translate-y-1.5 scale-95"
+                }`}
+              >
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-2 shadow-2xl backdrop-blur-xl">
                   <Link
                     href="/about"
                     onClick={() => setCompanyOpen(false)}
@@ -291,7 +313,7 @@ export function PublicHeader({
                     </div>
                   </Link>
                 </div>
-              )}
+              </div>
             </div>
           </nav>
 

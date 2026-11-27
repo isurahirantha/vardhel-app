@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getGlobalSiteConfig } from "@/server/services/settings.service";
 import {
   getPublishedProducts,
+  getPublishedProjects,
   getApprovedFeedback,
   getPublishedFaqs,
   getAboutCompanyData,
@@ -40,6 +41,7 @@ export default async function HomePage({
     tCta,
     tHome,
     products,
+    projects,
     feedbackList,
     faqs,
     companyData,
@@ -49,6 +51,7 @@ export default async function HomePage({
     getTranslations({ locale: validLocale, namespace: "cta" }),
     getTranslations({ locale: validLocale, namespace: "home" }),
     getPublishedProducts(validLocale),
+    getPublishedProjects(validLocale),
     getApprovedFeedback(validLocale),
     getPublishedFaqs(validLocale),
     getAboutCompanyData(validLocale),
@@ -647,6 +650,7 @@ export default async function HomePage({
             {/* Unified Vardhel Workspace: Live Client Work + Interactive Product Dock */}
             <LiveWorkReel
               products={products}
+              projects={projects}
               videoUrl={siteConfig.workReelVideoUrl}
               locale={validLocale}
             />

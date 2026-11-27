@@ -375,7 +375,10 @@ export function SettingsClient({ csrfToken, initial }: SettingsClientProps) {
             <div>
               <h2 className="text-base font-bold text-white">Live Work Showreel Video (MP4 / WebM)</h2>
               <p className="text-xs text-slate-400">
-                When uploaded, this looping video overrides the default animated reel in the Platforms section.
+                When uploaded, this looping video overrides the default animated reel in the Platforms section.{" "}
+                <span className="font-mono text-[11px] text-emerald-400">
+                  Optimal: 1920 × 1080 px (or 1280 × 720 px), 16:9 MP4/WebM, 24–30 fps, &lt; 15 MB.
+                </span>
               </p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface MobileScrollCarouselProps {
   children: React.ReactNode;
@@ -41,7 +42,7 @@ export function MobileScrollCarousel({
           aria-label={prevLabel}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] dark:bg-[#111114] text-xs font-bold text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/45"
         >
-          &lsaquo;
+          <ChevronLeft className="h-3.5 w-3.5" />
         </button>
         <button
           type="button"
@@ -49,7 +50,7 @@ export function MobileScrollCarousel({
           aria-label={nextLabel}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] dark:bg-[#111114] text-xs font-bold text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/45"
         >
-          &rsaquo;
+          <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
 

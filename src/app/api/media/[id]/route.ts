@@ -17,7 +17,7 @@ export async function GET(
     }
 
     // If stored in public folder (seeded assets), redirect to static public path
-    if (media.storagePath.startsWith("/")) {
+    if (media.storagePath.startsWith("/") && !media.storagePath.startsWith("//")) {
       return NextResponse.redirect(new URL(media.storagePath, _req.url));
     }
 

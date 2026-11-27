@@ -63,6 +63,8 @@ export interface PublicProjectDTO {
   challengeHtml: string;
   solutionHtml: string;
   resultHtml: string;
+  coverUrl: string;
+  logoUrl: string;
   techStack: string[];
   isFeatured: boolean;
   isDemo: boolean;
@@ -408,6 +410,8 @@ export async function getPublishedProjects(locale: "en" | "si"): Promise<PublicP
     const rows = await prisma.project.findMany({
       where: { isPublished: true, deletedAt: null },
       include: {
+        clientLogo: true,
+        cover: true,
         translations: true,
         links: { orderBy: { sortOrder: "asc" } },
         socialWork: {
@@ -431,6 +435,8 @@ export async function getPublishedProjects(locale: "en" | "si"): Promise<PublicP
         challengeHtml: sanitizeRichText(nonEmpty(loc?.challenge, en?.challenge)),
         solutionHtml: sanitizeRichText(nonEmpty(loc?.solution, en?.solution)),
         resultHtml: sanitizeRichText(nonEmpty(loc?.result, en?.result)),
+        coverUrl: p.cover?.publicUrl ?? "",
+        logoUrl: p.clientLogo?.publicUrl ?? "",
         techStack: Array.isArray(p.techStackJson) ? (p.techStackJson as string[]) : [],
         isFeatured: p.isFeatured,
         isDemo: p.isDemo,
@@ -769,7 +775,7 @@ export async function getAboutCompanyData(locale: "en" | "si") {
       about: getPage(
         "about",
         "Meet Our Digital Specialists",
-        "<p>At Vardhel, we've assembled a powerhouse of technical talent dedicated to crafting exceptional software and growing our customers' businesses.</p>"
+        "<p>At Vardhel, we've assembled a powerhouse of technical and creative talent in Sri Lanka dedicated to crafting exceptional software and helping businesses grow.</p><p><strong>We transform ideas into measurable growth.</strong> Backed by <strong>VARDHEL, our AI-driven business growth system</strong>, we pinpoint high-impact opportunities, design and build custom software that solves real business challenges, and manage your digital presence so customers find, trust, and choose you.</p>"
       ),
       vision: getPage(
         "vision",
@@ -867,12 +873,12 @@ export async function getAboutCompanyData(locale: "en" | "si") {
               };
             })
           : [
-              { id: "t1", name: "Frontend Developers", role: "Specialist Discipline" },
-              { id: "t2", name: "Backend Engineers", role: "Specialist Discipline" },
-              { id: "t3", name: "QA Analysts", role: "Specialist Discipline" },
-              { id: "t4", name: "UI/UX Designers", role: "Specialist Discipline" },
-              { id: "t5", name: "Business Analysts & Growth Strategists", role: "Specialist Discipline" },
-              { id: "t6", name: "Solution Architects", role: "Specialist Discipline" },
+              { id: "t1", name: "AI & Business Intelligence", role: "Specialist Discipline" },
+              { id: "t2", name: "Full-Stack Product Engineering", role: "Specialist Discipline" },
+              { id: "t3", name: "Conversion UI/UX Architecture", role: "Specialist Discipline" },
+              { id: "t4", name: "Automated Workflows & APIs", role: "Specialist Discipline" },
+              { id: "t5", name: "Growth & Funnel Strategy", role: "Specialist Discipline" },
+              { id: "t6", name: "Cloud & Security Engineering", role: "Specialist Discipline" },
             ],
       stats: stats.map((st) => {
         const en = st.translations.find((t) => t.locale === "en");
@@ -889,7 +895,8 @@ export async function getAboutCompanyData(locale: "en" | "si") {
     return {
       about: {
         title: "Meet Our Digital Specialists",
-        bodyHtml: "<p>At Vardhel, we craft exceptional software and grow businesses.</p>",
+        bodyHtml:
+          "<p>At Vardhel, we've assembled a powerhouse of technical and creative talent in Sri Lanka dedicated to crafting exceptional software and helping businesses grow.</p><p><strong>We transform ideas into measurable growth.</strong> Backed by <strong>VARDHEL, our AI-driven business growth system</strong>, we pinpoint high-impact opportunities, design and build custom software that solves real business challenges, and manage your digital presence so customers find, trust, and choose you.</p>",
       },
       vision: {
         title: "Our Vision",
