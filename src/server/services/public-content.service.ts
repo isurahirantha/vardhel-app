@@ -458,6 +458,69 @@ export async function getPublishedProjects(locale: "en" | "si"): Promise<PublicP
   }
 }
 
+export interface PublicHomeSectionDTO {
+  key: string;
+  sortOrder: number;
+  isVisible: boolean;
+  title: string;
+  subtitle: string;
+}
+
+const DEFAULT_HOME_SECTIONS: Record<"en" | "si", PublicHomeSectionDTO[]> = {
+  en: [
+    { key: "hero", sortOrder: 1, isVisible: true, title: "Intelligence-Led Business Growth.", subtitle: "" },
+    { key: "proof_ticker", sortOrder: 2, isVisible: true, title: "Industries We Power", subtitle: "" },
+    { key: "how_it_works", sortOrder: 3, isVisible: true, title: "We start by understanding your business — not by asking what to post.", subtitle: "How VARDHEL Works · Capabilities & Advantage" },
+    { key: "platforms", sortOrder: 4, isVisible: true, title: "Platforms Engineered by Vardhel", subtitle: "Flagship Platforms" },
+    { key: "feedback", sortOrder: 5, isVisible: true, title: "Customer Experiences", subtitle: "" },
+    { key: "faq", sortOrder: 6, isVisible: true, title: "Frequently Asked Questions", subtitle: "" },
+    { key: "final_cta", sortOrder: 7, isVisible: true, title: "Your Next Stage of Growth Starts Here.", subtitle: "" },
+  ],
+  si: [
+    { key: "hero", sortOrder: 1, isVisible: true, title: "බුද්ධිමය ව්‍යාපාර වර්ධනය.", subtitle: "" },
+    { key: "proof_ticker", sortOrder: 2, isVisible: true, title: "ඉලක්කගත ක්ෂේත්‍ර", subtitle: "" },
+    { key: "how_it_works", sortOrder: 3, isVisible: true, title: "අපි ආරම්භ කරන්නේ ඔබේ ව්‍යාපාරය තේරුම් ගැනීමෙනි", subtitle: "VARDHEL ක්‍රියා කරන ආකාරය · අපගේ හැකියාවන් සහ විශේෂත්වය" },
+    { key: "platforms", sortOrder: 4, isVisible: true, title: "Vardhel විසින් නිර්මාණය කළ මෘදුකාංග පද්ධති", subtitle: "අපගේ නිෂ්පාදන" },
+    { key: "feedback", sortOrder: 5, isVisible: true, title: "පාරිභෝගික අදහස්", subtitle: "" },
+    { key: "faq", sortOrder: 6, isVisible: true, title: "නිතර අසන ප්‍රශ්න (FAQ)", subtitle: "" },
+    { key: "final_cta", sortOrder: 7, isVisible: true, title: "ඔබේ වර්ධනයේ ඊළඟ අදියර මෙතැනින් අරඹන්න.", subtitle: "" },
+  ],
+};
+
+export async function getHomeSections(locale: "en" | "si"): Promise<PublicHomeSectionDTO[]> {
+  const defaults = DEFAULT_HOME_SECTIONS[locale];
+  const alignedKeys = defaults.map((d) => d.key);
+
+  try {
+    const rows = await prisma.homeSection.findMany({
+      where: { key: { in: alignedKeys } },
+      include: { translations: true },
+      orderBy: { sortOrder: "asc" },
+    });
+
+    if (rows.length === 0) return defaults;
+
+    const byKey = new Map(rows.map((r) => [r.key, r]));
+    const merged: PublicHomeSectionDTO[] = defaults.map((def) => {
+      const row = byKey.get(def.key);
+      if (!row) return def;
+      const en = row.translations.find((t) => t.locale === "en");
+      const loc = pickLocalized(row.translations, locale);
+      return {
+        key: def.key,
+        sortOrder: row.sortOrder,
+        isVisible: row.isVisible,
+        title: nonEmpty(loc?.title, en?.title || def.title),
+        subtitle: nonEmpty(loc?.subtitle, en?.subtitle || def.subtitle),
+      };
+    });
+
+    return merged.sort((a, b) => a.sortOrder - b.sortOrder);
+  } catch {
+    return defaults;
+  }
+}
+
 export async function getApprovedFeedback(locale: "en" | "si") {
   try {
     // STRICT VAPT RULE (Section 8.4): Only APPROVED feedback is returned; raw email & submittedIpHash are NEVER returned to clients.

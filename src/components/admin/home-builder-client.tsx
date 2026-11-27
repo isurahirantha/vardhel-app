@@ -76,108 +76,150 @@ export function HomeBuilderClient({
         </div>
       )}
 
-      <div className="space-y-4">
-        {sections.map((s, idx) => (
-          <div
-            key={s.id}
-            className="rounded-2xl border border-white/10 bg-[#0d1326] p-5 space-y-4"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="rounded-lg bg-orange-600/20 px-2.5 py-1 font-mono text-xs font-bold text-orange-400">
-                  #{idx + 1} &bull; {s.key}
-                </span>
-                <label className="flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-8 space-y-4">
+          {sections.map((s, idx) => (
+            <div
+              key={s.id}
+              className={`rounded-2xl border bg-[#0d1326] p-5 space-y-4 transition-opacity ${
+                s.isVisible ? "border-white/10" : "border-white/5 opacity-60"
+              }`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="rounded-lg bg-emerald-500/15 px-2.5 py-1 font-mono text-xs font-bold text-emerald-300">
+                    #{idx + 1} &bull; {s.key}
+                  </span>
+                  <label className="flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={s.isVisible}
+                      onChange={(e) => {
+                        const next = [...sections];
+                        next[idx] = { ...s, isVisible: e.target.checked };
+                        setSections(next);
+                      }}
+                      className="h-4 w-4 accent-emerald-500"
+                    />
+                    <span>Visible on Home Page</span>
+                  </label>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => move(idx, -1)}
+                    disabled={idx === 0}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 disabled:opacity-30"
+                    aria-label="Move section up"
+                  >
+                    <ArrowUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(idx, 1)}
+                    disabled={idx === sections.length - 1}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 disabled:opacity-30"
+                    aria-label="Move section down"
+                  >
+                    <ArrowDown className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="block text-[11px] font-bold text-orange-400">
+                    Heading &amp; Subtitle (English)
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={s.isVisible}
+                    type="text"
+                    value={s.enTitle}
                     onChange={(e) => {
                       const next = [...sections];
-                      next[idx] = { ...s, isVisible: e.target.checked };
+                      next[idx] = { ...s, enTitle: e.target.value };
                       setSections(next);
                     }}
-                    className="h-4 w-4 accent-orange-600"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white"
                   />
-                  <span>Visible on Home Page</span>
-                </label>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => move(idx, -1)}
-                  disabled={idx === 0}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 disabled:opacity-30"
-                  aria-label="Move section up"
-                >
-                  <ArrowUp className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => move(idx, 1)}
-                  disabled={idx === sections.length - 1}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 disabled:opacity-30"
-                  aria-label="Move section down"
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </button>
+                  <input
+                    type="text"
+                    value={s.enSubtitle}
+                    onChange={(e) => {
+                      const next = [...sections];
+                      next[idx] = { ...s, enSubtitle: e.target.value };
+                      setSections(next);
+                    }}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-[11px] font-bold text-indigo-400">
+                    Heading &amp; Subtitle (සිංහල - Sinhala)
+                  </label>
+                  <input
+                    type="text"
+                    value={s.siTitle}
+                    onChange={(e) => {
+                      const next = [...sections];
+                      next[idx] = { ...s, siTitle: e.target.value };
+                      setSections(next);
+                    }}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white"
+                  />
+                  <input
+                    type="text"
+                    value={s.siSubtitle}
+                    onChange={(e) => {
+                      const next = [...sections];
+                      next[idx] = { ...s, siSubtitle: e.target.value };
+                      setSections(next);
+                    }}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300"
+                  />
+                </div>
               </div>
             </div>
+          ))}
+        </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="block text-[11px] font-bold text-orange-400">
-                  Heading &amp; Subtitle (English)
-                </label>
-                <input
-                  type="text"
-                  value={s.enTitle}
-                  onChange={(e) => {
-                    const next = [...sections];
-                    next[idx] = { ...s, enTitle: e.target.value };
-                    setSections(next);
-                  }}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white"
-                />
-                <input
-                  type="text"
-                  value={s.enSubtitle}
-                  onChange={(e) => {
-                    const next = [...sections];
-                    next[idx] = { ...s, enSubtitle: e.target.value };
-                    setSections(next);
-                  }}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-[11px] font-bold text-indigo-400">
-                  Heading &amp; Subtitle (සිංහල - Sinhala)
-                </label>
-                <input
-                  type="text"
-                  value={s.siTitle}
-                  onChange={(e) => {
-                    const next = [...sections];
-                    next[idx] = { ...s, siTitle: e.target.value };
-                    setSections(next);
-                  }}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white"
-                />
-                <input
-                  type="text"
-                  value={s.siSubtitle}
-                  onChange={(e) => {
-                    const next = [...sections];
-                    next[idx] = { ...s, siSubtitle: e.target.value };
-                    setSections(next);
-                  }}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300"
-                />
-              </div>
+        {/* Live Section Order Preview */}
+        <div className="lg:col-span-4">
+          <div className="sticky top-6 rounded-2xl border border-white/10 bg-[#0d1326] p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-400">
+                Live Order Preview
+              </span>
+              <span className="text-[11px] text-slate-400">
+                {sections.filter((s) => s.isVisible).length} visible
+              </span>
+            </div>
+            <div className="space-y-2">
+              {sections
+                .filter((s) => s.isVisible)
+                .map((s, i) => (
+                  <div
+                    key={s.id}
+                    className={`rounded-xl border border-white/10 px-3.5 py-2.5 ${
+                      i % 2 === 0 ? "bg-white/5" : "bg-[#151e36]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[10px] font-bold text-emerald-400">
+                        0{i + 1} · {s.key.toUpperCase()}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {i % 2 === 0 ? "White" : "Stone"}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 truncate text-xs font-semibold text-white">
+                      {s.enTitle}
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
-        ))}
+        </div>
       </div>
     </form>
   );

@@ -224,6 +224,42 @@ export async function updateUiStringAction(input: {
 // 3. Products CRUD (with Video, Features, Live Links, Revisions)
 // ============================================================================
 
+function isSafeImageOrPath(url: string): boolean {
+  const trimmed = url.trim();
+  if (!trimmed) return true;
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return true;
+  return isSafeExternalUrl(trimmed);
+}
+
+async function resolveMediaIdForImageUrl(
+  rawUrl: string | undefined,
+  altText: string,
+  adminId: string
+): Promise<string | null> {
+  const clean = rawUrl?.trim();
+  if (!clean) return null;
+
+  const existing = await prisma.media.findFirst({
+    where: { publicUrl: clean, deletedAt: null },
+    select: { id: true },
+  });
+  if (existing) return existing.id;
+
+  const created = await prisma.media.create({
+    data: {
+      type: "image",
+      storagePath: clean,
+      publicUrl: clean,
+      mime: "image/jpeg",
+      size: 0,
+      altText: sanitizePlainText(altText) || "Product image",
+      uploadedBy: adminId,
+    },
+    select: { id: true },
+  });
+  return created.id;
+}
+
 export async function saveProductAction(input: {
   csrfToken: string;
   id?: string;
@@ -232,6 +268,8 @@ export async function saveProductAction(input: {
   isFeatured: boolean;
   isPublished: boolean;
   sortOrder: number;
+  coverUrl?: string;
+  logoUrl?: string;
   videoType?: string;
   videoUrl?: string;
   techStack: string[];
@@ -278,11 +316,30 @@ export async function saveProductAction(input: {
     return { ok: false, error: "Video URL must be a valid HTTPS URL." };
   }
 
+  if (input.coverUrl && !isSafeImageOrPath(input.coverUrl)) {
+    return { ok: false, error: "Cover Image URL must be a relative path (/...) or HTTPS URL." };
+  }
+
+  if (input.logoUrl && !isSafeImageOrPath(input.logoUrl)) {
+    return { ok: false, error: "Logo URL must be a relative path (/...) or HTTPS URL." };
+  }
+
   for (const link of input.links) {
     if (!isSafeExternalUrl(link.url)) {
       return { ok: false, error: `Invalid link URL: ${link.url}. Only HTTPS URLs are permitted.` };
     }
   }
+
+  const coverId = await resolveMediaIdForImageUrl(
+    input.coverUrl,
+    `${input.en.name || cleanSlug} Cover`,
+    session.adminId
+  );
+  const logoId = await resolveMediaIdForImageUrl(
+    input.logoUrl,
+    `${input.en.name || cleanSlug} Logo`,
+    session.adminId
+  );
 
   const product = input.id
     ? await prisma.product.update({
@@ -294,6 +351,8 @@ export async function saveProductAction(input: {
           isPublished: input.isPublished,
           publishedAt: input.isPublished ? new Date() : null,
           sortOrder: input.sortOrder,
+          coverId,
+          logoId,
           videoType: input.videoType || null,
           videoUrl: input.videoUrl?.trim() || null,
           techStackJson: input.techStack.map((t) => sanitizePlainText(t)).filter(Boolean),
@@ -307,6 +366,8 @@ export async function saveProductAction(input: {
           isPublished: input.isPublished,
           publishedAt: input.isPublished ? new Date() : null,
           sortOrder: input.sortOrder,
+          coverId,
+          logoId,
           videoType: input.videoType || null,
           videoUrl: input.videoUrl?.trim() || null,
           techStackJson: input.techStack.map((t) => sanitizePlainText(t)).filter(Boolean),

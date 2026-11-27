@@ -10,6 +10,7 @@ import {
   Plus,
   Trash2,
   Video,
+  Image as ImageIcon,
   Link2,
   CheckCircle2,
   AlertTriangle,
@@ -23,6 +24,8 @@ export interface AdminProductItem {
   isFeatured: boolean;
   isPublished: boolean;
   sortOrder: number;
+  coverUrl: string;
+  logoUrl: string;
   videoType: string;
   videoUrl: string;
   techStack: string[];
@@ -71,6 +74,8 @@ export function ProductsAdminClient({
       isFeatured: true,
       isPublished: true,
       sortOrder: initialProducts.length + 1,
+      coverUrl: "",
+      logoUrl: "",
       videoType: "youtube",
       videoUrl: "",
       techStack: ["Next.js", "TypeScript", "MySQL"],
@@ -104,6 +109,8 @@ export function ProductsAdminClient({
       isFeatured: true,
       isPublished: true,
       sortOrder: initialProducts.length + 1,
+      coverUrl: "",
+      logoUrl: "",
       videoType: "youtube",
       videoUrl: "",
       techStack: ["React", "TypeScript", "Node.js"],
@@ -141,6 +148,8 @@ export function ProductsAdminClient({
         isFeatured: selected.isFeatured,
         isPublished: selected.isPublished,
         sortOrder: selected.sortOrder,
+        coverUrl: selected.coverUrl,
+        logoUrl: selected.logoUrl,
         videoType: selected.videoType,
         videoUrl: selected.videoUrl,
         techStack: selected.techStack,
@@ -533,6 +542,107 @@ export function ProductsAdminClient({
             </div>
           </div>
         )}
+
+        {/* Product Images & Live Homepage Card Preview */}
+        <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-4 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-emerald-400" />
+              <h3 className="text-sm font-bold text-white">
+                Product Images (Homepage &amp; Product Detail)
+              </h3>
+            </div>
+            <span className="font-mono text-[11px] text-emerald-300">
+              Platforms Engineered by Vardhel
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
+            <div className="lg:col-span-7 space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-200">
+                  Card Cover Image URL (HTTPS or `/assets/...` / `/api/media/...`)
+                </label>
+                <div className="mt-1 flex gap-2">
+                  <input
+                    type="text"
+                    value={selected.coverUrl}
+                    onChange={(e) =>
+                      setSelected({ ...selected, coverUrl: e.target.value })
+                    }
+                    placeholder="/assets/img/eventloom_cover.png or https://..."
+                    className="w-full rounded-lg border border-white/10 bg-[#060913] px-3 py-2 text-xs text-white"
+                  />
+                  {selected.coverUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setSelected({ ...selected, coverUrl: "" })}
+                      className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300 hover:bg-white/10"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Displayed on the homepage product card. Leave empty to show the built-in stylized mockup.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-200">
+                  Product Logo Image URL (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={selected.logoUrl}
+                  onChange={(e) =>
+                    setSelected({ ...selected, logoUrl: e.target.value })
+                  }
+                  placeholder="/assets/img/eventloom_logo.png or https://..."
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-[#060913] px-3 py-2 text-xs text-white"
+                />
+              </div>
+            </div>
+
+            {/* Live Homepage Card Preview */}
+            <div className="lg:col-span-5">
+              <div className="rounded-xl border border-white/10 bg-[#f7f7f5] p-3.5 text-[#0e192c]">
+                <div className="relative flex h-28 w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-[#10b981] to-[#14b8a6] p-2">
+                  <span className="absolute top-2 right-2 z-10 rounded-full bg-[#10B981] px-2 py-0.5 font-mono text-[9px] font-bold text-[#06231B]">
+                    {selected.status}
+                  </span>
+                  {selected.coverUrl ? (
+                    <img
+                      src={selected.coverUrl}
+                      alt={selected.en.name || "Product preview"}
+                      className="h-full w-full rounded object-cover"
+                    />
+                  ) : (
+                    <div className="w-4/5 rounded-lg bg-white/95 p-2 shadow-sm text-[9px] text-slate-600">
+                      <div className="h-1 w-2/3 rounded bg-[#10B981] mb-1.5" />
+                      <div>✓ Workflow &amp; Core Operations</div>
+                      <div className="text-slate-400">• Client Review &amp; Routing</div>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-2.5 flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#0e192c]">
+                    {selected.en.name || "Product Name"}
+                  </span>
+                  <span className="text-[10px] font-semibold text-emerald-700">
+                    {selected.status}
+                  </span>
+                </div>
+                <p className="mt-0.5 truncate font-mono text-[10px] font-semibold text-emerald-700">
+                  {selected.en.tagline || "Product tagline"}
+                </p>
+                <p className="mt-1 line-clamp-2 text-[10px] text-[#475569]">
+                  {selected.en.shortDescription || "Short description appears here on the homepage card."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Video Configuration (~2-min Product Overview Video) */}
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">

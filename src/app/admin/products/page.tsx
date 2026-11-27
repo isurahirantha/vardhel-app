@@ -14,6 +14,8 @@ export default async function AdminProductsPage() {
     .findMany({
       where: { deletedAt: null },
       include: {
+        logo: true,
+        cover: true,
         translations: true,
         features: {
           include: { translations: true },
@@ -35,6 +37,8 @@ export default async function AdminProductsPage() {
       isFeatured: p.isFeatured,
       isPublished: p.isPublished,
       sortOrder: p.sortOrder,
+      coverUrl: p.cover?.publicUrl ?? "",
+      logoUrl: p.logo?.publicUrl ?? "",
       videoType: p.videoType ?? "youtube",
       videoUrl: p.videoUrl ?? "",
       techStack: Array.isArray(p.techStackJson)
