@@ -13,9 +13,9 @@ build/
 .env.*
 !.env.example
 
-# Local file uploads
-storage/
-!storage/.gitkeep
+# Local file uploads (root only, do not ignore src/lib/storage/)
+/storage/
+!/storage/.gitkeep
 
 # Testing & logs
 coverage/
