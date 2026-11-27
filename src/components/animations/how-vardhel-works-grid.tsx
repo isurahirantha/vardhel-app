@@ -358,24 +358,18 @@ export function HowVardhelWorksGrid({
                       {capabilitiesLabel}
                     </span>
                     <div className="no-scrollbar flex flex-nowrap overflow-x-auto gap-1.5 pb-1 lg:flex-wrap lg:pb-0">
-                      {allCapabilities.map((cap) => {
-                        const isActiveCap = stage.activeCapIds?.includes(cap.id);
-                        return (
+                      {allCapabilities
+                        .filter((cap) => stage.activeCapIds?.includes(cap.id))
+                        .map((cap) => (
                           <Link
                             key={cap.id}
                             href={cap.href}
                             tabIndex={isSelected ? 0 : -1}
-                            className={`whitespace-nowrap shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-                              isActiveCap
-                                ? "border border-emerald-500/35 bg-emerald-500/12 text-emerald-700 dark:text-emerald-400"
-                                : "border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] text-[var(--text-muted)] opacity-70 hover:opacity-100"
-                            }`}
+                            className="whitespace-nowrap shrink-0 rounded-full border border-emerald-500/35 bg-emerald-500/12 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 transition-colors hover:bg-emerald-500/20"
                           >
-                            {isActiveCap ? "✓ " : ""}
-                            {cap.label}
+                            ✓ {cap.label}
                           </Link>
-                        );
-                      })}
+                        ))}
                     </div>
                   </div>
                 )}

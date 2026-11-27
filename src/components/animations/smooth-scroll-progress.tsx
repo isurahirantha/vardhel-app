@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import Lenis from "lenis";
 
 export function SmoothScrollProgress() {
-  const [progress, setProgress] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -16,26 +16,34 @@ export function SmoothScrollProgress() {
       window.matchMedia("(pointer: coarse)").matches &&
       !window.matchMedia("(pointer: fine)").matches;
 
-    const onScroll = () => {
-      const total =
-        document.documentElement.scrollHeight - window.innerHeight;
-      if (total > 0) {
-        setProgress(Math.min(100, Math.max(0, (window.scrollY / total) * 100)));
+    const updateBar = (ratio: number) => {
+      if (barRef.current) {
+        barRef.current.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
       }
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const onNativeScroll = () => {
+      const total =
+        document.documentElement.scrollHeight - window.innerHeight;
+      updateBar(total > 0 ? window.scrollY / total : 0);
+    };
 
     if (prefersReducedMotion || isTouchOnly) {
-      return () => window.removeEventListener("scroll", onScroll);
+      onNativeScroll();
+      window.addEventListener("scroll", onNativeScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onNativeScroll);
     }
 
-    // High responsiveness: reduced from 1.05s to 0.65s for snappy, immediate interaction
     const lenis = new Lenis({
-      duration: 0.65,
+      lerp: 0.06,
       smoothWheel: true,
-      wheelMultiplier: 1.1,
+      wheelMultiplier: 0.85,
       touchMultiplier: 1,
+      anchors: true,
+    });
+
+    lenis.on("scroll", ({ progress }) => {
+      updateBar(progress);
     });
 
     let rafId = 0;
@@ -48,7 +56,6 @@ export function SmoothScrollProgress() {
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
-      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
@@ -58,8 +65,9 @@ export function SmoothScrollProgress() {
       className="fixed left-0 right-0 top-0 z-50 h-0.5 bg-transparent pointer-events-none"
     >
       <div
-        className="h-full bg-gradient-to-r from-orange-500 via-orange-600 to-indigo-500 transition-[width] duration-150"
-        style={{ width: `${progress}%` }}
+        ref={barRef}
+        className="h-full w-full origin-left bg-gradient-to-r from-orange-500 via-orange-600 to-indigo-500 will-change-transform"
+        style={{ transform: "scaleX(0)" }}
       />
     </div>
   );

@@ -101,7 +101,7 @@ export function HeroGrowthStaircase({
         </div>
         <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-500">
           <Sparkles className="h-3 w-3" />
-          <span>Interactive Matrix</span>
+          <span>5-Stage Model</span>
         </span>
       </div>
 
@@ -178,7 +178,7 @@ export function HeroGrowthStaircase({
           {currentActiveStage.isPinnacle && (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[9px] font-bold text-emerald-500 uppercase tracking-wider">
               <Sparkles className="h-2.5 w-2.5" />
-              <span>Target Climax</span>
+              <span>Core Outcome</span>
             </span>
           )}
         </div>

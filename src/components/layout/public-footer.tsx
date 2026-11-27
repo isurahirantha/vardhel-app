@@ -9,7 +9,6 @@ import {
   Linkedin,
   Youtube,
   MessageCircle,
-  ArrowUpRight,
   ArrowUp,
   ShieldCheck,
 } from "lucide-react";
@@ -177,27 +176,8 @@ export function PublicFooter({
           </div>
         </div>
 
-        {/* Conversion CTA Bar */}
-        <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-4 shadow-2xs sm:flex-row sm:items-center">
-          <div>
-            <p className="text-sm font-bold text-[var(--text-primary)]">
-              Let&rsquo;s grow your business with VARDHEL.
-            </p>
-            <p className="text-xs text-[var(--text-muted)]">
-              Book a free consultation to map your software, web, and growth roadmap.
-            </p>
-          </div>
-          <Link
-            href="/contact"
-            className="keep-white inline-flex shrink-0 items-center gap-2 rounded-full bg-[#0E192C] dark:bg-emerald-500 px-5 py-2.5 text-xs font-bold text-white dark:text-[#04261f] shadow-sm transition-all hover:opacity-90"
-          >
-            <span className="keep-white dark:text-[#04261f]">Book a Free Consultation</span>
-            <ArrowUpRight className="h-3.5 w-3.5 text-emerald-400 dark:text-[#04261f]" />
-          </Link>
-        </div>
-
         {/* Footer Bottom Utility & Social Row (Includes Legal Links & Back to Top) */}
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[var(--border-subtle)] pt-6 text-xs text-[var(--text-muted)] lg:flex-row">
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-[var(--border-subtle)] pt-6 text-xs text-[var(--text-muted)] lg:flex-row">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-start">
             <p>
               &copy; {currentYear} {brandName || "Vardhel"}. {rightsText || "All rights reserved."}

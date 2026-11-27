@@ -13,6 +13,7 @@ import { safeJsonLd } from "@/lib/security/sanitize";
 import { HeroGrowthStaircase } from "@/components/animations/hero-growth-staircase";
 import { HeroParticleSection } from "@/components/animations/hero-particle-section";
 import { HowVardhelWorksGrid } from "@/components/animations/how-vardhel-works-grid";
+import { IndustriesBounceStrip } from "@/components/animations/industries-bounce-strip";
 import { LiveWorkReel } from "@/components/animations/live-work-reel";
 import { MobileScrollCarousel } from "@/components/ui/mobile-scroll-carousel";
 import { FeedbackAvatar } from "@/components/ui/feedback-avatar";
@@ -185,14 +186,18 @@ export default async function HomePage({
                       href="/contact"
                       className="keep-white inline-flex min-h-[48px] items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-7 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:opacity-95"
                     >
-                      <span className="keep-white">{tCta("grow_business")}</span>
+                      <span className="keep-white">
+                        {validLocale === "si" ? tCta("grow_business") : "Book a Free Consultation"}
+                      </span>
                       <ArrowUpRight className="keep-white h-4 w-4" />
                     </Link>
                     <a
-                      href="#capabilities"
+                      href="#how-it-works"
                       className="glass-card inline-flex min-h-[48px] items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-[var(--text-primary)] transition-all hover:border-emerald-500/50"
                     >
-                      <span>{tCta("explore_what_we_do")}</span>
+                      <span>
+                        {validLocale === "si" ? tCta("explore_what_we_do") : "See Our Services"}
+                      </span>
                       <ArrowUpRight className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
                     </a>
                   </div>
@@ -202,12 +207,14 @@ export default async function HomePage({
                     <span className="flex tracking-tight text-amber-400" aria-hidden="true">
                       ★★★★★
                     </span>
-                    <span className="font-bold text-[var(--text-primary)]">5.0 Rating</span>
+                    <span className="font-bold text-[var(--text-primary)]">
+                      {validLocale === "si" ? "විශ්වාසනීය සේවා සැපයුම" : "Client-Verified Delivery"}
+                    </span>
                     <span>•</span>
                     <span>
                       {validLocale === "si"
-                        ? "ව්‍යාපාර 20+ ක විශ්වාසය දිනූ තාක්ෂණික හවුල්කරු"
-                        : "Trusted by 20+ ambitious businesses"}
+                        ? "සුවිශේෂී මෘදුකාංග, වෙබ් සහ AI උපායමාර්ග"
+                        : "Custom Software, Web & AI Strategy"}
                     </span>
                   </div>
                 </div>
@@ -235,21 +242,21 @@ export default async function HomePage({
                   : [
                     {
                       id: "st-1",
-                      value: "20",
-                      suffix: "+",
-                      label:
-                        validLocale === "si"
-                          ? "සම්බන්ධ වූ ව්‍යාපාර"
-                          : "Businesses Onboarded",
-                    },
-                    {
-                      id: "st-2",
-                      value: "3",
+                      value: "End-to-End",
                       suffix: "",
                       label:
                         validLocale === "si"
-                          ? "ප්‍රධාන මෘදුකාංග පද්ධති"
-                          : "Flagship SaaS Platforms",
+                          ? "උපායමාර්ග, නිර්මාණය සහ වර්ධනය"
+                          : "Strategy, Build & Growth",
+                    },
+                    {
+                      id: "st-2",
+                      value: "Custom-Built",
+                      suffix: "",
+                      label:
+                        validLocale === "si"
+                          ? "සැකිලි රහිත සුවිශේෂී පද්ධති"
+                          : "Zero Generic Templates",
                     },
                     {
                       id: "st-3",
@@ -276,56 +283,7 @@ export default async function HomePage({
               );
             })()}
 
-            <div className="ticker-mask relative overflow-hidden">
-              <div className="animate-ticker flex items-center gap-3">
-                <div className="flex items-center gap-2.5 pr-4 text-xs font-semibold text-[var(--text-secondary)]">
-                  <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="uppercase tracking-wider text-[var(--text-muted)] font-mono text-[11px] whitespace-nowrap">
-                    {validLocale === "si" ? "ඉලක්කගත ක්ෂේත්‍ර" : "Industries We Power"}
-                  </span>
-                </div>
-
-                {[
-                  validLocale === "si" ? "▸ සංචාරක සහ ආගන්තුක සත්කාර" : "▸ Hospitality & Tourism",
-                  validLocale === "si" ? "▸ ඊ-වාණිජ්‍යය සහ සිල්ලර" : "▸ E-Commerce & Retail",
-                  validLocale === "si" ? "▸ සෞඛ්‍ය සහ සායනික" : "▸ Healthcare & Wellness",
-                  validLocale === "si" ? "▸ නිශ්චල දේපල සහ ඉදිකිරීම්" : "▸ Real Estate & Architecture",
-                  validLocale === "si" ? "▸ වෘත්තීය සේවා සහ ආයතනික" : "▸ Professional Services",
-                  validLocale === "si" ? "▸ උත්සව සහ විනෝදාස්වාදය" : "▸ Events & Entertainment",
-                ].map((ind, i) => (
-                  <span
-                    key={`ind-1-${i}`}
-                    className="whitespace-nowrap rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/50"
-                  >
-                    {ind}
-                  </span>
-                ))}
-
-                {/* Seamless duplicate loop */}
-                <div className="flex items-center gap-2.5 pl-4 pr-4 text-xs font-semibold text-[var(--text-secondary)]">
-                  <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="uppercase tracking-wider text-[var(--text-muted)] font-mono text-[11px] whitespace-nowrap">
-                    {validLocale === "si" ? "ඉලක්කගත ක්ෂේත්‍ර" : "Industries We Power"}
-                  </span>
-                </div>
-
-                {[
-                  validLocale === "si" ? "▸ සංචාරක සහ ආගන්තුක සත්කාර" : "▸ Hospitality & Tourism",
-                  validLocale === "si" ? "▸ ඊ-වාණිජ්‍යය සහ සිල්ලර" : "▸ E-Commerce & Retail",
-                  validLocale === "si" ? "▸ සෞඛ්‍ය සහ සායනික" : "▸ Healthcare & Wellness",
-                  validLocale === "si" ? "▸ නිශ්චල දේපල සහ ඉදිකිරීම්" : "▸ Real Estate & Architecture",
-                  validLocale === "si" ? "▸ වෘත්තීය සේවා සහ ආයතනික" : "▸ Professional Services",
-                  validLocale === "si" ? "▸ උත්සව සහ විනෝදාස්වාදය" : "▸ Events & Entertainment",
-                ].map((ind, i) => (
-                  <span
-                    key={`ind-2-${i}`}
-                    className="whitespace-nowrap rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-2xs transition-colors hover:border-emerald-500/50"
-                  >
-                    {ind}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <IndustriesBounceStrip locale={validLocale} />
           </div>
         </section>
       )}
@@ -355,7 +313,7 @@ export default async function HomePage({
 
             <HowVardhelWorksGrid
               capabilitiesLabel={
-                validLocale === "si" ? "ක්‍රියාත්මක වන හැකියාවන්:" : "Capabilities Activated:"
+                validLocale === "si" ? "මෙම අදියරේදී සක්‍රීය වන්නේ:" : "Activated in This Stage:"
               }
               allCapabilities={[
                 {
@@ -669,12 +627,12 @@ export default async function HomePage({
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
-                  {validLocale === "si" ? "අපගේ නිෂ්පාදන" : "Flagship Platforms"}
+                  {validLocale === "si" ? "සජීවී ප්‍රදර්ශනය" : "Live Showcase"}
                 </span>
                 <h2 className="mt-1.5 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                   {validLocale === "si"
-                    ? "Vardhel විසින් නිර්මාණය කළ මෘදුකාංග පද්ධති"
-                    : "Platforms Engineered by Vardhel"}
+                    ? "Vardhel නිෂ්පාදන සහ පාරිභෝගික ව්‍යාපෘති"
+                    : "Vardhel Products & Client Launches"}
                 </h2>
               </div>
               <Link
@@ -686,95 +644,12 @@ export default async function HomePage({
               </Link>
             </div>
 
-            {/* Option 1: Looping Live Work Showreel (admin-uploaded MP4/WebM overrides canvas fallback) */}
-            <LiveWorkReel videoUrl={siteConfig.workReelVideoUrl} locale={validLocale} />
-
-            <MobileScrollCarousel
-              wrapperClassName="mt-5"
-              gridClassName="md:grid md:grid-cols-3 md:gap-5"
-              prevLabel="Previous platform"
-              nextLabel="Next platform"
-            >
-              {products.map((prod) => {
-                const hasCover = Boolean(prod.coverUrl);
-                const isEventLoom = prod.slug.includes("event");
-                const isCaptureLoom = prod.slug.includes("capture");
-                const gradientBg = isEventLoom
-                  ? "from-[#10b981] to-[#14b8a6]"
-                  : isCaptureLoom
-                    ? "from-[#1E293B] to-[#334155]"
-                    : "from-[#4C1D95] to-[#831843]";
-
-                return (
-                  <Link
-                    key={prod.id}
-                    href={`/products/${prod.slug}`}
-                    className="glass-card glass-card-hover group flex w-[82vw] max-w-[320px] shrink-0 snap-center md:w-auto md:max-w-none flex-col justify-between overflow-hidden rounded-2xl p-4"
-                  >
-                    <div>
-                      <div className={`relative flex h-32 md:h-36 w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${gradientBg} p-3 shadow-inner`}>
-                        <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-[#10B981] px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-[#06231B] shadow-xs">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#06231B] animate-pulse" />
-                          LIVE
-                        </span>
-
-                        {hasCover ? (
-                          <div className="relative h-full w-full overflow-hidden rounded-lg">
-                            <img
-                              src={prod.coverUrl}
-                              alt={prod.name}
-                              loading="lazy"
-                              className="h-full w-full rounded-lg object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          </div>
-                        ) : (
-                          /* Stylized Product Dashboard Mockup from template */
-                          <div className="w-[85%] max-w-[240px] rounded-xl bg-white/95 p-3.5 shadow-lg backdrop-blur-xs">
-                            <div className="h-1.5 w-full rounded-full bg-slate-200 mb-1.5" />
-                            <div className="h-1.5 w-3/5 rounded-full bg-slate-200 mb-2" />
-                            <div className="h-1.5 w-4/5 rounded-full bg-[#10B981] mb-2.5" />
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
-                                <span className="h-2 w-2 rounded-xs bg-[#10B981]" />
-                                <span>Workflow &amp; Core Operations</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
-                                <span className="h-2 w-2 rounded-xs bg-slate-200" />
-                                <span>Client Review &amp; Routing</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 text-[9px] text-slate-600">
-                                <span className="h-2 w-2 rounded-xs bg-slate-200" />
-                                <span>Analytics &amp; ROI Tracking</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-3 flex items-center justify-between">
-                        <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
-                          {prod.name}
-                        </h3>
-                        <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-                          {prod.status}
-                        </span>
-                      </div>
-                      <p className="mt-0.5 line-clamp-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 font-mono">
-                        {prod.tagline}
-                      </p>
-                      <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[var(--text-secondary)]">
-                        {prod.shortDescription}
-                      </p>
-                    </div>
-
-                    <div className="mt-3 flex items-center justify-between border-t border-[var(--border-subtle)] pt-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                      <span>Explore {prod.name}</span>
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </div>
-                  </Link>
-                );
-              })}
-            </MobileScrollCarousel>
+            {/* Unified Vardhel Workspace: Live Client Work + Interactive Product Dock */}
+            <LiveWorkReel
+              products={products}
+              videoUrl={siteConfig.workReelVideoUrl}
+              locale={validLocale}
+            />
           </div>
         </section>
       )}
@@ -801,42 +676,52 @@ export default async function HomePage({
               </Link>
             </div>
 
-            {feedbackList.length > 0 && (
-              <MobileScrollCarousel
-                wrapperClassName="mt-4 md:mt-6"
-                gridClassName="md:grid md:grid-cols-3 md:gap-5"
-                prevLabel="Previous review"
-                nextLabel="Next review"
-              >
-                {feedbackList.slice(0, 6).map((fb) => (
-                  <div key={fb.id} className="glass-card w-[84vw] max-w-[330px] shrink-0 snap-center md:w-auto md:max-w-none rounded-2xl p-5 space-y-2.5 flex flex-col justify-between">
-                    <div className="space-y-2.5">
-                      <div className="flex items-center gap-1 text-amber-400">
-                        {Array.from({ length: fb.rating }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-amber-400" />
-                        ))}
-                      </div>
-                      <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-                        &ldquo;{fb.message}&rdquo;
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 pt-2 border-t border-[var(--border-subtle)] text-xs">
-                      <FeedbackAvatar name={fb.name} avatarUrl={fb.avatarUrl} />
-                      <div className="min-w-0">
-                        <p className="truncate font-bold text-[var(--text-primary)]">
-                          {fb.name}
+            {feedbackList.length > 0 && (() => {
+              const isFeedbackCarousel = feedbackList.length > 3;
+              return (
+                <MobileScrollCarousel
+                  alwaysCarousel={isFeedbackCarousel}
+                  wrapperClassName="mt-4 md:mt-6"
+                  gridClassName={isFeedbackCarousel ? "md:gap-5 md:pb-2" : "md:grid md:grid-cols-3 md:gap-5"}
+                  prevLabel="Previous review"
+                  nextLabel="Next review"
+                >
+                  {feedbackList.map((fb) => (
+                    <div
+                      key={fb.id}
+                      className={`glass-card w-[84vw] max-w-[330px] shrink-0 snap-center rounded-2xl p-5 space-y-2.5 flex flex-col justify-between ${isFeedbackCarousel
+                        ? "md:w-[calc((100%-40px)/3)] md:max-w-none md:snap-start"
+                        : "md:w-auto md:max-w-none"
+                        }`}
+                    >
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-1 text-amber-400">
+                          {Array.from({ length: fb.rating }).map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-amber-400" />
+                          ))}
+                        </div>
+                        <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                          &ldquo;{fb.message}&rdquo;
                         </p>
-                        {(fb.role || fb.company) && (
-                          <p className="truncate text-[var(--text-muted)]">
-                            {fb.role} {fb.company ? `@ ${fb.company}` : ""}
+                      </div>
+                      <div className="flex items-center gap-3 pt-2 border-t border-[var(--border-subtle)] text-xs">
+                        <FeedbackAvatar name={fb.name} avatarUrl={fb.avatarUrl} />
+                        <div className="min-w-0">
+                          <p className="truncate font-bold text-[var(--text-primary)]">
+                            {fb.name}
                           </p>
-                        )}
+                          {(fb.role || fb.company) && (
+                            <p className="truncate text-[var(--text-muted)]">
+                              {fb.role} {fb.company ? `@ ${fb.company}` : ""}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </MobileScrollCarousel>
-            )}
+                  ))}
+                </MobileScrollCarousel>
+              );
+            })()}
           </div>
         </section>
       )}
