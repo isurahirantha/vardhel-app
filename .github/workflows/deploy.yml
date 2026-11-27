@@ -1,0 +1,135 @@
+
+name: CI/CD Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Prevent simultaneous deployments
+concurrency:
+  group: vardhel-production-deploy
+  cancel-in-progress: false
+
+# Minimum GitHub permissions
+permissions:
+  contents: read
+
+jobs:
+  # ==========================================
+  # CI - Continuous Integration
+  # ==========================================
+  ci:
+    name: Validate Application
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: TypeScript Typecheck
+        run: npm run typecheck
+
+  # ==========================================
+  # CD - Continuous Deployment
+  # ==========================================
+  deploy:
+    name: Deploy to Production VPS
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # ----------------------------------------
+      # Configure SSH
+      # ----------------------------------------
+      - name: Configure SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+
+      # ----------------------------------------
+      # Synchronize Application Files
+      # ----------------------------------------
+      - name: Sync Files to VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "node_modules/" \
+            --exclude ".next/" \
+            --exclude ".env*" \
+            --exclude "storage/" \
+            --exclude "backups/" \
+            --exclude "logs/" \
+            ./ "${VPS_USER}@${VPS_HOST}:/home/web/vardhel/"
+
+      # ----------------------------------------
+      # Deploy Docker Application
+      # ----------------------------------------
+      - name: Rebuild and Deploy Application
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes \
+            "${VPS_USER}@${VPS_HOST}" << 'ENDSSH'
+
+            set -e
+
+            cd /home/web/vardhel
+
+            echo "Starting VARDHEL deployment..."
+
+            # Build and start the web service
+            docker compose -f docker-compose.prod.yml up \
+              -d --build web
+
+            # Apply production database migrations
+            docker compose -f docker-compose.prod.yml exec \
+              -T web npx prisma migrate deploy
+
+            echo "VARDHEL deployment completed."
+
+          ENDSSH
+
+      # ----------------------------------------
+      # Deployment Summary
+      # ----------------------------------------
+      - name: Deployment Status
+        if: success()
+        run: echo "VARDHEL successfully deployed to production!"
+
+      - name: Deployment Failed
+        if: failure()
+        run: echo "VARDHEL deployment failed. Check the workflow logs."
