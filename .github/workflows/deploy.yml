@@ -115,9 +115,9 @@ jobs:
             docker compose -f docker-compose.prod.yml up \
               -d --build web
 
-            # Apply production database migrations
+            # Sync production database schema (safe for db-push-managed DBs)
             docker compose -f docker-compose.prod.yml exec \
-              -T web npx prisma migrate deploy
+              -T web npx prisma db push --skip-generate
 
             echo "VARDHEL deployment completed."
 
