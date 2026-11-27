@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { VardhelLogoMark } from "@/components/ui/vardhel-logo-mark";
 import {
   Mail,
   Phone,
@@ -84,9 +85,7 @@ export function PublicFooter({
           {/* Col 1: Brand + Trust Signals */}
           <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="inline-flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-gradient-to-br from-[#0e192c] to-[#228870] text-base font-bold text-white shadow-inner font-serif">
-                V
-              </span>
+              <VardhelLogoMark className="h-8 w-8 shrink-0" />
               <div>
                 <span className="block text-[15px] font-bold tracking-[0.08em] text-[var(--text-primary)]">
                   {brandName || "VARDHEL"}

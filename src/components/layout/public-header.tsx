@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
+import { VardhelLogoMark } from "@/components/ui/vardhel-logo-mark";
 import {
   Menu,
   X,
@@ -103,17 +103,8 @@ export function PublicHeader({
             className="flex shrink-0 items-center gap-2.5 rounded-full pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
             aria-label={brandName || "Vardhel"}
           >
-            <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 p-1">
-              <Image
-                src="/SVG/iconlogo.svg"
-                alt="Vardhel Monogram"
-                width={28}
-                height={28}
-                className="h-6 w-6 object-contain"
-                priority
-              />
-            </div>
-            <span className="text-lg font-black tracking-wider text-[var(--text-primary)]">
+            <VardhelLogoMark className="h-7 w-7 shrink-0" />
+            <span className="text-sm font-bold tracking-wider uppercase text-[var(--text-primary)]">
               VARDHEL
             </span>
           </Link>
